@@ -106,6 +106,14 @@ public :
     TFile                   *fCurrentFile;
     TH1D                    *hTotalEvents;
 
+    TH1D                    *hZEta;
+    TH1D                    *hZPt;
+    TH1D                    *hZMass;
+    TH1D                    *hMu1Eta;
+    TH1D                    *hMu1Pt;
+    TH1D                    *hMu2Eta;
+    TH1D                    *hMu2Pt;
+
     ClassDef(BLTSelector,0);
 };
 

@@ -140,6 +140,16 @@ void MultileptonAnalyzer::Begin(TTree *tree)
     string outHistName = params->get_output_treename("TotalEvents");
     hTotalEvents = new TH1D(outHistName.c_str(),"TotalEvents",10,0.5,10.5);
 
+    // Histograms
+    hZEta = new TH1D("z_eta", "z_eta", 100, -10, 10);
+    hZPt = new TH1D("z_pt", "z_pt", 100, 0, 100);
+    hZMass = new TH1D("z_mass", "z_mass", 100, 80, 100);
+    hMu1Eta = new TH1D("mu1_eta", "mu1_eta", 100, -10, 10);
+    hMu1Pt = new TH1D("mu1_pt", "mu1_pt", 100, 0, 100);
+    hMu2Eta = new TH1D("mu2_eta", "mu2_eta", 100, -10, 10);
+    hMu2Pt = new TH1D("mu2_pt", "mu2_pt", 100, 0, 100);
+
+
     ReportPostBegin();
 }
 
@@ -162,24 +172,61 @@ Bool_t MultileptonAnalyzer::Process(Long64_t entry)
     // Gen-level selection //
     /////////////////////////
     
-    bool isProcess = false, isAccepted = false;
+//    bool isProcess = false;
+    bool isAccepted = false;
 
     if (!isRealData)
     {
-        vector<TGenParticle*> leptons;
-        float massZ = -1;
+        vector<TGenParticle*> leptons, zbosons;
+//        float massZ = -1;
 
         for (int i = 0; i < fGenParticleArr->GetEntries(); ++i)
         {
             TGenParticle* particle = (TGenParticle*) fGenParticleArr->At(i);
 
             if (abs(particle->pdgId) == 23)
-                massZ = particle->mass;
+//                massZ = particle->mass;
+                zbosons.push_back(particle);
             else if (particle->status == 1 && abs(particle->pdgId) == 13)
                 leptons.push_back(particle);
         }
         std::sort(leptons.begin(), leptons.end(), sort_gen_pt);
+        if (zbosons.size() > 1)
+        {
+            float zmass_diff = 1000;
+            for (unsigned int i = 0; i < zbosons.size(); i++)
+            {
+                if (abs(zbosons[i]->mass - 91.2) < zmass_diff)
+                {
+                    zmass_diff = abs(zbosons[i]->mass - 91.2);
+                    the_z.SetPtEtaPhiM(zbosons[i]->pt, zbosons[i]->eta, zbosons[i]->phi, zbosons[i]->mass);
+                }
+            }
+        }
 
+        if (params->selection == "mumu")
+        {
+            if (leptons.size() >= 2)
+            {
+                muon1.SetPtEtaPhiM(leptons[0]->pt, leptons[0]->eta, leptons[0]->phi, leptons[0]->mass);
+                for (unsigned i = 1; i < leptons.size(); ++i)
+                {
+                    if (leptons[0]->pdgId != leptons[i]->pdgId)
+                    {
+                        muon2.SetPtEtaPhiM(leptons[i]->pt, leptons[i]->eta, leptons[i]->phi, leptons[i]->mass);
+                        break;
+                    }
+                }
+                hZEta->Fill(the_z.Eta());
+                hZPt->Fill(the_z.Pt());
+                hZMass->Fill(the_z.M());
+                hMu1Eta->Fill(muon1.Eta());
+                hMu1Pt->Fill(muon1.Pt());
+                hMu2Eta->Fill(muon2.Eta());
+                hMu2Pt->Fill(muon2.Pt());
+            }
+        }
+/*
         if (params->selection == "mumu")
         {
             if (leptons.size() > 1)
@@ -211,7 +258,7 @@ Bool_t MultileptonAnalyzer::Process(Long64_t entry)
                 }
             }
         }
-        else if (params->selection == "4mu")
+*/        else if (params->selection == "4mu")
         {
             if (leptons.size() > 3)
             {
