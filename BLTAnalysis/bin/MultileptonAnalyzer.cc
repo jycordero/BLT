@@ -253,6 +253,25 @@ Bool_t MultileptonAnalyzer::Process(Long64_t entry)
         }
         else if (params->selection == "4mu")
         {
+            if (params->datasetgroup == "DYJetsToLL" && leptons.size() > 1)
+            {
+                for (unsigned k = 0; k < zbosons.size(); k++)
+                {
+                    for (unsigned int j = 0; j < leptons.size(); j++)
+                    {
+                        for (unsigned int i = 0; i < j; i++)
+                        {
+                            float Mll = sqrt(2 * leptons[i]->pt * leptons[j]->pt * (cosh(leptons[i]->eta - leptons[j]->eta) - cos(leptons[i]->phi - leptons[j]->phi)));
+                            if (abs(Mll - zbosons[k]->mass) <= 3 && leptons[i]->pdgId != leptons[j]->pdgId)
+                            {
+                                isProcess = true;
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+
             if (leptons.size() >= 4)
             {
                 unsigned muon2Index = 1, muon3Index = 2, muon4Index = 3;
@@ -271,25 +290,26 @@ Bool_t MultileptonAnalyzer::Process(Long64_t entry)
                     {
                         muon4.SetPtEtaPhiM(leptons[i]->pt, leptons[i]->eta, leptons[i]->phi, leptons[i]->mass);
                         muon4Index = i;
-                        isProcess = true;
-                        this->genEvents++;
+                        if (params->datasetgroup == "Zto4mu")
+                            isProcess = true;
                         break;
                     }
                 }
 
-                if (isProcess)
-                {
-                    float Mll = (muon1 + muon2).M(), M4l = (muon1 + muon2 + muon3 + muon4).M();
-                    if (muon1.Pt() > 25 && muon2.Pt() > 25 && muon3.Pt() > 10 && muon4.Pt() > 10
-                            && abs(muon1.Eta()) < 2.1 && abs(muon2.Eta()) < 2.1 && abs(muon3.Eta()) < 2.4 && abs(muon4.Eta()) < 2.4
-                            && Mll > 12 && M4l > 80 && M4l < 100)
-                    {
-                        cout << "?" << endl;
-                        this->genAcceptedEvents++;
-                        isAccepted = true;
-                    }
+            }
 
+            if (isProcess)
+            {
+                this->genEvents++;
+                float Mll = (muon1 + muon2).M(), M4l = (muon1 + muon2 + muon3 + muon4).M();
+                if (muon1.Pt() > 25 && muon2.Pt() > 25 && muon3.Pt() > 10 && muon4.Pt() > 10
+                        && abs(muon1.Eta()) < 2.1 && abs(muon2.Eta()) < 2.1 && abs(muon3.Eta()) < 2.4 && abs(muon4.Eta()) < 2.4
+                        && Mll > 12 && M4l > 80 && M4l < 100)
+                {
+                    this->genAcceptedEvents++;
+                    isAccepted = true;
                 }
+
             }
         }
 
