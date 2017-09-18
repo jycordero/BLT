@@ -220,16 +220,17 @@ Bool_t MultileptonAnalyzer::Process(Long64_t entry)
         std::sort(leptons.begin(), leptons.end(), sort_gen_pt);
         if (zbosons.size() > 1)
         {
-            float zmass_diff = 1000;
-            for (unsigned int i = 0; i < zbosons.size(); i++)
-            {
-                if (abs(zbosons[i]->mass - 91.2) < zmass_diff)
-                {
-                    zmass_diff = abs(zbosons[i]->mass - 91.2);
+//            float zmass_diff = 1000;
+//            for (unsigned int i = 0; i < zbosons.size(); i++)
+//            {
+//                if (abs(zbosons[i]->mass - 91.2) < zmass_diff)
+//                {
+//                    zmass_diff = abs(zbosons[i]->mass - 91.2);
 //                    cout << zbosons[i]->status << endl;
-                    the_z.SetPtEtaPhiM(zbosons[i]->pt, zbosons[i]->eta, zbosons[i]->phi, zbosons[i]->mass);
-                }
-            }
+//                    the_z.SetPtEtaPhiM(zbosons[i]->pt, zbosons[i]->eta, zbosons[i]->phi, zbosons[i]->mass);
+//                }
+//            }
+                the_z.SetPtEtaPhiM(zbosons[0]->pt, zbosons[0]->eta, zbosons[0]->phi, zbosons[0]->mass);
         }
 
         if (params->selection == "mumu")
