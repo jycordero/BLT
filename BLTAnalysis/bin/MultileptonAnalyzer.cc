@@ -142,12 +142,15 @@ void MultileptonAnalyzer::Begin(TTree *tree)
 
     // Histograms
     hZEta = new TH1D("z_eta", "z_eta", 100, -10, 10);
+    hZRap = new TH1D("z_rap", "z_rap", 100, -10, 10);
     hZPt = new TH1D("z_pt", "z_pt", 100, 0, 100);
     hZMass = new TH1D("z_mass", "z_mass", 100, 80, 100);
     hMu1Eta = new TH1D("mu1_eta", "mu1_eta", 100, -10, 10);
+    hMu1Rap = new TH1D("mu1_rap", "mu1_rap", 100, -10, 10);
     hMu1Pt = new TH1D("mu1_pt", "mu1_pt", 100, 0, 100);
     hMu2Eta = new TH1D("mu2_eta", "mu2_eta", 100, -10, 10);
     hMu2Pt = new TH1D("mu2_pt", "mu2_pt", 100, 0, 100);
+    hMu2Rap = new TH1D("mu2_rap", "mu2_rap", 100, -10, 10);
 
 
     ReportPostBegin();
@@ -172,27 +175,27 @@ Bool_t MultileptonAnalyzer::Process(Long64_t entry)
     // Gen-level selection //
     /////////////////////////
     
-    bool isProcess = false;
+//    bool isProcess = false;
     bool isAccepted = false;
 
     if (!isRealData)
     {
         vector<TGenParticle*> leptons;
-//        vector<TGenParticle*> zbosons;
-        float massZ = -1;
+        vector<TGenParticle*> zbosons;
+//        float massZ = -1;
 
         for (int i = 0; i < fGenParticleArr->GetEntries(); ++i)
         {
             TGenParticle* particle = (TGenParticle*) fGenParticleArr->At(i);
 
             if (abs(particle->pdgId) == 23)
-                massZ = particle->mass;
-//                zbosons.push_back(particle);
+//                massZ = particle->mass;
+                zbosons.push_back(particle);
             else if (particle->status == 1 && abs(particle->pdgId) == 13)
                 leptons.push_back(particle);
         }
         std::sort(leptons.begin(), leptons.end(), sort_gen_pt);
-/*        if (zbosons.size() > 1)
+        if (zbosons.size() > 1)
         {
             float zmass_diff = 1000;
             for (unsigned int i = 0; i < zbosons.size(); i++)
@@ -230,7 +233,7 @@ Bool_t MultileptonAnalyzer::Process(Long64_t entry)
                 hMu2Pt->Fill(muon2.Pt());
             }
         }
-*/
+/*
         if (params->selection == "mumu")
         {
             if (leptons.size() > 1)
@@ -262,6 +265,7 @@ Bool_t MultileptonAnalyzer::Process(Long64_t entry)
                 }
             }
         }
+*/
         else if (params->selection == "4mu")
         {
             if (leptons.size() > 3)
