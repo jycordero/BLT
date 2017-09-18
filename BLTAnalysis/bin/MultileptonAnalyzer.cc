@@ -172,26 +172,27 @@ Bool_t MultileptonAnalyzer::Process(Long64_t entry)
     // Gen-level selection //
     /////////////////////////
     
-//    bool isProcess = false;
+    bool isProcess = false;
     bool isAccepted = false;
 
     if (!isRealData)
     {
-        vector<TGenParticle*> leptons, zbosons;
-//        float massZ = -1;
+        vector<TGenParticle*> leptons;
+//        vector<TGenParticle*> zbosons;
+        float massZ = -1;
 
         for (int i = 0; i < fGenParticleArr->GetEntries(); ++i)
         {
             TGenParticle* particle = (TGenParticle*) fGenParticleArr->At(i);
 
             if (abs(particle->pdgId) == 23)
-//                massZ = particle->mass;
-                zbosons.push_back(particle);
+                massZ = particle->mass;
+//                zbosons.push_back(particle);
             else if (particle->status == 1 && abs(particle->pdgId) == 13)
                 leptons.push_back(particle);
         }
         std::sort(leptons.begin(), leptons.end(), sort_gen_pt);
-        if (zbosons.size() > 1)
+/*        if (zbosons.size() > 1)
         {
             float zmass_diff = 1000;
             for (unsigned int i = 0; i < zbosons.size(); i++)
@@ -218,15 +219,18 @@ Bool_t MultileptonAnalyzer::Process(Long64_t entry)
                     }
                 }
                 hZEta->Fill(the_z.Eta());
+                hZRap->Fill(the_z.Rapidity());
                 hZPt->Fill(the_z.Pt());
                 hZMass->Fill(the_z.M());
                 hMu1Eta->Fill(muon1.Eta());
+                hMu1Rap->Fill(muon1.Rapidity());
                 hMu1Pt->Fill(muon1.Pt());
                 hMu2Eta->Fill(muon2.Eta());
+                hMu2Rap->Fill(muon2.Rapidity());
                 hMu2Pt->Fill(muon2.Pt());
             }
         }
-/*
+*/
         if (params->selection == "mumu")
         {
             if (leptons.size() > 1)
@@ -258,7 +262,7 @@ Bool_t MultileptonAnalyzer::Process(Long64_t entry)
                 }
             }
         }
-*/        else if (params->selection == "4mu")
+        else if (params->selection == "4mu")
         {
             if (leptons.size() > 3)
             {
