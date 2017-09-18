@@ -152,11 +152,14 @@ void MultileptonAnalyzer::Begin(TTree *tree)
 
     // histograms
     hZEta = new TH1D("z_eta", "z_eta", 100, -10, 10);
+    hZRap = new TH1D("z_rap", "z_rap", 100, -10, 10);
     hZPt = new TH1D("z_pt", "z_pt", 100, 0, 100);
     hZMass = new TH1D("z_mass", "z_mass", 100, 80, 100);
     hMu1Eta = new TH1D("mu1_eta", "mu1_eta", 100, -10, 10);
+    hMu1Rap = new TH1D("mu1_rap", "mu1_rap", 100, -10, 10);
     hMu1Pt = new TH1D("mu1_pt", "mu1_pt", 100, 0, 100);
     hMu2Eta = new TH1D("mu2_eta", "mu2_eta", 100, -10, 10);
+    hMu2Rap = new TH1D("mu2_rap", "mu2_rap", 100, -10, 10);
     hMu2Pt = new TH1D("mu2_pt", "mu2_pt", 100, 0, 100);
 
     ReportPostBegin();
@@ -243,11 +246,14 @@ Bool_t MultileptonAnalyzer::Process(Long64_t entry)
                     }
                 }
                 hZEta->Fill(the_z.Eta());
+                hZRap->Fill(the_z.Rapidity());
                 hZPt->Fill(the_z.Pt());
                 hZMass->Fill(the_z.M());
                 hMu1Eta->Fill(muon1.Eta());
+                hMu1Rap->Fill(muon1.Rapidity());
                 hMu1Pt->Fill(muon1.Pt());
                 hMu2Eta->Fill(muon2.Eta());
+                hMu2Rap->Fill(muon2.Rapidity());
                 hMu2Pt->Fill(muon2.Pt());
             }
         }

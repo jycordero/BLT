@@ -118,11 +118,14 @@ public :
     TH1D                    *hTotalEvents;
 
     TH1D                    *hZEta;
+    TH1D                    *hZRap;
     TH1D                    *hZPt;
     TH1D                    *hZMass;
     TH1D                    *hMu1Eta;
+    TH1D                    *hMu1Rap;
     TH1D                    *hMu1Pt;
     TH1D                    *hMu2Eta;
+    TH1D                    *hMu2Rap;
     TH1D                    *hMu2Pt;
 
     ClassDef(BLTSelector,0);
