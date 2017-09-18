@@ -246,16 +246,20 @@ Bool_t MultileptonAnalyzer::Process(Long64_t entry)
                         break;
                     }
                 }
-                hZEta->Fill(the_z.Eta());
-                hZRap->Fill(the_z.Rapidity());
-                hZPt->Fill(the_z.Pt());
-                hZMass->Fill(the_z.M());
-                hMu1Eta->Fill(muon1.Eta());
-                hMu1Rap->Fill(muon1.Rapidity());
-                hMu1Pt->Fill(muon1.Pt());
-                hMu2Eta->Fill(muon2.Eta());
-                hMu2Rap->Fill(muon2.Rapidity());
-                hMu2Pt->Fill(muon2.Pt());
+
+                if (the_z.Pt() > 0)
+                {
+                    hZEta->Fill(the_z.Eta());
+                    hZRap->Fill(the_z.Rapidity());
+                    hZPt->Fill(the_z.Pt());
+                    hZMass->Fill(the_z.M());
+                    hMu1Eta->Fill(muon1.Eta());
+                    hMu1Rap->Fill(muon1.Rapidity());
+                    hMu1Pt->Fill(muon1.Pt());
+                    hMu2Eta->Fill(muon2.Eta());
+                    hMu2Rap->Fill(muon2.Rapidity());
+                    hMu2Pt->Fill(muon2.Pt());
+                }
             }
         }
         else if (params->selection == "4mu")
