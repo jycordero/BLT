@@ -197,16 +197,16 @@ Bool_t MultileptonAnalyzer::Process(Long64_t entry)
         std::sort(leptons.begin(), leptons.end(), sort_gen_pt);
         if (zbosons.size() > 1)
         {
-//          float zmass_diff = 1000;
-//          for (unsigned int i = 0; i < zbosons.size(); i++)
-//          {
-//              if (abs(zbosons[i]->mass - 91.2) < zmass_diff)
-//              {
-//                  zmass_diff = abs(zbosons[i]->mass - 91.2);
-//                  the_z.SetPtEtaPhiM(zbosons[i]->pt, zbosons[i]->eta, zbosons[i]->phi, zbosons[i]->mass);
-//              }
-//          }
-            the_z.SetPtEtaPhiM(zbosons[0]->pt, zbosons[0]->eta, zbosons[0]->phi, zbosons[0]->mass);
+            float zmass_diff = 1000;
+            for (unsigned int i = 0; i < zbosons.size(); i++)
+            {
+                if (abs(zbosons[i]->mass - 91.2) < zmass_diff)
+                {
+                    zmass_diff = abs(zbosons[i]->mass - 91.2);
+                    the_z.SetPtEtaPhiM(zbosons[i]->pt, zbosons[i]->eta, zbosons[i]->phi, zbosons[i]->mass);
+                }
+            }
+//            the_z.SetPtEtaPhiM(zbosons[0]->pt, zbosons[0]->eta, zbosons[0]->phi, zbosons[0]->mass);
         }
 
         if (params->selection == "mumu")
@@ -222,16 +222,20 @@ Bool_t MultileptonAnalyzer::Process(Long64_t entry)
                         break;
                     }
                 }
-                hZEta->Fill(the_z.Eta());
-                hZRap->Fill(the_z.Rapidity());
-                hZPt->Fill(the_z.Pt());
-                hZMass->Fill(the_z.M());
-                hMu1Eta->Fill(muon1.Eta());
-                hMu1Rap->Fill(muon1.Rapidity());
-                hMu1Pt->Fill(muon1.Pt());
-                hMu2Eta->Fill(muon2.Eta());
-                hMu2Rap->Fill(muon2.Rapidity());
-                hMu2Pt->Fill(muon2.Pt());
+
+                if (the_z.Pt() > 0)
+                {
+                    hZEta->Fill(the_z.Eta());
+                    hZRap->Fill(the_z.Rapidity());
+                    hZPt->Fill(the_z.Pt());
+                    hZMass->Fill(the_z.M());
+                    hMu1Eta->Fill(muon1.Eta());
+                    hMu1Rap->Fill(muon1.Rapidity());
+                    hMu1Pt->Fill(muon1.Pt());
+                    hMu2Eta->Fill(muon2.Eta());
+                    hMu2Rap->Fill(muon2.Rapidity());
+                    hMu2Pt->Fill(muon2.Pt());
+                }
             }
         }
 /*
