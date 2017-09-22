@@ -87,6 +87,8 @@ public:
     Bool_t triggerStatus;
     Float_t eventWeight, nPU;
 
+    Bool_t isProcess, isAccepted, isSelected; 
+
     TLorentzVector the_z, muon1, muon2, muon3, muon4;
     TLorentzVector leptonOneP4, leptonTwoP4, leptonThreeP4, leptonFourP4;
     TLorentzVector jetP4, bjetP4, genJetP4, genBJetP4;
