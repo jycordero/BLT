@@ -46,19 +46,11 @@ public :
     long int      totalEvents;          // number of events processed after skimming
     long int      passedEvents;         // number of events selected
 
-    long int      genEvents;            // number of generator-level events of selected process
-    long int      genAcceptedEvents;    // number of generator-level events accepted
-    long int      passIdEvents;         // number of accepted events that pass isolation and ID requirements
-
     BLTSelector(TTree * /*tree*/ =0) : fChain(0) {
         fileCount           = 0;
         unskimmedEventCount = 0;
         totalEvents         = 0;
         passedEvents        = 0;
-
-        genEvents           = 0;
-        genAcceptedEvents   = 0;
-        passIdEvents        = 0;
     }
     virtual ~BLTSelector() { }
     virtual Int_t   Version() const { return 2; }
@@ -116,18 +108,6 @@ public :
 
     TFile                   *fCurrentFile;
     TH1D                    *hTotalEvents;
-    TH1D                    *hSelectedEvents;
-
-//  TH1D                    *hZEta;
-//  TH1D                    *hZRap;
-//  TH1D                    *hZPt;
-//  TH1D                    *hZMass;
-//  TH1D                    *hMu1Eta;
-//  TH1D                    *hMu1Rap;
-//  TH1D                    *hMu1Pt;
-//  TH1D                    *hMu2Eta;
-//  TH1D                    *hMu2Rap;
-//  TH1D                    *hMu2Pt;
 
     ClassDef(BLTSelector,0);
 };

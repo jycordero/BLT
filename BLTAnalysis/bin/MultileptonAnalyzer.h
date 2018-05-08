@@ -84,22 +84,18 @@ public:
     // Branches in the output file
     UInt_t runNumber, lumiSection, nPV, nPartons;
     ULong64_t evtNumber;
-    Bool_t triggerStatus;
+//  Bool_t triggerStatus;
     Float_t eventWeight, nPU;
 
-    Bool_t isProcess, isAccepted, isSelected; 
+    TClonesArray *muonsP4 = new TClonesArray("TLorentzVector");
+    TClonesArray &muonsP4ptr = *muonsP4;
+    TClonesArray *electronsP4 = new TClonesArray("TLorentzVector");
+    TClonesArray &electronsP4ptr = *electronsP4;
+    std::vector<float> muonsIso, electronsIso;
+    std::vector<int> muonsQ, electronsQ;
 
-    TLorentzVector the_z, muon1, muon2, muon3, muon4;
-    TLorentzVector leptonOneP4, leptonTwoP4, leptonThreeP4, leptonFourP4;
-    TLorentzVector jetP4, bjetP4, genJetP4, genBJetP4;
-    Float_t leptonOneIso, leptonTwoIso, leptonThreeIso, leptonFourIso;
-    Int_t leptonOneQ, leptonTwoQ, leptonThreeQ, leptonFourQ;
-    Int_t leptonOneFlavor, leptonTwoFlavor, leptonThreeFlavor, leptonFourFlavor;
-    Int_t jetFlavor, bjetFlavor;
-    Bool_t leptonOneTrigger, leptonTwoTrigger, leptonThreeTrigger, leptonFourTrigger;
-
-    Float_t jetD0, bjetD0;
-    Float_t bjetPUID, bjetTag, jetPUID, jetTag, genJetTag, genBJetTag;
+//  Float_t jetD0, bjetD0;
+//  Float_t bjetPUID, bjetTag, jetPUID, jetTag, genJetTag, genBJetTag;
     Float_t met, metPhi;
 
     UInt_t nJets, nFwdJets, nBJets, nMuons, nElectrons;
