@@ -81,24 +81,47 @@ public:
 
     std::vector<string> triggerNames;
 
+
     // Branches in the output file
+
+    // event data
     UInt_t runNumber, lumiSection, nPV, nPartons;
     ULong64_t evtNumber;
-//  Bool_t triggerStatus;
     Float_t eventWeight, nPU;
+    Float_t met, metPhi;
 
+    // leptons
     TClonesArray *muonsP4 = new TClonesArray("TLorentzVector");
     TClonesArray &muonsP4ptr = *muonsP4;
     TClonesArray *electronsP4 = new TClonesArray("TLorentzVector");
     TClonesArray &electronsP4ptr = *electronsP4;
-    std::vector<float> muonsIso, electronsIso;
-    std::vector<int> muonsQ, electronsQ;
+    std::vector<Float_t> muonsIso, electronsIso;
+    std::vector<Int_t> muonsQ, electronsQ;
 
-//  Float_t jetD0, bjetD0;
-//  Float_t bjetPUID, bjetTag, jetPUID, jetTag, genJetTag, genBJetTag;
-    Float_t met, metPhi;
+    // muon ID criteria
+    std::vector<Bool_t> muonIsGLB, muonPassStdCuts; 
+    std::vector<Float_t> muonMuNChi2, muonD0, muonDz;
+    std::vector<Int_t> muonNMatchStn, muonNPixHits, muonNTkLayers, muonNValidHits;
 
-    UInt_t nJets, nFwdJets, nBJets, nMuons, nElectrons;
+    // electron ID criteria
+    std::vector<Bool_t> electronIsConv, electronPassID, electronPassIso;
+    std::vector<Bool_t> electronPassStdCuts;
+    std::vector<Float_t> electronCombIso, electronEnergyInv;
+    std::vector<Float_t> electronScEta, electronD0, electronDz, electronSieie;
+    std::vector<Float_t> electronHOverE, electronDEtaIn, electronDPhiIn;
+    std::vector<Int_t> electronNMissHits;
+
+    // gen-level particles
+    TClonesArray *genMuonsP4 = new TClonesArray("TLorentzVector");
+    TClonesArray &genMuonsP4ptr = *genMuonsP4;
+    TClonesArray *genElectronsP4 = new TClonesArray("TLorentzVector");
+    TClonesArray &genElectronsP4ptr = *genElectronsP4;
+    std::vector<Int_t> genMuonsQ, genElectronsQ;
+    std::vector<Int_t> genIntermID;
+    std::vector<Float_t> genIntermMass;
+
+    // counters
+    UInt_t nMuons, nElectrons;
 
     // MET kluge 
     float MetKluge(float);

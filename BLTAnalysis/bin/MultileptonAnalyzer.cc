@@ -80,30 +80,58 @@ void MultileptonAnalyzer::Begin(TTree *tree)
     outFile->cd();
     outTree = new TTree(outTreeName.c_str(), "bltTree");
 
-//  muonsP4->SetClass("TLorentzVector");
-//  electronsP4->SetClass("TLorentzVector");
-
     // event data
 //  outTree->Branch("runNumber", &runNumber);
     outTree->Branch("evtNumber", &evtNumber, "eventNumber/l");
     outTree->Branch("lumiSection", &lumiSection);
-//  outTree->Branch("triggerStatus", &triggerStatus);
     outTree->Branch("eventWeight", &eventWeight);
     outTree->Branch("nPV", &nPV);
     outTree->Branch("nPU", &nPU);
     outTree->Branch("nPartons", &nPartons);
-
     outTree->Branch("met", &met);
     outTree->Branch("metPhi", &metPhi);
 
-    // leptons
+    // muons
     outTree->Branch("muonP4", &muonsP4, 256000, 0);
-    outTree->Branch("muonIso", &muonsIso);
     outTree->Branch("muonQ", &muonsQ);
-    outTree->Branch("electronP4", &electronsP4, 256000, 0);
-    outTree->Branch("electronIso", &electronsIso);
-    outTree->Branch("electronQ", &electronsQ);
+    outTree->Branch("muonIso", &muonsIso);
+    outTree->Branch("muonIsGLB", &muonIsGLB);
+    outTree->Branch("muonMuNChi2", &muonMuNChi2);
+    outTree->Branch("muonNMatchStn", &muonNMatchStn);
+    outTree->Branch("muonNPixHits", &muonNPixHits);
+    outTree->Branch("muonD0", &muonD0);
+    outTree->Branch("muonNTkLayers", &muonNTkLayers);
+    outTree->Branch("muonNValidHits", &muonNValidHits);
+    outTree->Branch("muonPassStdCuts", &muonPassStdCuts);
+//  outTree->Branch("muonMatchBits", &muonMatchBits);
 
+    // electrons
+    outTree->Branch("electronP4", &electronsP4, 256000, 0);
+    outTree->Branch("electronQ", &electronsQ);
+    outTree->Branch("electronIso", &electronsIso);
+    outTree->Branch("electronCombIso", &electronCombIso);
+    outTree->Branch("electronEnergyInv", &electronEnergyInv);
+    outTree->Branch("electronScEta", &electronScEta);
+    outTree->Branch("electronD0", &electronD0);
+    outTree->Branch("electronDz", &electronDz);
+    outTree->Branch("electronSieie", &electronSieie);
+    outTree->Branch("electronHOverE", &electronHOverE);
+    outTree->Branch("electronDEtaIn", &electronDEtaIn);
+    outTree->Branch("electronDPhiIn", &electronDPhiIn);
+    outTree->Branch("electronNMissHits", &electronNMissHits);
+    outTree->Branch("electronIsConv", &electronIsConv);
+    outTree->Branch("electronPassID", &electronPassID);
+    outTree->Branch("electronPassIso", &electronPassIso);
+    outTree->Branch("electronPassStdCuts", &electronPassStdCuts);
+//  outTree->Branch("electronMatchBits", &electronMatchBits);
+
+    // gen-level particles
+    outTree->Branch("genMuonP4", &genMuonsP4, 256000, 0);
+    outTree->Branch("genMuonQ", &genMuonsQ);
+    outTree->Branch("genElectronP4", &genElectronsP4, 256000, 0);
+    outTree->Branch("genElectronQ", &genElectronsQ);
+    outTree->Branch("genIntermID", &genIntermID);
+    outTree->Branch("genIntermMass", &genIntermMass);
 
     // event counter
     string outHistName = params->get_output_treename("TotalEvents");
@@ -114,8 +142,22 @@ void MultileptonAnalyzer::Begin(TTree *tree)
 
 Bool_t MultileptonAnalyzer::Process(Long64_t entry)
 {
-    muonsP4ptr.Clear();
-    electronsP4ptr.Clear();
+    // Clear vectors and TClonesArrays
+    muonsP4ptr.Clear(); electronsP4ptr.Clear();
+    muonsIso.clear(); electronsIso.clear();
+    muonsQ.clear(); electronsQ.clear();
+    muonIsGLB.clear(); muonPassStdCuts.clear();
+    muonMuNChi2.clear(); muonD0.clear(); muonDz.clear();
+    muonNMatchStn.clear(); muonNPixHits.clear(); muonNTkLayers.clear(); muonNValidHits.clear();
+    electronIsConv.clear(); electronPassID.clear(); electronPassIso.clear();
+    electronPassStdCuts.clear();
+    electronCombIso.clear(); electronEnergyInv.clear();
+    electronScEta.clear(); electronD0.clear(); electronDz.clear(); electronSieie.clear();
+    electronHOverE.clear(); electronDEtaIn.clear(); electronDPhiIn.clear();
+    electronNMissHits.clear();
+    genMuonsP4ptr.Clear(); genElectronsP4ptr.Clear();
+    genMuonsQ.clear(); genElectronsQ.clear();
+    genIntermID.clear(); genIntermMass.clear();
 
     GetEntry(entry, 1);  // load all branches
     this->totalEvents++;
@@ -179,7 +221,6 @@ Bool_t MultileptonAnalyzer::Process(Long64_t entry)
     runNumber     = fInfo->runNum;
     evtNumber     = fInfo->evtNum;
     lumiSection   = fInfo->lumiSec;
-//  triggerStatus = passTrigger;
     nPV           = fPVArr->GetEntries();
     if (!isData) {
         nPU = fInfo->nPUmean;
@@ -193,14 +234,19 @@ Bool_t MultileptonAnalyzer::Process(Long64_t entry)
     ///////////////////////
 
     if (!isData) {
-        unsigned count = 0;
+        unsigned count = 0,  muonIdx = 0, electronIdx = 0;
+
         for (int i = 0; i < fGenParticleArr->GetEntries(); ++i) {
             TGenParticle* particle = (TGenParticle*) fGenParticleArr->At(i);
 
-            //cout << particle->status << ", "
-            //     << particle->pdgId  << ", "
-            //     << particle->parent
-            //     << endl;
+//          TLorentzVector mom;
+//          mom.SetPtEtaPhiM(particle->pt, particle->eta, particle->phi, particle->mass);
+//          cout << i << ", "
+//               << particle->status << ", "
+//               << particle->pdgId  << ", "
+//               << particle->parent << ", "
+//               << mom.Pt()
+//               << endl;
 
             if (
                     particle->status == 23 
@@ -209,7 +255,33 @@ Bool_t MultileptonAnalyzer::Process(Long64_t entry)
                ) {
                 ++count;
 
+            } else if (
+                    particle->status == 23
+                    && abs(particle->pdgId) == 13
+               ) {
+                TLorentzVector mom;
+                mom.SetPtEtaPhiM(particle->pt, particle->eta, particle->phi, particle->mass);
+                new(genMuonsP4ptr[muonIdx]) TLorentzVector(mom);
+        		genMuonsQ.push_back(copysign(1, particle->pdgId));
+                muonIdx++;
+
+            } else if (
+                    particle->status == 23
+                    && abs(particle->pdgId) == 11
+               ) {
+                TLorentzVector mom;
+                mom.SetPtEtaPhiM(particle->pt, particle->eta, particle->phi, particle->mass);
+                new(genElectronsP4ptr[electronIdx]) TLorentzVector(mom);
+	        	genElectronsQ.push_back(copysign(1, particle->pdgId));
+                electronIdx++;
+
+            } else if (particle->status == 22)
+            {
+                genIntermID.push_back(particle->pdgId);
+                genIntermMass.push_back(particle->mass);
             }
+
+
         }
         nPartons = count; // This is saved for reweighting inclusive DY and combining it with parton binned DY
         //cout << nPartons << "\n" << endl;
@@ -242,18 +314,19 @@ Bool_t MultileptonAnalyzer::Process(Long64_t entry)
         assert(muon);
 
         if (
+                muon->pt > 4 
 //              muon->pt > 10 
 //              && fabs(muon->eta) < 2.4
-                // tight muon ID
-                //&& (muon->typeBits & baconhep::kPFMuon) 
-                   (muon->typeBits & baconhep::kGlobal) 
-                && muon->muNchi2    < 10.
-                && muon->nMatchStn  > 1
-                && muon->nPixHits   > 0
-                && fabs(muon->d0)   < 0.2
-                && fabs(muon->dz)   < 0.5
-                && muon->nTkLayers  > 5 
-                && muon->nValidHits > 0
+//              // tight muon ID
+//              //&& (muon->typeBits & baconhep::kPFMuon) 
+//                 (muon->typeBits & baconhep::kGlobal) 
+//              && muon->muNchi2    < 10.
+//              && muon->nMatchStn  > 1
+//              && muon->nPixHits   > 0
+//              && fabs(muon->d0)   < 0.2
+//              && fabs(muon->dz)   < 0.5
+//              && muon->nTkLayers  > 5 
+//              && muon->nValidHits > 0
            ) {
             tmp_muons.push_back(muon);
         }
@@ -317,6 +390,16 @@ Bool_t MultileptonAnalyzer::Process(Long64_t entry)
                     muons_iso.push_back(muon->trkIso);
                     muons_q.push_back(muon->q);
 
+                    muonIsGLB.push_back(muon->typeBits & baconhep::kGlobal);
+                    muonMuNChi2.push_back(muon->muNchi2);
+                    muonNMatchStn.push_back(muon->nMatchStn);
+                    muonNPixHits.push_back(muon->nPixHits);
+                    muonD0.push_back(muon->d0);
+                    muonDz.push_back(muon->dz);
+                    muonNTkLayers.push_back(muon->nTkLayers);
+                    muonNValidHits.push_back(muon->nValidHits);
+
+
 //                  // trigger matching
 //                  bool triggered = false;
 //                  for (unsigned i = 0; i < triggerNames.size(); ++i) {
@@ -341,16 +424,31 @@ Bool_t MultileptonAnalyzer::Process(Long64_t entry)
         assert(electron);
 
         if (
+                electron->pt > 4 
 //              electron->pt > 20 
 //              && fabs(electron->eta) < 2.5
-                   particleSelector->PassElectronID(electron, cuts->tightElID)
-                && particleSelector->PassElectronIso(electron, cuts->tightElIso, cuts->EAEl)
+//              && particleSelector->PassElectronID(electron, cuts->tightElID)
+//              && particleSelector->PassElectronIso(electron, cuts->tightElIso, cuts->EAEl)
            ) {
             TLorentzVector electronP4;
             copy_p4(electron, ELE_MASS, electronP4);
             electrons.push_back(electronP4);
             electrons_iso.push_back(0.);
             electrons_q.push_back(electron->q);
+
+            electronEnergyInv.push_back(fabs(1. - electron->eoverp)/electron->ecalEnergy);
+            electronScEta.push_back(electron->scEta);
+            electronD0.push_back(electron->d0);
+            electronDz.push_back(electron->dz);
+            electronSieie.push_back(electron->sieie);
+            electronHOverE.push_back(electron->hovere);
+            electronDEtaIn.push_back(electron->dEtaIn);
+            electronDPhiIn.push_back(electron->dPhiIn);
+            electronNMissHits.push_back(electron->nMissingHits);
+            electronIsConv.push_back(electron->isConv);
+            electronPassID.push_back(particleSelector->PassElectronID(electron, cuts->tightElID));
+            electronPassIso.push_back(particleSelector->PassElectronIso(electron, cuts->tightElIso, cuts->EAEl));
+
 
 //          // trigger matching
 //          bool triggered = false;
@@ -403,43 +501,11 @@ Bool_t MultileptonAnalyzer::Process(Long64_t entry)
 //      return kTRUE;
 
     } else if (params->selection == "mumu") {
-        if (muons.size() < 2)
-            return kTRUE;
-        hTotalEvents->Fill(5);
-
-        // Find leading positive and negatively charged muons and convert to TLorentzVectors
-        TLorentzVector muonOneP4, muonTwoP4;
-//      unsigned muonTwoIndex = 1;
-//      muonOneP4 = muons[0];
-//      for (unsigned i = 1; i < muons.size(); ++i) {
-//          if (muons_q[0] != muons_q[i]) {
-//              muonTwoP4 = muons[i];
-//              muonTwoIndex = i;
-//              break;
-//          }
-//      }
-
-//      if (
-//              !(muonOneP4.Pt() > 25 && fabs(muonOneP4.Eta()) < 2.1) 
-//              || !(muonTwoP4.Pt() > 25 && fabs(muonTwoP4.Eta()) < 2.1)
-//         )
+//      if (muons.size() < 2)
 //          return kTRUE;
-//      hTotalEvents->Fill(6);
+//      hTotalEvents->Fill(5);
 
-//      TLorentzVector dimuon;
-//      dimuon = muonOneP4 + muonTwoP4;
-//      if (sync_print) {
-//          cout << dimuon.M() << endl;
-//      }
-
-//      if (dimuon.M() < 12. || dimuon.M() > 110.)
-//          return kTRUE;
-//      hTotalEvents->Fill(7);
-
-//      if (nBJets == 0 || (nBJets + nJets < 2 && nFwdJets == 0)) 
-//          return kTRUE;
-//      hTotalEvents->Fill(8);
-
+        // Fill TClonesArrays
         for (unsigned i = 0; i < muons.size(); ++i)
             new(muonsP4ptr[i]) TLorentzVector(muons[i]);
         muonsIso = muons_iso;
