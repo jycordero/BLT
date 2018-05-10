@@ -133,6 +133,14 @@ void MultileptonAnalyzer::Begin(TTree *tree)
     outTree->Branch("genIntermID", &genIntermID);
     outTree->Branch("genIntermMass", &genIntermMass);
 
+    // object counters
+    outTree->Branch("nMuons", &nMuons);
+    outTree->Branch("nElectrons", &nElectrons);
+    outTree->Branch("nLeptons", &nLeptons);
+    outTree->Branch("nGenMuons", &nGenMuons);
+    outTree->Branch("nGenElectrons", &nGenElectrons);
+    outTree->Branch("nGenLeptons", &nGenLeptons);
+
     // event counter
     string outHistName = params->get_output_treename("TotalEvents");
     hTotalEvents = new TH1D(outHistName.c_str(),"TotalEvents",10,0.5,10.5);
@@ -281,6 +289,9 @@ Bool_t MultileptonAnalyzer::Process(Long64_t entry)
                 genIntermMass.push_back(particle->mass);
             }
 
+            nGenMuons     = genMuonsQ.size();
+            nGenElectrons = genElectronsQ.size();
+            nGenLeptons   = nGenMuons + nGenElectrons;
 
         }
         nPartons = count; // This is saved for reweighting inclusive DY and combining it with parton binned DY
@@ -484,6 +495,7 @@ Bool_t MultileptonAnalyzer::Process(Long64_t entry)
 
     nMuons     = muons.size();
     nElectrons = electrons.size();
+    nLeptons   = nMuons + nElectrons;
 
     // Synchronization printout
     if (sync_print) {

@@ -101,7 +101,8 @@ public:
     // muon ID criteria
     std::vector<Bool_t> muonIsGLB, muonPassStdCuts; 
     std::vector<Float_t> muonMuNChi2, muonD0, muonDz;
-    std::vector<Int_t> muonNMatchStn, muonNPixHits, muonNTkLayers, muonNValidHits;
+    std::vector<UInt_t> muonNMatchStn, muonNPixHits, muonNTkLayers;
+    std::vector<UInt_t> muonNValidHits;
 
     // electron ID criteria
     std::vector<Bool_t> electronIsConv, electronPassID, electronPassIso;
@@ -109,7 +110,7 @@ public:
     std::vector<Float_t> electronCombIso, electronEnergyInv;
     std::vector<Float_t> electronScEta, electronD0, electronDz, electronSieie;
     std::vector<Float_t> electronHOverE, electronDEtaIn, electronDPhiIn;
-    std::vector<Int_t> electronNMissHits;
+    std::vector<UInt_t> electronNMissHits;
 
     // gen-level particles
     TClonesArray *genMuonsP4 = new TClonesArray("TLorentzVector");
@@ -121,7 +122,7 @@ public:
     std::vector<Float_t> genIntermMass;
 
     // counters
-    UInt_t nMuons, nElectrons;
+    UInt_t nMuons, nElectrons, nLeptons, nGenMuons, nGenElectrons, nGenLeptons;
 
     // MET kluge 
     float MetKluge(float);
