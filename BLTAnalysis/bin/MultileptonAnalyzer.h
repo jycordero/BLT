@@ -95,7 +95,7 @@ public:
     TClonesArray &muonsP4ptr = *muonsP4;
     TClonesArray *electronsP4 = new TClonesArray("TLorentzVector");
     TClonesArray &electronsP4ptr = *electronsP4;
-    std::vector<Float_t> muonsIso, electronsIso;
+    std::vector<Float_t> muonsTrkIso, electronsTrkIso;
     std::vector<Int_t> muonsQ, electronsQ;
 
     // muon ID criteria
@@ -122,7 +122,9 @@ public:
     std::vector<Float_t> genIntermMass;
 
     // counters
-    UInt_t nMuons, nElectrons, nLeptons, nGenMuons, nGenElectrons, nGenLeptons;
+    UInt_t nMuons, nElectrons, nLeptons;
+    UInt_t nStdMuons, nStdElectrons, nStdLeptons;
+    UInt_t nGenMuons, nGenElectrons, nGenLeptons;
 
     // MET kluge 
     float MetKluge(float);
