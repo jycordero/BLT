@@ -58,7 +58,8 @@ void MultileptonAnalyzer::Begin(TTree *tree)
 //  }
 
     // Weight utility class
-    weights.reset(new WeightUtils(params->period, params->selection, false)); // Lumi mask
+//  weights.reset(new WeightUtils(params->period, params->selection, false)); // Lumi mask
+    weights.reset(new WeightUtils(params->period, "mumu", false)); // Lumi mask
     // Set up object to handle good run-lumi filtering if necessary
     lumiMask = RunLumiRangeMap();
     if (true) { // this will need to be turned off for MC
@@ -209,6 +210,8 @@ Bool_t MultileptonAnalyzer::Process(Long64_t entry)
             return kTRUE;
     }
     hTotalEvents->Fill(2);
+
+    cout << "pass lumi mask" << endl;
 
 //  /* Trigger selection */
 //  bool passTrigger = false;
@@ -489,8 +492,8 @@ Bool_t MultileptonAnalyzer::Process(Long64_t entry)
             copy_p4(all_muons[i], MUON_MASS, muonP4);
 
             new(muonsP4ptr[i]) TLorentzVector(muonP4);
-            muonsTrkIso.push_back(muon->trkIso);
             muonsQ.push_back(muon->q);
+            muonsTrkIso.push_back(muon->trkIso);
             muonIsGLB.push_back(muon->typeBits & baconhep::kGlobal);
             muonMuNChi2.push_back(muon->muNchi2);
             muonNMatchStn.push_back(muon->nMatchStn);
@@ -507,8 +510,8 @@ Bool_t MultileptonAnalyzer::Process(Long64_t entry)
             copy_p4(all_electrons[i], ELE_MASS, electronP4);
 
             new(electronsP4ptr[i]) TLorentzVector(electronP4);
-            electronsTrkIso.push_back(electron->trkIso);
             electronsQ.push_back(electron->q);
+            electronsTrkIso.push_back(electron->trkIso);
             electronEnergyInv.push_back(fabs(1. - electron->eoverp)/electron->ecalEnergy);
             electronScEta.push_back(electron->scEta);
             electronD0.push_back(electron->d0);
@@ -521,6 +524,16 @@ Bool_t MultileptonAnalyzer::Process(Long64_t entry)
             electronIsConv.push_back(electron->isConv);
             electronPassID.push_back(particleSelector->PassElectronID(electron, cuts->tightElID));
             electronPassIso.push_back(particleSelector->PassElectronIso(electron, cuts->tightElIso, cuts->EAEl));
+
+            int iEta = 0;
+            float etaBins[8] = {0., 1., 1.479, 2.0, 2.2, 2.3, 2.4, 2.5};
+            for (unsigned i = 0; i < 8; ++i) {
+                if (fabs(electron->scEta) > etaBins[i] && fabs(electron->scEta) < etaBins[i+1]) {
+                    iEta = i;
+                    break;
+                }
+            }
+            electronCombIso.push_back(electron->chHadIso + std::max(0.,(double)electron->neuHadIso + electron->gammaIso - fInfo->rhoJet * cuts->EAEl[iEta]));
         }
     }        
 
