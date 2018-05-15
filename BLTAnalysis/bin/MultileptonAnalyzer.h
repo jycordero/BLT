@@ -80,24 +80,51 @@ public:
 
     std::vector<string> triggerNames;
 
+
     // Branches in the output file
-    UInt_t runNumber, lumiSection, nPU, nPartons;
+
+    // event data
+    UInt_t runNumber, lumiSection, nPV, nPartons;
     ULong64_t evtNumber;
-    Bool_t triggerStatus;
-    Float_t eventWeight;
-    UInt_t nJets, nFwdJets, nBJets, nMuons, nElectrons;
-
-    TLorentzVector leptonOneP4, leptonTwoP4, jetP4, bjetP4, genBJetP4;
-    Float_t leptonOneIso, leptonTwoIso;
-    Int_t leptonOneQ, leptonTwoQ;
-    Int_t leptonOneFlavor, leptonTwoFlavor;
-    Bool_t leptonOneTrigger, leptonTwoTrigger;
-
-    Float_t jetD0, bjetD0;
-    Float_t bjetTag, jetTag, genBJetTag;
-    Float_t bjetPUID, jetPUID;
-    Float_t bjetFlavor, jetFlavor;
+    Float_t eventWeight, nPU;
     Float_t met, metPhi;
+
+    // leptons
+    TClonesArray *muonsP4 = new TClonesArray("TLorentzVector");
+    TClonesArray &muonsP4ptr = *muonsP4;
+    TClonesArray *electronsP4 = new TClonesArray("TLorentzVector");
+    TClonesArray &electronsP4ptr = *electronsP4;
+    std::vector<Float_t> muonsTrkIso, electronsTrkIso;
+    std::vector<Int_t> muonsQ, electronsQ;
+
+    // muon ID criteria
+    std::vector<Bool_t> muonIsGLB, muonPassStdCuts;
+    std::vector<Float_t> muonMuNChi2, muonD0, muonDz;
+    std::vector<UInt_t> muonNMatchStn, muonNPixHits, muonNTkLayers;
+    std::vector<UInt_t> muonNValidHits;
+
+    // electron ID criteria
+    std::vector<Bool_t> electronIsConv, electronPassID, electronPassIso;
+    std::vector<Bool_t> electronPassStdCuts;
+    std::vector<Float_t> electronCombIso, electronEnergyInv;
+    std::vector<Float_t> electronScEta, electronD0, electronDz, electronSieie;
+    std::vector<Float_t> electronHOverE, electronDEtaIn, electronDPhiIn;
+    std::vector<UInt_t> electronNMissHits;
+
+    // gen-level particles
+    TClonesArray *genMuonsP4 = new TClonesArray("TLorentzVector");
+    TClonesArray &genMuonsP4ptr = *genMuonsP4;
+    TClonesArray *genElectronsP4 = new TClonesArray("TLorentzVector");
+    TClonesArray &genElectronsP4ptr = *genElectronsP4;
+    std::vector<Int_t> genMuonsQ, genElectronsQ;
+    std::vector<Int_t> genIntermID;
+    std::vector<Float_t> genIntermMass;
+
+    // counters
+    UInt_t nMuons, nElectrons, nLeptons;
+    UInt_t nStdMuons, nStdElectrons, nStdLeptons;
+    UInt_t nGenMuons, nGenElectrons, nGenLeptons;
+
 
     //ClassDef(MultileptonAnalyzer,0);
 };
