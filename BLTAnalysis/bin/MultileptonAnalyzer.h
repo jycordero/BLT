@@ -87,12 +87,11 @@ public:
     Float_t eventWeight;
     UInt_t nJets, nFwdJets, nBJets, nMuons, nElectrons;
 
-    TLorentzVector the_z, muon1, muon2, muon3, muon4;
-    TLorentzVector leptonOneP4, leptonTwoP4, leptonThreeP4, leptonFourP4, jetP4, bjetP4, genBJetP4;
-    Float_t leptonOneIso, leptonTwoIso, leptonThreeIso, leptonFourIso;
-    Int_t leptonOneQ, leptonTwoQ, leptonThreeQ, leptonFourQ;
-    Int_t leptonOneFlavor, leptonTwoFlavor, leptonThreeFlavor, leptonFourFlavor;
-    Bool_t leptonOneTrigger, leptonTwoTrigger, leptonThreeTrigger, leptonFourTrigger;
+    TLorentzVector leptonOneP4, leptonTwoP4, jetP4, bjetP4, genBJetP4;
+    Float_t leptonOneIso, leptonTwoIso;
+    Int_t leptonOneQ, leptonTwoQ;
+    Int_t leptonOneFlavor, leptonTwoFlavor;
+    Bool_t leptonOneTrigger, leptonTwoTrigger;
 
     Float_t jetD0, bjetD0;
     Float_t bjetTag, jetTag, genBJetTag;
