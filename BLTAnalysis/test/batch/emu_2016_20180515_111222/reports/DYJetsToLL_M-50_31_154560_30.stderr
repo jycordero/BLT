@@ -1,0 +1,87 @@
+Error in <TFile::TFile>: file /storage/local/data1/condor/execute/dir_3277038/CMSSW_7_4_14/src/BLT/BLTAnalysis/data/pileup_sf_2016_full.root does not exist
+Error in <TFile::TFile>: file /storage/local/data1/condor/execute/dir_3277038/CMSSW_7_4_14/src/BLT/BLTAnalysis/data/muon_trigger/EfficienciesAndSF_BCDEF.root does not exist
+Error in <TFile::TFile>: file /storage/local/data1/condor/execute/dir_3277038/CMSSW_7_4_14/src/BLT/BLTAnalysis/data/muon_id/EfficienciesAndSF_BCDEF.root does not exist
+Error in <TFile::TFile>: file /storage/local/data1/condor/execute/dir_3277038/CMSSW_7_4_14/src/BLT/BLTAnalysis/data/muon_iso/EfficienciesAndSF_BCDEF.root does not exist
+
+ *** Break *** segmentation violation
+
+
+
+===========================================================
+There was a crash.
+This is the entire stack trace of all threads:
+===========================================================
+
+Thread 6 (Thread 0x2b505dc62700 (LWP 3277981)):
+#0  0x000000329fce91c3 in epoll_wait () from /lib64/libc.so.6
+#1  0x00002b505d72833a in XrdSys::IOEvents::PollE::Begin(XrdSysSemaphore*, int&, char const**) () from /cvmfs/cms.cern.ch/slc6_amd64_gcc491/cms/cmssw/CMSSW_7_4_14/external/slc6_amd64_gcc491/lib/libXrdUtils.so.2
+#2  0x00002b505d724c0d in XrdSys::IOEvents::BootStrap::Start(void*) () from /cvmfs/cms.cern.ch/slc6_amd64_gcc491/cms/cmssw/CMSSW_7_4_14/external/slc6_amd64_gcc491/lib/libXrdUtils.so.2
+#3  0x00002b505d723427 in XrdSysThread_Xeq () from /cvmfs/cms.cern.ch/slc6_amd64_gcc491/cms/cmssw/CMSSW_7_4_14/external/slc6_amd64_gcc491/lib/libXrdUtils.so.2
+#4  0x00000032a0007aa1 in start_thread () from /lib64/libpthread.so.0
+#5  0x000000329fce8bcd in clone () from /lib64/libc.so.6
+
+Thread 5 (Thread 0x2b505de63700 (LWP 3277982)):
+#0  0x00000032a000f00d in nanosleep () from /lib64/libpthread.so.0
+#1  0x00002b505d723bbb in XrdSysTimer::Wait(int) () from /cvmfs/cms.cern.ch/slc6_amd64_gcc491/cms/cmssw/CMSSW_7_4_14/external/slc6_amd64_gcc491/lib/libXrdUtils.so.2
+#2  0x00002b505d7cdf61 in XrdCl::TaskManager::RunTasks() () from /cvmfs/cms.cern.ch/slc6_amd64_gcc491/cms/cmssw/CMSSW_7_4_14/external/slc6_amd64_gcc491/lib/libXrdCl.so.2
+#3  0x00002b505d7ce0c9 in ?? () from /cvmfs/cms.cern.ch/slc6_amd64_gcc491/cms/cmssw/CMSSW_7_4_14/external/slc6_amd64_gcc491/lib/libXrdCl.so.2
+#4  0x00000032a0007aa1 in start_thread () from /lib64/libpthread.so.0
+#5  0x000000329fce8bcd in clone () from /lib64/libc.so.6
+
+Thread 4 (Thread 0x2b505e064700 (LWP 3277983)):
+#0  0x000000329fce5419 in syscall () from /lib64/libc.so.6
+#1  0x00002b505d826883 in XrdCl::JobManager::RunJobs() () from /cvmfs/cms.cern.ch/slc6_amd64_gcc491/cms/cmssw/CMSSW_7_4_14/external/slc6_amd64_gcc491/lib/libXrdCl.so.2
+#2  0x00002b505d826a19 in ?? () from /cvmfs/cms.cern.ch/slc6_amd64_gcc491/cms/cmssw/CMSSW_7_4_14/external/slc6_amd64_gcc491/lib/libXrdCl.so.2
+#3  0x00000032a0007aa1 in start_thread () from /lib64/libpthread.so.0
+#4  0x000000329fce8bcd in clone () from /lib64/libc.so.6
+
+Thread 3 (Thread 0x2b505e265700 (LWP 3277984)):
+#0  0x000000329fce5419 in syscall () from /lib64/libc.so.6
+#1  0x00002b505d826883 in XrdCl::JobManager::RunJobs() () from /cvmfs/cms.cern.ch/slc6_amd64_gcc491/cms/cmssw/CMSSW_7_4_14/external/slc6_amd64_gcc491/lib/libXrdCl.so.2
+#2  0x00002b505d826a19 in ?? () from /cvmfs/cms.cern.ch/slc6_amd64_gcc491/cms/cmssw/CMSSW_7_4_14/external/slc6_amd64_gcc491/lib/libXrdCl.so.2
+#3  0x00000032a0007aa1 in start_thread () from /lib64/libpthread.so.0
+#4  0x000000329fce8bcd in clone () from /lib64/libc.so.6
+
+Thread 2 (Thread 0x2b505e466700 (LWP 3277985)):
+#0  0x000000329fce5419 in syscall () from /lib64/libc.so.6
+#1  0x00002b505d826883 in XrdCl::JobManager::RunJobs() () from /cvmfs/cms.cern.ch/slc6_amd64_gcc491/cms/cmssw/CMSSW_7_4_14/external/slc6_amd64_gcc491/lib/libXrdCl.so.2
+#2  0x00002b505d826a19 in ?? () from /cvmfs/cms.cern.ch/slc6_amd64_gcc491/cms/cmssw/CMSSW_7_4_14/external/slc6_amd64_gcc491/lib/libXrdCl.so.2
+#3  0x00000032a0007aa1 in start_thread () from /lib64/libpthread.so.0
+#4  0x000000329fce8bcd in clone () from /lib64/libc.so.6
+
+Thread 1 (Thread 0x2b5054511c40 (LWP 3277790)):
+#0  0x000000329fcac86d in waitpid () from /lib64/libc.so.6
+#1  0x000000329fc3e479 in do_system () from /lib64/libc.so.6
+#2  0x000000329fc3e7b0 in system () from /lib64/libc.so.6
+#3  0x00002b5053283fc7 in TUnixSystem::StackTrace() () from /cvmfs/cms.cern.ch/slc6_amd64_gcc491/cms/cmssw/CMSSW_7_4_14/external/slc6_amd64_gcc491/lib/libCore.so
+#4  0x00002b5053285f5c in TUnixSystem::DispatchSignals(ESignals) () from /cvmfs/cms.cern.ch/slc6_amd64_gcc491/cms/cmssw/CMSSW_7_4_14/external/slc6_amd64_gcc491/lib/libCore.so
+#5  <signal handler called>
+#6  0x00002b5051250085 in WeightUtils::GetPUWeight (this=<optimized out>, nPU=<optimized out>) at /uscms/homes/j/jrainbol/CMSSW_7_4_14/src/BLT/BLTAnalysis/src/WeightUtils.cc:77
+#7  0x000000000041299b in MultileptonAnalyzer::Process (this=0x681460, entry=<optimized out>) at /uscms/homes/j/jrainbol/CMSSW_7_4_14/src/BLT/BLTAnalysis/bin/MultileptonAnalyzer.cc:242
+#8  0x00002b50780925fe in TTreePlayer::Process(TSelector*, char const*, long long, long long) () from /cvmfs/cms.cern.ch/slc6_amd64_gcc491/lcg/root/6.02.00-odfocd7/lib/libTreePlayer.so
+#9  0x00002b505123ffbb in BLTSelector::MakeMeSandwich (this=this
+entry=0x681460, argc=argc
+entry=8, argv=argv
+entry=0x7ffcc09ae718) at /uscms/homes/j/jrainbol/CMSSW_7_4_14/src/BLT/BLTAnalysis/src/BLTSelector.cc:200
+#10 0x000000000040e51b in main (argc=8, argv=0x7ffcc09ae718) at /uscms/homes/j/jrainbol/CMSSW_7_4_14/src/BLT/BLTAnalysis/bin/MultileptonAnalyzer.cc:579
+===========================================================
+
+
+The lines below might hint at the cause of the crash.
+If they do not help you then please submit a bug report at
+http://root.cern.ch/bugs. Please post the ENTIRE stack trace
+from above as an attachment in addition to anything else
+that might help us fixing this issue.
+===========================================================
+#6  0x00002b5051250085 in WeightUtils::GetPUWeight (this=<optimized out>, nPU=<optimized out>) at /uscms/homes/j/jrainbol/CMSSW_7_4_14/src/BLT/BLTAnalysis/src/WeightUtils.cc:77
+#7  0x000000000041299b in MultileptonAnalyzer::Process (this=0x681460, entry=<optimized out>) at /uscms/homes/j/jrainbol/CMSSW_7_4_14/src/BLT/BLTAnalysis/bin/MultileptonAnalyzer.cc:242
+#8  0x00002b50780925fe in TTreePlayer::Process(TSelector*, char const*, long long, long long) () from /cvmfs/cms.cern.ch/slc6_amd64_gcc491/lcg/root/6.02.00-odfocd7/lib/libTreePlayer.so
+#9  0x00002b505123ffbb in BLTSelector::MakeMeSandwich (this=this
+entry=0x681460, argc=argc
+entry=8, argv=argv
+entry=0x7ffcc09ae718) at /uscms/homes/j/jrainbol/CMSSW_7_4_14/src/BLT/BLTAnalysis/src/BLTSelector.cc:200
+#10 0x000000000040e51b in main (argc=8, argv=0x7ffcc09ae718) at /uscms/homes/j/jrainbol/CMSSW_7_4_14/src/BLT/BLTAnalysis/bin/MultileptonAnalyzer.cc:579
+===========================================================
+
+
+cp: cannot stat `output_DYJetsToLL_M-50_31.root': No such file or directory

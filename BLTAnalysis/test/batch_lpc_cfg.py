@@ -1,5 +1,5 @@
 #! /usr/bin/env python
-import BatchMaster as bm
+import BLT.BLTAnalysis.BatchMaster as bm
 import sys
 
 
@@ -7,12 +7,13 @@ import sys
 cfg        = bm.JobConfig
 selection  = 'emu'
 period     = '2016'
-path       = '/eos/uscms/store/group/lpcbacon/12a'
+path       = '/eos/uscms/store/group/lpcbacon/12' #12a'
 executable = 'execBatch.sh'
 location   = 'lpc'
 
 data_samples = ['single_mu', 'single_el']
-mc_samples   = ['ttbar', 'wjets', 'zjets', 't']#, 'diboson']
+mc_samples   = ['zjets']#, 'diboson']
+#mc_samples   = ['ttbar', 'wjets', 'zjets', 't']#, 'diboson']
 
 ''' 
 Set job configurations.  
@@ -434,7 +435,7 @@ mc_dict['diboson'] = [
         ]
 
 batch_list = []
-batch_list += sum([data_dict[n] for n in data_samples], []) 
+#batch_list += sum([data_dict[n] for n in data_samples], []) 
 batch_list += sum([mc_dict[n] for n in mc_samples], []) 
 
 #dataList = []
@@ -446,11 +447,13 @@ batch_list += sum([mc_dict[n] for n in mc_samples], [])
 #       ),
 #    ])
 
-batch = bm.BatchMaster(configList = batch_list, 
-                      shortQueue = False,
-                      stageDir   = 'batch',
+batch = bm.BatchMaster(config_list = batch_list, 
+#                     shortQueue = False,
+                      stage_dir   = 'batch',
+#                     selection  = '{0}_{1}'.format(selection, period),
+                      selection  = selection,
+                      period     = period,
                       executable = executable,
-                      selection  = '{0}_{1}'.format(selection, period),
                       location   = 'lpc'
                      )
 batch.submit_to_batch()
