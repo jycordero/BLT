@@ -13,5 +13,11 @@ __init__.py
 # Stuff
 *~
 *.log
-*.swp
-*.swo
+
+# Batch crap
+BLTAnalysis/test/batch/**
+
+# Fix data subdir
+!BLTAnalysis/data/**
+
+
