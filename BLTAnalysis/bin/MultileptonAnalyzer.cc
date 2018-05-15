@@ -58,8 +58,8 @@ void MultileptonAnalyzer::Begin(TTree *tree)
 //  }
 
     // Weight utility class
-//  weights.reset(new WeightUtils(params->period, params->selection, false)); // Lumi mask
-    weights.reset(new WeightUtils(params->period, "mumu", false)); // Lumi mask
+    weights.reset(new WeightUtils(params->period, params->selection, false)); // Lumi mask
+//  weights.reset(new WeightUtils(params->period, "mumu", false)); // Lumi mask
     // Set up object to handle good run-lumi filtering if necessary
     lumiMask = RunLumiRangeMap();
     if (true) { // this will need to be turned off for MC

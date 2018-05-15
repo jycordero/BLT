@@ -1,4 +1,0 @@
-root://cmseos.fnal.gov//store/group/lpcbacon/12/Summer16_DYJetsToLL_M-10to50_amcatnlo/Summer16_DYJetsToLL_M-10to50_amcatnlo_bacon_12.root
-root://cmseos.fnal.gov//store/group/lpcbacon/12/Summer16_DYJetsToLL_M-10to50_amcatnlo/Summer16_DYJetsToLL_M-10to50_amcatnlo_bacon_13.root
-root://cmseos.fnal.gov//store/group/lpcbacon/12/Summer16_DYJetsToLL_M-10to50_amcatnlo/Summer16_DYJetsToLL_M-10to50_amcatnlo_bacon_14.root
-root://cmseos.fnal.gov//store/group/lpcbacon/12/Summer16_DYJetsToLL_M-10to50_amcatnlo/Summer16_DYJetsToLL_M-10to50_amcatnlo_bacon_15.root

@@ -1,1 +1,0 @@
-root://cmseos.fnal.gov//store/group/lpcbacon/12/Summer16_DYJetsToLL_M-50_amcatnlo/Summer16_DYJetsToLL_M-50_amcatnlo_bacon_42.root
