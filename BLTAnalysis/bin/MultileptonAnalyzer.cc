@@ -143,6 +143,22 @@ void MultileptonAnalyzer::Begin(TTree *tree)
 
 Bool_t MultileptonAnalyzer::Process(Long64_t entry)
 {
+    // Clear vectors and TClonesArrays
+    muonsP4ptr.Clear(); electronsP4ptr.Clear();
+    muonsTrkIso.clear(); electronsTrkIso.clear();
+    muonsQ.clear(); electronsQ.clear();
+    muonIsGLB.clear(); muonPassStdCuts.clear();
+    muonMuNChi2.clear(); muonD0.clear(); muonDz.clear();
+    muonNMatchStn.clear(); muonNPixHits.clear(); muonNTkLayers.clear(); muonNValidHits.clear();
+    electronIsConv.clear(); electronPassID.clear(); electronPassIso.clear();
+    electronPassStdCuts.clear();
+    electronCombIso.clear(); electronEnergyInv.clear();
+    electronScEta.clear(); electronD0.clear(); electronDz.clear(); electronSieie.clear();
+    electronHOverE.clear(); electronDEtaIn.clear(); electronDPhiIn.clear();
+    electronNMissHits.clear();
+    genMuonsP4ptr.Clear(); genElectronsP4ptr.Clear();
+    genMuonsQ.clear(); genElectronsQ.clear();
+    genIntermID.clear(); genIntermMass.clear();
 
     GetEntry(entry, 1);  // load all branches
     this->totalEvents++;
