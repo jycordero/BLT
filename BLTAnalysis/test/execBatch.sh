@@ -14,14 +14,14 @@ PERIOD=$5
 TOPDIR=$PWD
 
 # lpc
-#export SCRAM_ARCH=slc6_amd64_gcc491
-#export CMSSW_VERSION=CMSSW_7_4_14
-#source /cvmfs/cms.cern.ch/cmsset_default.sh
+export SCRAM_ARCH=slc6_amd64_gcc491
+export CMSSW_VERSION=CMSSW_7_4_14
+source /cvmfs/cms.cern.ch/cmsset_default.sh
 
 # nut3
-export SCRAM_ARCH=slc6_amd64_gcc491
-export CMSSW_VERSION=CMSSW_7_4_12
-source /software/tier3/osg/cmsset_default.sh 
+#export SCRAM_ARCH=slc6_amd64_gcc491
+#export CMSSW_VERSION=CMSSW_7_4_12
+#source /software/tier3/osg/cmsset_default.sh 
 
 # Setup CMSSW environment
 #scram project CMSSW $CMSSW_VERSION

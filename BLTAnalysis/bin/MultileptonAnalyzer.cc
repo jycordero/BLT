@@ -82,7 +82,7 @@ void MultileptonAnalyzer::Begin(TTree *tree)
     outTree = new TTree(outTreeName.c_str(), "bltTree");
 
     // event data
-//  outTree->Branch("runNumber", &runNumber);
+    outTree->Branch("runNumber", &runNumber);
     outTree->Branch("evtNumber", &evtNumber, "eventNumber/l");
     outTree->Branch("lumiSection", &lumiSection);
     outTree->Branch("eventWeight", &eventWeight);
@@ -210,8 +210,8 @@ Bool_t MultileptonAnalyzer::Process(Long64_t entry)
             return kTRUE;
     }
     hTotalEvents->Fill(2);
-
-    cout << "pass lumi mask" << endl;
+//  if (!isData)
+//      hTotalEvents->Fill(2);
 
 //  /* Trigger selection */
 //  bool passTrigger = false;
