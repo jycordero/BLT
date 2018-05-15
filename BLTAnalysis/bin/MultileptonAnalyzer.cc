@@ -38,7 +38,7 @@ void MultileptonAnalyzer::Begin(TTree *tree)
     cuts.reset(new Cuts());
     particleSelector.reset(new ParticleSelector(*params, *cuts));
 
-//  // Trigger bits mapping file
+    // Trigger bits mapping file
     const std::string cmssw_base = getenv("CMSSW_BASE");
 //  std::string trigfilename = cmssw_base + "/src/BaconAna/DataFormats/data/HLTFile_25ns";
 //  trigger.reset(new baconhep::TTrigger(trigfilename));
@@ -74,7 +74,7 @@ void MultileptonAnalyzer::Begin(TTree *tree)
     rng = new TRandom3();
 
     // Prepare the output tree
-    string outFileName = params->get_output_filename("skimmed");
+    string outFileName = params->get_output_filename("output");
     string outTreeName = params->get_output_treename("tree");
 
     outFile = new TFile(outFileName.c_str(),"RECREATE");
@@ -210,8 +210,6 @@ Bool_t MultileptonAnalyzer::Process(Long64_t entry)
             return kTRUE;
     }
     hTotalEvents->Fill(2);
-//  if (!isData)
-//      hTotalEvents->Fill(2);
 
 //  /* Trigger selection */
 //  bool passTrigger = false;
@@ -561,7 +559,7 @@ void MultileptonAnalyzer::ReportPostBegin()
 void MultileptonAnalyzer::ReportPostTerminate()
 {
     std::cout << "  ==== Terminate Job =========================================" << std::endl;
-    std::cout << "  output   : " << params->get_output_filename("demoFile") << std::endl;
+    std::cout << "  output   : " << params->get_output_filename("output") << std::endl;
     std::cout << "           : Processed " << this->fileCount << " files with " << this->unskimmedEventCount << " unskimmed events." << std::endl;
     std::cout << "           : Selected " << this->passedEvents << " / " << this->totalEvents << " events." << std::endl;
     std::cout << "  ============================================================" << std::endl;
