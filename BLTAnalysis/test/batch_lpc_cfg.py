@@ -7,13 +7,13 @@ import sys
 cfg        = bm.JobConfig
 selection  = 'emu'
 period     = '2016'
-path       = '/eos/uscms/store/group/lpcbacon/12' #12a'
+path       = '/eos/uscms/store/group/lpcbacon/12a' #12a'
 executable = 'execBatch.sh'
 location   = 'lpc'
 
-data_samples = ['single_mu', 'single_el']
-mc_samples   = ['zjets']#, 'diboson']
-#mc_samples   = ['ttbar', 'wjets', 'zjets', 't']#, 'diboson']
+data_samples = ['single_el']
+#data_samples = ['single_mu', 'single_el']
+mc_samples   = ['ttbar', 'wjets', 'zjets', 't']#, 'diboson']
 
 ''' 
 Set job configurations.  
@@ -435,8 +435,8 @@ mc_dict['diboson'] = [
         ]
 
 batch_list = []
-#batch_list += sum([data_dict[n] for n in data_samples], []) 
-batch_list += sum([mc_dict[n] for n in mc_samples], []) 
+batch_list += sum([data_dict[n] for n in data_samples], []) 
+#batch_list += sum([mc_dict[n] for n in mc_samples], []) 
 
 #dataList = []
 #dataList.extend([

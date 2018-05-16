@@ -409,8 +409,9 @@ Bool_t MultileptonAnalyzer::Process(Long64_t entry)
         }
 
         // Perform selection
-        if (muon->trkIso/muon->pt < 0.1) {
-            if (muonP4.Pt() > 25 && fabs(muonP4.Eta()) < 2.1) {
+        if (muon->trkIso/muonP4.Pt() < 0.1) {
+//          if (muonP4.Pt() > 25 && fabs(muonP4.Eta()) < 2.1) {
+            if (muonP4.Pt() > 20) {
                 nStdMuons++;
                 std_muons_idx.push_back(tmp_muons_idx[i]);
             }
