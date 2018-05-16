@@ -13,3 +13,6 @@ __init__.py
 # Stuff
 *~
 *.log
+
+# Batch crap
+BLTAnalysis/test/batch/**
