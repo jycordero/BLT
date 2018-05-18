@@ -85,7 +85,8 @@ public:
     // Branches in the output file
 
     // event data
-    UInt_t runNumber, lumiSection, nPV, nPartons;
+    UInt_t runNumber, lumiSection;
+    UShort_t nPV, nPartons;
     ULong64_t evtNumber;
     Float_t eventWeight, nPU;
     Float_t met, metPhi;
@@ -96,13 +97,13 @@ public:
     TClonesArray *electronsP4 = new TClonesArray("TLorentzVector");
     TClonesArray &electronsP4ptr = *electronsP4;
     std::vector<Float_t> muonsTrkIso, electronsTrkIso;
-    std::vector<Int_t> muonsQ, electronsQ;
+    std::vector<Short_t> muonsQ, electronsQ;
 
     // muon ID criteria
     std::vector<Bool_t> muonIsGLB, muonPassStdCuts; 
     std::vector<Float_t> muonMuNChi2, muonD0, muonDz;
-    std::vector<UInt_t> muonNMatchStn, muonNPixHits, muonNTkLayers;
-    std::vector<UInt_t> muonNValidHits;
+    std::vector<UShort_t> muonNMatchStn, muonNPixHits, muonNTkLayers;
+    std::vector<UShort_t> muonNValidHits;
 
     // electron ID criteria
     std::vector<Bool_t> electronIsConv, electronPassID, electronPassIso;
@@ -110,21 +111,21 @@ public:
     std::vector<Float_t> electronCombIso, electronEnergyInv;
     std::vector<Float_t> electronScEta, electronD0, electronDz, electronSieie;
     std::vector<Float_t> electronHOverE, electronDEtaIn, electronDPhiIn;
-    std::vector<UInt_t> electronNMissHits;
+    std::vector<UShort_t> electronNMissHits;
 
     // gen-level particles
     TClonesArray *genMuonsP4 = new TClonesArray("TLorentzVector");
     TClonesArray &genMuonsP4ptr = *genMuonsP4;
     TClonesArray *genElectronsP4 = new TClonesArray("TLorentzVector");
     TClonesArray &genElectronsP4ptr = *genElectronsP4;
-    std::vector<Int_t> genMuonsQ, genElectronsQ;
-    std::vector<Int_t> genIntermID;
+    std::vector<Short_t> genMuonsQ, genElectronsQ;
+    std::vector<Short_t> genIntermID;
     std::vector<Float_t> genIntermMass;
 
     // counters
-    UInt_t nMuons, nElectrons, nLeptons;
-    UInt_t nStdMuons, nStdElectrons, nStdLeptons;
-    UInt_t nGenMuons, nGenElectrons, nGenLeptons;
+    UShort_t nMuons, nElectrons, nLeptons;
+    UShort_t nStdMuons, nStdElectrons, nStdLeptons;
+    UShort_t nGenMuons, nGenElectrons, nGenLeptons;
 
     // MET kluge 
     float MetKluge(float);

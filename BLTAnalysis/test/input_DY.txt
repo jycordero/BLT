@@ -1,1 +1,0 @@
-root://cmseos.fnal.gov//store/user/lpcbacon/12/Summer16_DYJetsToLL_M-50_amcatnlo_withGenFlags/Summer16_DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8_bacon_1.root

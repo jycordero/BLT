@@ -1,1 +1,0 @@
-root://cmseos.fnal.gov//store/user/lpcbacon/12a/SingleMuon_Run2016B-03Feb2017_ver1-v1/SingleMuon_Run2016B-03Feb2017_ver1-v1_bacon.root
