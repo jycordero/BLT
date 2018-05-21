@@ -191,8 +191,8 @@ mcList.extend([
     ])
 
 batchList = []
-batchList += dataList
-#batchList += mcList 
+#batchList += dataList
+batchList += mcList 
 batch = bm.BatchMaster(config_list = batchList, 
                        stage_dir   = 'batch',
                        selection   = selection,

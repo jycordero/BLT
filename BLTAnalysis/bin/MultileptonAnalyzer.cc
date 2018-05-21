@@ -81,7 +81,7 @@ void MultileptonAnalyzer::Begin(TTree *tree)
     outTree->Branch("metPhi", &metPhi);
 
     // muons
-    outTree->Branch("muonP4", &muonsP4, 256000, 0);
+    outTree->Branch("muonP4", &muonsP4, 32000, 1);
     outTree->Branch("muonQ", &muonsQ);
     outTree->Branch("muonTrkIso", &muonsTrkIso);
     outTree->Branch("muonIsGLB", &muonIsGLB);
@@ -96,7 +96,7 @@ void MultileptonAnalyzer::Begin(TTree *tree)
 //  outTree->Branch("muonMatchBits", &muonMatchBits);
 
     // electrons
-    outTree->Branch("electronP4", &electronsP4, 256000, 0);
+    outTree->Branch("electronP4", &electronsP4, 32000, 1);
     outTree->Branch("electronQ", &electronsQ);
     outTree->Branch("electronTrkIso", &electronsTrkIso);
     outTree->Branch("electronCombIso", &electronCombIso);
@@ -116,9 +116,9 @@ void MultileptonAnalyzer::Begin(TTree *tree)
 //  outTree->Branch("electronMatchBits", &electronMatchBits);
 
     // gen-level particles
-    outTree->Branch("genMuonP4", &genMuonsP4, 256000, 0);
+    outTree->Branch("genMuonP4", &genMuonsP4, 32000, 1);
     outTree->Branch("genMuonQ", &genMuonsQ);
-    outTree->Branch("genElectronP4", &genElectronsP4, 256000, 0);
+    outTree->Branch("genElectronP4", &genElectronsP4, 32000, 1);
     outTree->Branch("genElectronQ", &genElectronsQ);
     outTree->Branch("genIntermID", &genIntermID);
     outTree->Branch("genIntermMass", &genIntermMass);
