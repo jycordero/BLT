@@ -101,7 +101,7 @@ public:
 
     // muon ID criteria
     std::vector<Bool_t> muonIsGLB, muonPassStdCuts; 
-    std::vector<Float_t> muonMuNChi2, muonD0, muonDz;
+    std::vector<Float_t> muonsSF, muonMuNChi2, muonD0, muonDz;
     std::vector<UShort_t> muonNMatchStn, muonNPixHits, muonNTkLayers;
     std::vector<UShort_t> muonNValidHits;
 

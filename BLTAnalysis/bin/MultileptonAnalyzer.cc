@@ -59,7 +59,6 @@ void MultileptonAnalyzer::Begin(TTree *tree)
 
     // Weight utility class
     weights.reset(new WeightUtils(params->period, params->selection, false)); // Lumi mask
-//  weights.reset(new WeightUtils(params->period, "mumu", false)); // Lumi mask
     // Set up object to handle good run-lumi filtering if necessary
     lumiMask = RunLumiRangeMap();
     if (true) { // this will need to be turned off for MC
@@ -95,6 +94,7 @@ void MultileptonAnalyzer::Begin(TTree *tree)
     // muons
     outTree->Branch("muonP4", &muonsP4, 32000, 1);
     outTree->Branch("muonQ", &muonsQ);
+    outTree->Branch("muonSF", &muonsSF);
     outTree->Branch("muonTrkIso", &muonsTrkIso);
     outTree->Branch("muonIsGLB", &muonIsGLB);
     outTree->Branch("muonMuNChi2", &muonMuNChi2);
@@ -160,7 +160,7 @@ Bool_t MultileptonAnalyzer::Process(Long64_t entry)
     muonsTrkIso.clear(); electronsTrkIso.clear();
     muonsQ.clear(); electronsQ.clear();
     muonIsGLB.clear(); muonPassStdCuts.clear();
-    muonMuNChi2.clear(); muonD0.clear(); muonDz.clear();
+    muonsSF.clear(); muonMuNChi2.clear(); muonD0.clear(); muonDz.clear();
     muonNMatchStn.clear(); muonNPixHits.clear(); muonNTkLayers.clear(); muonNValidHits.clear();
     electronIsConv.clear(); electronPassID.clear(); electronPassIso.clear();
     electronPassStdCuts.clear();
@@ -501,6 +501,11 @@ Bool_t MultileptonAnalyzer::Process(Long64_t entry)
             muonDz.push_back(muon->dz);
             muonNTkLayers.push_back(muon->nTkLayers);
             muonNValidHits.push_back(muon->nValidHits);
+
+            if (isData)
+                muonsSF.push_back(muonCorr->kScaleDT(muon->q, muon->pt, muon->eta, muon->phi, 0, 0));
+            else
+                muonsSF.push_back(muonCorr->kScaleAndSmearMC(muon->q, muon->pt, muon->eta, muon->phi, muon->nTkLayers, rng->Rndm(), rng->Rndm(), 0, 0));
         }
 
         for (unsigned i = 0; i < all_electrons.size(); ++i) {
