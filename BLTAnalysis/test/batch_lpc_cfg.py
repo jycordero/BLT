@@ -24,47 +24,47 @@ data_dict['single_mu'] = [
         cfg(data_name = 'muon_2016B_v1',
             path      = '{0}/SingleMuon_Run2016B-03Feb2017_ver1-v1'.format(path),
             nJobs     = 30,
-            suffix    = 'muon_2016B'
+            suffix    = 'muon_2016'
             ),
         cfg(data_name = 'muon_2016B_v2',
             path      = '{0}/SingleMuon_Run2016B-03Feb2017_ver2-v2'.format(path),
             nJobs     = 30,
-            suffix    = 'muon_2016B'
+            suffix    = 'muon_2016'
             ),
         cfg(data_name = 'muon_2016C',
             path      = '{0}/SingleMuon_Run2016C-03Feb2017-v1'.format(path),
             nJobs     = 30,
-            suffix    = 'muon_2016C'
+            suffix    = 'muon_2016'
             ),
         cfg(data_name = 'muon_2016D',
             path      = '{0}/SingleMuon_Run2016D-03Feb2017-v1'.format(path),
             nJobs     = 30,
-            suffix    = 'muon_2016D'
+            suffix    = 'muon_2016'
             ),
         cfg(data_name = 'muon_2016E',
             path      = '{0}/SingleMuon_Run2016E-03Feb2017-v1'.format(path),
             nJobs     = 30,
-            suffix    = 'muon_2016E'
+            suffix    = 'muon_2016'
             ),
         cfg(data_name = 'muon_2016F',
             path      = '{0}/SingleMuon_Run2016F-03Feb2017-v1'.format(path),
             nJobs     = 30,
-            suffix    = 'muon_2016F'
+            suffix    = 'muon_2016'
             ),
         cfg(data_name = 'muon_2016G',
             path      = '{0}/SingleMuon_Run2016G-03Feb2017-v1'.format(path),
             nJobs     = 30,
-            suffix    = 'muon_2016G'
+            suffix    = 'muon_2016'
             ),
         cfg(data_name = 'muon_2016H_v2',
             path      = '{0}/SingleMuon_Run2016H-03Feb2017_ver2-v1'.format(path),
             nJobs     = 30,
-            suffix    = 'muon_2016H'
+            suffix    = 'muon_2016'
             ),
         cfg(data_name = 'muon_2016H_v3',
             path      = '{0}/SingleMuon_Run2016H-03Feb2017_ver3-v1'.format(path),
             nJobs     = 30,
-            suffix    = 'muon_2016H'
+            suffix    = 'muon_2016'
             ),
         ]
 
@@ -72,47 +72,47 @@ data_dict['single_el'] = [
         cfg(data_name = 'electron_2016B_v1',
             nJobs    = 30,
             path     = '{0}/SingleElectron_Run2016B-03Feb2017_ver1-v1'.format(path),
-            suffix   = 'electron_2016B'
+            suffix   = 'electron_2016'
             ),
         cfg(data_name = 'electron_2016B_v2',
             path     = '{0}/SingleElectron_Run2016B-03Feb2017_ver2-v2'.format(path),
             nJobs    = 30,
-            suffix   = 'electron_2016B'
+            suffix   = 'electron_2016'
             ),
         cfg(data_name = 'electron_2016C',
             path     = '{0}/SingleElectron_Run2016C-03Feb2017-v1'.format(path),
             nJobs    = 30,
-            suffix   = 'electron_2016C'
+            suffix   = 'electron_2016'
             ),
         cfg(data_name = 'electron_2016D',
             path     = '{0}/SingleElectron_Run2016D-03Feb2017-v1'.format(path),
             nJobs    = 30,
-            suffix   = 'electron_2016D'
+            suffix   = 'electron_2016'
             ),
         cfg(data_name = 'electron_2016E',
             path     = '{0}/SingleElectron_Run2016E-03Feb2017-v1'.format(path),
             nJobs    = 30,
-            suffix   = 'electron_2016E'
+            suffix   = 'electron_2016'
             ),
         cfg(data_name = 'electron_2016F',
             path     = '{0}/SingleElectron_Run2016F-03Feb2017-v1'.format(path),
             nJobs    = 30,
-            suffix   = 'electron_2016F'
+            suffix   = 'electron_2016'
             ),
         cfg(data_name = 'electron_2016G',
             path     = '{0}/SingleElectron_Run2016G-03Feb2017-v1'.format(path),
             nJobs    = 30,
-            suffix   = 'electron_2016G'
+            suffix   = 'electron_2016'
             ),
         cfg(data_name = 'electron_2016H_v2',
             path     = '{0}/SingleElectron_Run2016H-03Feb2017_ver2-v1'.format(path),
             nJobs    = 30,
-            suffix   = 'electron_2016H'
+            suffix   = 'electron_2016'
             ),
         cfg(data_name = 'electron_2016H_v3',
             path     = '{0}/SingleElectron_Run2016H-03Feb2017_ver3-v1'.format(path),
             nJobs    = 30,
-            suffix   = 'electron_2016H'
+            suffix   = 'electron_2016'
             ),
         ]
 
@@ -170,22 +170,22 @@ mc_dict['otman'] = [
         cfg(data_name = 'DYJetsToLL_M-50',
             path     = '{0}/Summer16_DYJetsToLL_M-50_amcatnlo'.format(path),
             nJobs    = 50,
-            suffix   = 'zjets_m-50'
+            suffix   = 'dy_m-50'
             ),
         cfg(data_name = 'DYJetsToLL_M-10to50',
             path     = '{0}/Summer16_DYJetsToLL_M-10to50_amcatnlo'.format(path),
             nJobs    = 10,
-            suffix   = 'zjets_m-10to50'
+            suffix   = 'dy_m-10to50'
             ),
         cfg(data_name = 'ttbar_inclusive',
             path     = '{0}/Summer16_TT_powheg'.format(path),
             nJobs    = 50,
-            suffix   = 'ttbar_inclusive'
+            suffix   = 'ttbar'
             ),
         cfg(data_name = 'WW',
             path     = '{0}/Summer16_WWTo2L2Nu_powheg'.format(path),
             nJobs    = 10,
-            suffix   = 'ww'
+            suffix   = 'ww_2l2nu'
             ),
         cfg(data_name = 'WZJetsTo3LNu',
             path     = '{0}/Summer16_WZTo3LNu_powheg'.format(path),
@@ -200,7 +200,7 @@ mc_dict['otman'] = [
         cfg(data_name = 'TTZToLLNuNu_M-10',
             path     = '{0}/Summer16_TTZToLLNuNu_M-10'.format(path),
             nJobs    = 10,
-            suffix   = 'ttz'
+            suffix   = 'ttz_2l2nu'
             ),
         ]
 
@@ -478,7 +478,7 @@ mc_dict['diboson'] = [
         ]
 
 batch_list = []
-#batch_list += sum([data_dict[n] for n in data_samples], []) 
+batch_list += sum([data_dict[n] for n in data_samples], []) 
 batch_list += sum([mc_dict[n] for n in mc_samples], []) 
 
 #dataList = []
