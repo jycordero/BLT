@@ -16,7 +16,7 @@ __init__.py
 
 # Remove crap in test dir
 BLTAnalysis/test/batch
-BLTAnalysis/test/ValidationTrees/**
+BLTAnalysis/test/ValidationTrees
 
 # Fix data subdir
 !BLTAnalysis/data/**
