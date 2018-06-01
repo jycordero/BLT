@@ -88,8 +88,9 @@ public:
     UInt_t runNumber, lumiSection;
     UShort_t nPV, nPartons;
     ULong64_t evtNumber;
-    Float_t eventWeight, nPU;
+    Float_t eventWeight, nPU, PUWeight;
     Float_t met, metPhi;
+    Bool_t passTrigger, passHLT_IsoMu24, passHLT_IsoTkMu24, passHLT_Ele27_WPTight_Gsf;
 
     // leptons
     TClonesArray *muonsP4 = new TClonesArray("TLorentzVector");
@@ -99,15 +100,17 @@ public:
     std::vector<Float_t> muonsTrkIso, electronsTrkIso;
     std::vector<Short_t> muonsQ, electronsQ;
 
-    // muon ID criteria
-    std::vector<Bool_t> muonIsGLB, muonPassStdCuts; 
+    // muon info
+    std::vector<Bool_t> muonIsGLB, muonPassStdCuts, muonPassTrigger; 
+    std::vector<Float_t> muonIDEff, muonIsoEff, muonTriggerEff;
     std::vector<Float_t> muonsSF, muonMuNChi2, muonD0, muonDz;
     std::vector<UShort_t> muonNMatchStn, muonNPixHits, muonNTkLayers;
     std::vector<UShort_t> muonNValidHits;
 
-    // electron ID criteria
+    // electron info
     std::vector<Bool_t> electronIsConv, electronPassID, electronPassIso;
-    std::vector<Bool_t> electronPassStdCuts;
+    std::vector<Bool_t> electronPassStdCuts, electronPassTrigger;
+    std::vector<Float_t> electronRecoEff, electronTriggerEff;
     std::vector<Float_t> electronCombIso, electronEnergyInv;
     std::vector<Float_t> electronScEta, electronD0, electronDz, electronSieie;
     std::vector<Float_t> electronHOverE, electronDEtaIn, electronDPhiIn;

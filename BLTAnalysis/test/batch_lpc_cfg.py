@@ -11,9 +11,10 @@ path       = '/eos/uscms/store/group/lpcbacon/12a'
 executable = 'execBatch.sh'
 location   = 'lpc'
 
-data_samples = ['single_mu', 'single_el']
-#mc_samples   = ['zjets', 'ttbar', 't', 'diboson']
-mc_samples   = ['otman']
+#data_samples = ['single_mu', 'single_el']
+data_samples = ['single_mu']
+mc_samples   = ['zjets', 'otman']
+#mc_samples   = ['otman']
 
 ''' 
 Set job configurations.  
@@ -24,47 +25,47 @@ data_dict['single_mu'] = [
         cfg(data_name = 'muon_2016B_v1',
             path      = '{0}/SingleMuon_Run2016B-03Feb2017_ver1-v1'.format(path),
             nJobs     = 30,
-            suffix    = 'muon_2016'
+            suffix    = 'muon_2016B'
             ),
         cfg(data_name = 'muon_2016B_v2',
             path      = '{0}/SingleMuon_Run2016B-03Feb2017_ver2-v2'.format(path),
             nJobs     = 30,
-            suffix    = 'muon_2016'
+            suffix    = 'muon_2016B'
             ),
         cfg(data_name = 'muon_2016C',
             path      = '{0}/SingleMuon_Run2016C-03Feb2017-v1'.format(path),
             nJobs     = 30,
-            suffix    = 'muon_2016'
+            suffix    = 'muon_2016C'
             ),
         cfg(data_name = 'muon_2016D',
             path      = '{0}/SingleMuon_Run2016D-03Feb2017-v1'.format(path),
             nJobs     = 30,
-            suffix    = 'muon_2016'
+            suffix    = 'muon_2016D'
             ),
         cfg(data_name = 'muon_2016E',
             path      = '{0}/SingleMuon_Run2016E-03Feb2017-v1'.format(path),
             nJobs     = 30,
-            suffix    = 'muon_2016'
+            suffix    = 'muon_2016E'
             ),
         cfg(data_name = 'muon_2016F',
             path      = '{0}/SingleMuon_Run2016F-03Feb2017-v1'.format(path),
             nJobs     = 30,
-            suffix    = 'muon_2016'
+            suffix    = 'muon_2016F'
             ),
         cfg(data_name = 'muon_2016G',
             path      = '{0}/SingleMuon_Run2016G-03Feb2017-v1'.format(path),
             nJobs     = 30,
-            suffix    = 'muon_2016'
+            suffix    = 'muon_2016G'
             ),
         cfg(data_name = 'muon_2016H_v2',
             path      = '{0}/SingleMuon_Run2016H-03Feb2017_ver2-v1'.format(path),
             nJobs     = 30,
-            suffix    = 'muon_2016'
+            suffix    = 'muon_2016H'
             ),
         cfg(data_name = 'muon_2016H_v3',
             path      = '{0}/SingleMuon_Run2016H-03Feb2017_ver3-v1'.format(path),
             nJobs     = 30,
-            suffix    = 'muon_2016'
+            suffix    = 'muon_2016H'
             ),
         ]
 
@@ -72,47 +73,47 @@ data_dict['single_el'] = [
         cfg(data_name = 'electron_2016B_v1',
             nJobs    = 30,
             path     = '{0}/SingleElectron_Run2016B-03Feb2017_ver1-v1'.format(path),
-            suffix   = 'electron_2016'
+            suffix   = 'electron_2016B'
             ),
         cfg(data_name = 'electron_2016B_v2',
             path     = '{0}/SingleElectron_Run2016B-03Feb2017_ver2-v2'.format(path),
             nJobs    = 30,
-            suffix   = 'electron_2016'
+            suffix   = 'electron_2016B'
             ),
         cfg(data_name = 'electron_2016C',
             path     = '{0}/SingleElectron_Run2016C-03Feb2017-v1'.format(path),
             nJobs    = 30,
-            suffix   = 'electron_2016'
+            suffix   = 'electron_2016C'
             ),
         cfg(data_name = 'electron_2016D',
             path     = '{0}/SingleElectron_Run2016D-03Feb2017-v1'.format(path),
             nJobs    = 30,
-            suffix   = 'electron_2016'
+            suffix   = 'electron_2016D'
             ),
         cfg(data_name = 'electron_2016E',
             path     = '{0}/SingleElectron_Run2016E-03Feb2017-v1'.format(path),
             nJobs    = 30,
-            suffix   = 'electron_2016'
+            suffix   = 'electron_2016E'
             ),
         cfg(data_name = 'electron_2016F',
             path     = '{0}/SingleElectron_Run2016F-03Feb2017-v1'.format(path),
             nJobs    = 30,
-            suffix   = 'electron_2016'
+            suffix   = 'electron_2016F'
             ),
         cfg(data_name = 'electron_2016G',
             path     = '{0}/SingleElectron_Run2016G-03Feb2017-v1'.format(path),
             nJobs    = 30,
-            suffix   = 'electron_2016'
+            suffix   = 'electron_2016G'
             ),
         cfg(data_name = 'electron_2016H_v2',
             path     = '{0}/SingleElectron_Run2016H-03Feb2017_ver2-v1'.format(path),
             nJobs    = 30,
-            suffix   = 'electron_2016'
+            suffix   = 'electron_2016H'
             ),
         cfg(data_name = 'electron_2016H_v3',
             path     = '{0}/SingleElectron_Run2016H-03Feb2017_ver3-v1'.format(path),
             nJobs    = 30,
-            suffix   = 'electron_2016'
+            suffix   = 'electron_2016H'
             ),
         ]
 
@@ -167,16 +168,16 @@ data_dict['mueg'] = [
 path = '/eos/uscms/store/group/lpcbacon/12'
 mc_dict = {}
 mc_dict['otman'] = [
-        cfg(data_name = 'DYJetsToLL_M-50',
-            path     = '{0}/Summer16_DYJetsToLL_M-50_amcatnlo'.format(path),
-            nJobs    = 50,
-            suffix   = 'dy_m-50'
-            ),
-        cfg(data_name = 'DYJetsToLL_M-10to50',
-            path     = '{0}/Summer16_DYJetsToLL_M-10to50_amcatnlo'.format(path),
-            nJobs    = 10,
-            suffix   = 'dy_m-10to50'
-            ),
+#       cfg(data_name = 'DYJetsToLL_M-50',
+#           path     = '{0}/Summer16_DYJetsToLL_M-50_amcatnlo'.format(path),
+#           nJobs    = 50,
+#           suffix   = 'dy_m-50'
+#           ),
+#       cfg(data_name = 'DYJetsToLL_M-10to50',
+#           path     = '{0}/Summer16_DYJetsToLL_M-10to50_amcatnlo'.format(path),
+#           nJobs    = 10,
+#           suffix   = 'dy_m-10to50'
+#           ),
         cfg(data_name = 'ttbar_inclusive',
             path     = '{0}/Summer16_TT_powheg'.format(path),
             nJobs    = 50,
@@ -204,28 +205,29 @@ mc_dict['otman'] = [
             ),
         ]
 
+path = '/eos/uscms/store/group/lpcbacon/12d'
 mc_dict['zjets'] = [
-        # Drell-Yan
+#       # Drell-Yan
+#       cfg(data_name = 'DYJetsToLL_M-50',
+#           path     = '{0}/Summer16_DYJetsToLL_M-50_amcatnlo'.format(path),
+#           nJobs    = 50,
+#           suffix   = 'zjets_m-50'
+#           ),
+#       cfg(data_name = 'DYJetsToLL_M-10to50',
+#           path     = '{0}/Summer16_DYJetsToLL_M-10to50_amcatnlo'.format(path),
+#           nJobs    = 10,
+#           suffix   = 'zjets_m-10to50'
+#           ),
         cfg(data_name = 'DYJetsToLL_M-50',
-            path     = '{0}/Summer16_DYJetsToLL_M-50_amcatnlo'.format(path),
+            path     = '{0}/DYJetsToLL_M-50_madgraph'.format(path),
             nJobs    = 50,
             suffix   = 'zjets_m-50'
-            ),
+           ),
         cfg(data_name = 'DYJetsToLL_M-10to50',
-            path     = '{0}/Summer16_DYJetsToLL_M-10to50_amcatnlo'.format(path),
+            path     = '{0}/DYJetsToLL_M-10to50_madgraph'.format(path),
             nJobs    = 10,
             suffix   = 'zjets_m-10to50'
-            ),
-# add?  #cfg(data_name = 'DYJetsToLL_M-50',
-        #    path     = '{0}/Summer16_DYJetsToLL_M-50_madgraph'.format(path),
-        #    nJobs    = 50,
-        #    suffix   = 'zjets_m-50'
-        #   ),
-        #cfg(data_name = 'DYJetsToLL_M-10to50',
-        #    path     = '{0}/Summer16_DYJetsToLL_M-10to50_madgraph'.format(path),
-        #    nJobs    = 10,
-        #    suffix   = 'zjets_m-10to50'
-        #   ),
+           ),
         #cfg(data_name = 'DY1JetsToLL_M-50',
         #    path     = '{0}/Summer16_DY1JetsToLL_M-50_madgraph'.format(path),
         #    nJobs    = 10,
