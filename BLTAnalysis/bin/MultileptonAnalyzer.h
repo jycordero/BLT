@@ -24,6 +24,7 @@
 #include "BLT/BLTAnalysis/interface/TriggerSelector.hh"
 #include "BLT/BLTAnalysis/interface/ParticleSelector.hh"
 #include "BLT/BLTAnalysis/interface/WeightUtils.h"
+#include "BLT/BLTAnalysis/interface/ElectronCorrector.h"
 
 #include "BLT/BLTAnalysis/interface/RoccoR.h"
 
@@ -70,6 +71,10 @@ public:
     RoccoR *muonCorr;
     TRandom3 *rng;
 
+    // electron scale and smear corrector (trash)
+    // (from topic_wbranch)
+    EnergyScaleCorrection *electronScaler;
+
     // Params and cuts
     std::unique_ptr<Parameters>         params;
     std::unique_ptr<Cuts>               cuts;
@@ -101,18 +106,19 @@ public:
     std::vector<Short_t> muonsQ, electronsQ;
 
     // muon info
-    std::vector<Bool_t> muonIsGLB, muonPassStdCuts, muonPassTrigger; 
-    std::vector<Float_t> muonIDEff, muonIsoEff, muonTriggerEff;
-    std::vector<Float_t> muonsSF, muonMuNChi2, muonD0, muonDz;
+    std::vector<Bool_t> muonIsPFMuon, muonIsGLB, muonPassStdCuts, muonPassTrigger; 
+    std::vector<Float_t> muonIDEff, muonTightIsoEff, muonLooseIsoEff;
+    std::vector<Float_t> muonTriggerEffData, muonTriggerEffMC;
+    std::vector<Float_t> muonSF, muonMuNChi2, muonD0, muonDz;
     std::vector<UShort_t> muonNMatchStn, muonNPixHits, muonNTkLayers;
     std::vector<UShort_t> muonNValidHits;
 
     // electron info
     std::vector<Bool_t> electronIsConv, electronPassID, electronPassIso;
     std::vector<Bool_t> electronPassStdCuts, electronPassTrigger;
-    std::vector<Float_t> electronRecoEff, electronTriggerEff;
+    std::vector<Float_t> electronRecoEff, electronTriggerEffData, electronTriggerEffMC;
     std::vector<Float_t> electronCombIso, electronEnergyInv;
-    std::vector<Float_t> electronScEta, electronD0, electronDz, electronSieie;
+    std::vector<Float_t> electronSF, electronScEta, electronD0, electronDz, electronSieie;
     std::vector<Float_t> electronHOverE, electronDEtaIn, electronDPhiIn;
     std::vector<UShort_t> electronNMissHits;
 
