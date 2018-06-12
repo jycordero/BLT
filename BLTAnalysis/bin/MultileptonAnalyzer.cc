@@ -254,6 +254,9 @@ Bool_t MultileptonAnalyzer::Process(Long64_t entry)
     if (!isData) {
         nPU = fInfo->nPUmean;
         PUWeight = weights->GetPUWeight(fInfo->nPUmean); // pileup reweighting
+        eventWeight = fGenEvtInfo->weight > 0 ? 1 : -1; // save gen weight for amc@nlo Drell-Yan sample
+        if (eventWeight < 0)
+            hTotalEvents->Fill(10);
     } else {
         nPU = 0;
     }
@@ -568,6 +571,18 @@ Bool_t MultileptonAnalyzer::Process(Long64_t entry)
                 }
             }
             electronCombIso.push_back(electron->chHadIso + std::max(0.,(double)electron->neuHadIso + electron->gammaIso - fInfo->rhoJet * cuts->EAEl[iEta]));
+
+            if (isData)
+            {
+                electronRecoEff.push_back(1.);
+                electronTriggerEff.push_back(1.);
+            }
+            else
+            {
+                electronRecoEff.push_back(weights->GetElectronRecoEff(electronP4));
+                pair<float, float> trigEff = weights->GetTriggerEffWeight("HLT_Ele27_WPTight_Gsf_v*", electronP4);
+                electronTriggerEff.push_back(trigEff.first);
+            }
         }
     }        
 

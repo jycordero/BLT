@@ -5,7 +5,6 @@ WeightUtils::WeightUtils(string dataPeriod, string selection, bool isRealData)
     _dataPeriod = dataPeriod;
     _selection  = selection;
     _isRealData = isRealData;
-    std::string fileName;
 
     const std::string cmssw_base = getenv("CMSSW_BASE");
 
@@ -56,22 +55,6 @@ WeightUtils::WeightUtils(string dataPeriod, string selection, bool isRealData)
     _muSF2012_ISO_MC[2] = (TGraphAsymmErrors*)f_muRecoSF2012_ISO->Get((filePath + "pair_newTuneP_probe_pt_PLOT_abseta_bin2_&_HighPt_pass_MC").c_str());
     _muSF2012_ISO_MC[3] = (TGraphAsymmErrors*)f_muRecoSF2012_ISO->Get((filePath + "pair_newTuneP_probe_pt_PLOT_abseta_bin3_&_HighPt_pass_MC").c_str());
 
-
-    // electron reco efficiencies
-    // (from topic_wbranch)
-    fileName = cmssw_base + "/src/BLT/BLTAnalysis/data/egamma_eff_reco_2016.root";
-    TFile* f_eleRecoSF = new TFile(fileName.c_str(), "OPEN"); 
-    _eleSF_RECO = (TGraphErrors*)f_eleRecoSF->Get("grSF1D_0");
-
-    // electron id efficiencies
-    // (from topic_wbranch)
-    fileName = cmssw_base + "/src/BLT/BLTAnalysis/data/egamma_eff_ID_2016.root";
-    TFile* f_eleIdSF = new TFile(fileName.c_str(), "OPEN"); 
-    _eleSF_ID[0] = (TGraphErrors*)f_eleIdSF->Get("grSF1D_0");
-    _eleSF_ID[1] = (TGraphErrors*)f_eleIdSF->Get("grSF1D_1");
-    _eleSF_ID[2] = (TGraphErrors*)f_eleIdSF->Get("grSF1D_2");
-    _eleSF_ID[3] = (TGraphErrors*)f_eleIdSF->Get("grSF1D_3");
-    _eleSF_ID[4] = (TGraphErrors*)f_eleIdSF->Get("grSF1D_4");
 }
 
 void WeightUtils::SetDataBit(bool isRealData)
@@ -96,41 +79,21 @@ float WeightUtils::GetPUWeight(float nPU)
 
 std::pair<float,float> WeightUtils::GetTriggerEffWeight(string triggerName, TLorentzVector &lepton) const
 {
+    float binningEta[] = {0., 0.9, 1.2, 2.1, 2.4};
+    int etaBin = 0;
+    for (int i = 0; i < 4; ++i) {
+        if (fabs(lepton.Eta()) > binningEta[i] && fabs(lepton.Eta()) <= binningEta[i+1]) {
+            etaBin = i;
+            break;
+        }
+    }
+    
     float effMC   = 1;
     float effData = 1;
-
     if (triggerName == "HLT_IsoMu24_v*") {
-        float binningEta[] = {0., 0.9, 1.2, 2.1, 2.4};
-        int etaBin = 0;
-        for (int i = 0; i < 4; ++i) {
-            if (fabs(lepton.Eta()) > binningEta[i] && fabs(lepton.Eta()) <= binningEta[i+1]) {
-                etaBin = i;
-                break;
-            }
-        }
-
         if (lepton.Pt() < 500.) {
             effData = _eff_IsoMu24_DATA[etaBin]->Eval(lepton.Pt());
         }
-    }
-
-    else if (triggerName == "HLT_Ele27_WPTight_Gsf_v*") {
-        int etaBin = 0;
-        int ptBin = 0;
-        for (int i = 0; i < 13; ++i) {
-            if (lepton.Eta() > _eleEtaBins[i] && lepton.Eta() <= _eleEtaBins[i+1]) {
-                etaBin = i;
-                break;
-            }
-        }
-        for (int i = 0; i < 8; ++i) {
-            if (lepton.Pt() > _elePtBins[i] && lepton.Pt() <= _elePtBins[i+1]) {
-                ptBin = i;
-                break;
-            }
-        }
-        effData = _ele_trigEff_data[etaBin][ptBin];
-        effMC   = _ele_trigEff_mc[etaBin][ptBin];
     }
 
     return std::make_pair(effData, effMC);
@@ -172,36 +135,8 @@ float WeightUtils::GetMuonISOEff(TLorentzVector& muon) const
         weight   *= _muSF2012_ISO_DATA[etaBin]->Eval(muon.Pt())/_muSF2012_ISO_MC[etaBin]->Eval(muon.Pt());
         //isoWeight = 1.;//_muSF2012_ISO[etaBin]->Eval(muonP4.Pt());
     }
-
+    
     return weight;
-}
-
-// (from topic_wbranch)
-float WeightUtils::GetElectronRecoEff(TLorentzVector& electron) const
-{
-    float binningPt[] = {10., 20., 35., 50., 90., 500.};
-    int ptBin = 0;
-    for (int i = 0; i < 5; ++i) {
-        if (fabs(electron.Pt()) > binningPt[i] && fabs(electron.Pt()) <= binningPt[i+1]) {
-            ptBin = i;
-            break;
-        }
-    }
-
-    float sfReco = _eleSF_RECO->Eval(electron.Eta());
-    float sfId   = _eleSF_ID[ptBin]->Eval(electron.Eta());
-
-//  int etaBin;
-//  etaBin = GetBinNumber<TGraphErrors*>(_eleSF_RECO, electron.Eta()); 
-//  float errReco = _eleSF_RECO->GetErrorY(etaBin);
-
-//  etaBin = GetBinNumber<TGraphErrors*>(_eleSF_ID[ptBin], electron.Eta()); 
-//  float errId  = _eleSF_ID[ptBin]->GetErrorY(etaBin);
-//  float sfErr = sfReco*sfId*(pow(errReco/sfReco, 2) + pow(errId/sfId, 2));
-
-//  EfficiencyContainer effCont(sfReco*sfId, 1., sfErr, 0.);
-//  return effCont;
-    return sfReco*sfId;
 }
 
 //float WeightUtils::GetElectronRecoEff(TLorentzVector& electron) const
