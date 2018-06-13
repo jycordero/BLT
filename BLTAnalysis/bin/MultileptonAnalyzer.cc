@@ -23,6 +23,8 @@ MultileptonAnalyzer::~MultileptonAnalyzer()
 
 void MultileptonAnalyzer::Begin(TTree *tree)
 {
+    rng = new TRandom3();
+
     // Parse command line option
     std::string tmp_option = GetOption();
     std::vector<std::string> options;
@@ -70,7 +72,6 @@ void MultileptonAnalyzer::Begin(TTree *tree)
 
     // muon momentum corrections
     muonCorr = new RoccoR(cmssw_base + "/src/BLT/BLTAnalysis/data/rcdata.2016.v3");
-    rng = new TRandom3();
 
     // electron scale corrections
     electronScaler = new EnergyScaleCorrection(cmssw_base + "/src/BLT/BLTAnalysis/data");
@@ -260,11 +261,20 @@ Bool_t MultileptonAnalyzer::Process(Long64_t entry)
     lumiSection   = fInfo->lumiSec;
     nPV           = fPVArr->GetEntries();
     if (!isData) {
+        // Pileup reweighting
         nPU = fInfo->nPUmean;
-        PUWeight = weights->GetPUWeight(fInfo->nPUmean); // pileup reweighting
-        eventWeight = fGenEvtInfo->weight > 0 ? 1 : -1; // save gen weight for amc@nlo Drell-Yan sample
+        PUWeight = weights->GetPUWeight(fInfo->nPUmean);
+
+        // Save gen weight for amc@nlo Drell-Yan sample
+        eventWeight = fGenEvtInfo->weight > 0 ? 1 : -1; 
         if (eventWeight < 0)
             hTotalEvents->Fill(10);
+
+        // Set data period for 2016 MC scale factors
+        if (rng->Rndm() < 0.468)
+            weights->SetDataPeriod("2016BtoF");    
+        else
+            weights->SetDataPeriod("2016GH");
     } else {
         nPU = 0;
     }

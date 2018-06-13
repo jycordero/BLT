@@ -11,10 +11,8 @@ path       = '/eos/uscms/store/group/lpcbacon/12a'
 executable = 'execBatch.sh'
 location   = 'lpc'
 
-#data_samples = ['single_mu', 'single_el']
-data_samples = ['single_mu']
+data_samples = ['single_mu', 'single_el']
 mc_samples   = ['zjets', 'otman']
-#mc_samples   = ['otman']
 
 ''' 
 Set job configurations.  
@@ -168,16 +166,16 @@ data_dict['mueg'] = [
 path = '/eos/uscms/store/group/lpcbacon/12'
 mc_dict = {}
 mc_dict['otman'] = [
-#       cfg(data_name = 'DYJetsToLL_M-50',
-#           path     = '{0}/Summer16_DYJetsToLL_M-50_amcatnlo'.format(path),
-#           nJobs    = 50,
-#           suffix   = 'dy_m-50'
-#           ),
-#       cfg(data_name = 'DYJetsToLL_M-10to50',
-#           path     = '{0}/Summer16_DYJetsToLL_M-10to50_amcatnlo'.format(path),
-#           nJobs    = 10,
-#           suffix   = 'dy_m-10to50'
-#           ),
+        cfg(data_name = 'DYJetsToLL_M-50',
+            path     = '{0}/Summer16_DYJetsToLL_M-50_amcatnlo'.format(path),
+            nJobs    = 50,
+            suffix   = 'dy_m-50'
+            ),
+        cfg(data_name = 'DYJetsToLL_M-10to50',
+            path     = '{0}/Summer16_DYJetsToLL_M-10to50_amcatnlo'.format(path),
+            nJobs    = 10,
+            suffix   = 'dy_m-10to50'
+            ),
         cfg(data_name = 'ttbar_inclusive',
             path     = '{0}/Summer16_TT_powheg'.format(path),
             nJobs    = 50,

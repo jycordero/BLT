@@ -42,8 +42,6 @@ class WeightUtils: public TObject {
         float   GetMuonTightISOEff(TLorentzVector&) const; 
         float   GetMuonLooseISOEff(TLorentzVector&) const; 
         float   GetElectronRecoEff(TLorentzVector&) const;
-        //float   GetMuonTriggerEff(string, vector<TLorentzVector>&) const;
-        //float   GetEleTriggerEff(string, vector<TLorentzVector>&) const;
 
         ClassDef(WeightUtils, 0);
 
@@ -54,23 +52,24 @@ class WeightUtils: public TObject {
         string _selection;
         bool   _isRealData;
 
+        // pileup
         TGraph  *_puReweight;
-        TGraphAsymmErrors *_muSF_IsoMu24_DATA_BCDEF[4], *_muSF_IsoMu24_MC_BCDEF[4]; 
-        TGraphAsymmErrors *_muSF_ID_DATA_BCDEF[4], *_muSF_ID_MC_BCDEF[4]; 
-        TGraphAsymmErrors *_muSF2012_ISO_DATA[4], *_muSF2012_ISO_MC[4];
-        TGraphAsymmErrors *_muSF_ISO_DATA_BCDEF[4], *_muSF_ISO_MC_BCDEF[4];
-        //TGraph *_muSF2012_ID_err[4], *_muSF2012_ISO_err[4];
 
-        //TH2D    *h2_MuTriggerSFs[2]; // Good for Mu17_Mu8 or Mu17_TkMu8
-        //TH2D    *h2_EleMVASF;
+        // muon trigger and ID/ISO scale factors
+        TGraphAsymmErrors *_muSF_IsoMu24_DATA_BCDEF[4], *_muSF_IsoMu24_MC_BCDEF[4];
+        TGraphAsymmErrors *_muSF_ID_DATA_BCDEF[4], *_muSF_ID_MC_BCDEF[4];
+        TGraphAsymmErrors *_muSF_ISO_DATA_BCDEF[4], *_muSF_ISO_MC_BCDEF[4]; 
+        TGraphAsymmErrors *_muSF2012_ISO_DATA_BCDEF[4], *_muSF2012_ISO_MC_BCDEF[4];
 
+        TGraphAsymmErrors *_muSF_IsoMu24_DATA_GH[4], *_muSF_IsoMu24_MC_GH[4];  
+        TGraphAsymmErrors *_muSF_ID_DATA_GH[4], *_muSF_ID_MC_GH[4]; 
+        TGraphAsymmErrors *_muSF_ISO_DATA_GH[4], *_muSF_ISO_MC_GH[4]; 
+        TGraphAsymmErrors *_muSF2012_ISO_DATA_GH[4], *_muSF2012_ISO_MC_GH[4];
 
         // electron RECO/ID scale factors (what about ISO?)
-        // (from topic_wbranch)
         TGraphErrors *_eleSF_RECO, *_eleSF_ID[5];
 
         // electron trigger efficiencies (the bins for 2.1 < |eta| < 2.4 are copies of the 1.6 to 2.1 bins
-        // (from topic_wbranch)
         float _elePtBins[8] = {30, 32, 35, 40, 50, 60, 120, 9999};
         float _eleEtaBins[13] = {-2.4, -2.1, -1.6, -1.4, -0.8, -0.4, 0., 0.4, 0.8, 1.4, 1.6, 2.1, 2.4};
         float _ele_trigEff_data[12][7] = {
