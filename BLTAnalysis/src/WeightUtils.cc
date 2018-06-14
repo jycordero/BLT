@@ -15,8 +15,8 @@ WeightUtils::WeightUtils(string dataPeriod, string selection, bool isRealData)
     _puReweight = (TGraph*)puFile->Get("pileup_sf");
 
     // muon trigger sf (BCDEF)
-//  std::string triggerFileName = cmssw_base + "/src/BLT/BLTAnalysis/data/muon_trigger/EfficienciesAndSF_RunBtoF.root";
-    std::string triggerFileName = cmssw_base + "/src/BLT/BLTAnalysis/data/muon_trigger/EfficienciesAndSF_BCDEF.root";
+//  std::string triggerFileName = cmssw_base + "/src/BLT/BLTAnalysis/data/muon_trigger/EfficienciesAndSF_BCDEF.root";
+    std::string triggerFileName = cmssw_base + "/src/BLT/BLTAnalysis/data/muon_trigger/EfficienciesAndSF_RunBtoF.root";
     TFile* triggerFile_BCDEF = new TFile(triggerFileName.c_str(), "OPEN");
 
     std::string filePath = "IsoMu24_OR_IsoTkMu24_PtEtaBins/efficienciesDATA/";

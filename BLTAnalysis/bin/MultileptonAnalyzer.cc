@@ -45,19 +45,18 @@ void MultileptonAnalyzer::Begin(TTree *tree)
     std::string trigfilename = cmssw_base + "/src/BaconAna/DataFormats/data/HLTFile_25ns";
     trigger.reset(new baconhep::TTrigger(trigfilename));
 
-//  if (params->selection == "mumu" || params->selection == "emu") {
-//      //triggerNames.push_back("HLT_IsoMu22_v*");
-//      //triggerNames.push_back("HLT_IsoTkMu22_v*");
-//      triggerNames.push_back("HLT_IsoMu24_v*");
-//      triggerNames.push_back("HLT_IsoTkMu24_v*");
-//      //triggerNames.push_back("HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_v*");
-//      //triggerNames.push_back("HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v*");
-//      //triggerNames.push_back("HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_v*");
-//      //triggerNames.push_back("HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v*");
-
-//  } else if (params->selection == "ee") {
-//      triggerNames.push_back("HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v*");
-//  }
+/*  if (params->selection == "mumu" || params->selection == "emu") {
+        //triggerNames.push_back("HLT_IsoMu22_v*");
+        //triggerNames.push_back("HLT_IsoTkMu22_v*");
+        triggerNames.push_back("HLT_IsoMu24_v*");
+        triggerNames.push_back("HLT_IsoTkMu24_v*");
+        //triggerNames.push_back("HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_v*");
+        //triggerNames.push_back("HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v*");
+        //triggerNames.push_back("HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_v*");
+        //triggerNames.push_back("HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v*");
+    } else if (params->selection == "ee") {
+        triggerNames.push_back("HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v*");
+    }   */
 
     // Weight utility class
     weights.reset(new WeightUtils(params->period, params->selection, false)); // Lumi mask
@@ -93,6 +92,7 @@ void MultileptonAnalyzer::Begin(TTree *tree)
     outTree->Branch("nPU", &nPU);
     outTree->Branch("PUWeight", &PUWeight);
     outTree->Branch("nPartons", &nPartons);
+    outTree->Branch("nJets", &nJets);
     outTree->Branch("met", &met);
     outTree->Branch("metPhi", &metPhi);
     outTree->Branch("passTrigger", &passTrigger);
@@ -110,7 +110,8 @@ void MultileptonAnalyzer::Begin(TTree *tree)
     outTree->Branch("muonTriggerEffMC", &muonTriggerEffMC);
     outTree->Branch("muonSF", &muonSF);
     outTree->Branch("muonTrkIso", &muonsTrkIso);
-    outTree->Branch("muonIsPFMuon", &muonIsPFMuon);
+    outTree->Branch("muonCombIso", &muonCombIso);
+    outTree->Branch("muonIsPF", &muonIsPF);
     outTree->Branch("muonIsGLB", &muonIsGLB);
     outTree->Branch("muonMuNChi2", &muonMuNChi2);
     outTree->Branch("muonNMatchStn", &muonNMatchStn);
@@ -131,6 +132,8 @@ void MultileptonAnalyzer::Begin(TTree *tree)
     outTree->Branch("electronSF", &electronSF);
     outTree->Branch("electronTrkIso", &electronsTrkIso);
     outTree->Branch("electronCombIso", &electronCombIso);
+    outTree->Branch("electronPassID", &electronPassID);
+    outTree->Branch("electronPassIso", &electronPassIso);
     outTree->Branch("electronEnergyInv", &electronEnergyInv);
     outTree->Branch("electronScEta", &electronScEta);
     outTree->Branch("electronD0", &electronD0);
@@ -141,8 +144,6 @@ void MultileptonAnalyzer::Begin(TTree *tree)
     outTree->Branch("electronDPhiIn", &electronDPhiIn);
     outTree->Branch("electronNMissHits", &electronNMissHits);
     outTree->Branch("electronIsConv", &electronIsConv);
-    outTree->Branch("electronPassID", &electronPassID);
-    outTree->Branch("electronPassIso", &electronPassIso);
     outTree->Branch("electronPassStdCuts", &electronPassStdCuts);
     outTree->Branch("electronPassTrigger", &electronPassTrigger);
 
@@ -175,18 +176,18 @@ void MultileptonAnalyzer::Begin(TTree *tree)
 Bool_t MultileptonAnalyzer::Process(Long64_t entry)
 {
     // Clear vectors and TClonesArrays
-    muonsP4ptr.Clear(); electronsP4ptr.Clear();
-    muonsTrkIso.clear(); electronsTrkIso.clear();
-    muonsQ.clear(); electronsQ.clear();
-    muonIsPFMuon.clear(); muonIsGLB.clear(); muonPassStdCuts.clear(); muonPassTrigger.clear();
+    muonsP4ptr.Clear(); muonsQ.clear(); muonsTrkIso.clear(); muonCombIso.clear();
+    muonIsPF.clear(); muonIsGLB.clear(); muonPassStdCuts.clear(); muonPassTrigger.clear();
     muonIDEff.clear(); muonTightIsoEff.clear(); muonLooseIsoEff.clear();
     muonTriggerEffData.clear(); muonTriggerEffMC.clear();
     muonSF.clear(); muonMuNChi2.clear(); muonD0.clear(); muonDz.clear();
     muonNMatchStn.clear(); muonNPixHits.clear(); muonNTkLayers.clear(); muonNValidHits.clear();
+
+    electronsP4ptr.Clear(); electronsQ.clear(); electronsTrkIso.clear(); electronCombIso.clear();
     electronIsConv.clear(); electronPassID.clear(); electronPassIso.clear();
     electronPassStdCuts.clear(); electronPassTrigger.clear();
     electronRecoEff.clear(); electronTriggerEffData.clear(); electronTriggerEffMC.clear();
-    electronSF.clear(); electronCombIso.clear(); electronEnergyInv.clear();
+    electronSF.clear(); electronEnergyInv.clear();
     electronScEta.clear(); electronD0.clear(); electronDz.clear(); electronSieie.clear();
     electronHOverE.clear(); electronDEtaIn.clear(); electronDPhiIn.clear();
     electronNMissHits.clear();
@@ -386,8 +387,7 @@ Bool_t MultileptonAnalyzer::Process(Long64_t entry)
         if (
                 muon->pt > 10 
                 && fabs(muon->eta) < 2.4
-                // tight muon ID
-                && (muon->typeBits & baconhep::kPFMuon) 
+                && (muon->typeBits & baconhep::kPFMuon) // tight muon ID
                 && (muon->typeBits & baconhep::kGlobal) 
                 && muon->muNchi2    < 10.
                 && muon->nMatchStn  > 1
@@ -446,12 +446,12 @@ Bool_t MultileptonAnalyzer::Process(Long64_t entry)
         }
 
         // Perform selection
-        if (muon->trkIso/muonP4.Pt() < 0.1) {
-//          if (muonP4.Pt() > 25 && fabs(muonP4.Eta()) < 2.1) {
-            if (muonP4.Pt() > 20) {
+        if (GetMuonIsolation(muon)/muonP4.Pt() < 0.15) {
+//      if (muon->trkIso/muonP4.Pt() < 0.1) {
+//          if (muonP4.Pt() > 20) {
                 nStdMuons++;
                 std_muons_idx.push_back(tmp_muons_idx[i]);
-            }
+//          }
         }
     }
     for (unsigned i = 0; i < std_muons_idx.size(); i++)
@@ -489,7 +489,7 @@ Bool_t MultileptonAnalyzer::Process(Long64_t entry)
         electronP4.SetPtEtaPhiM(eScale*electron->pt, electron->eta, electron->phi, ELE_MASS);
 
         if (
-                electronP4.Pt() > 20 
+                electronP4.Pt() > 10 
                 && fabs(electronP4.Eta()) < 2.5
                 && particleSelector->PassElectronID(electron, cuts->tightElID)
                 && particleSelector->PassElectronIso(electron, cuts->tightElIso, cuts->EAEl)
@@ -542,7 +542,8 @@ Bool_t MultileptonAnalyzer::Process(Long64_t entry)
             new(muonsP4ptr[i]) TLorentzVector(muonP4);
             muonsQ.push_back(muon->q);
             muonsTrkIso.push_back(muon->trkIso);
-            muonIsPFMuon.push_back(muon->typeBits & baconhep::kPFMuon);
+            muonCombIso.push_back(GetMuonIsolation(muon));
+            muonIsPF.push_back(muon->typeBits & baconhep::kPFMuon);
             muonIsGLB.push_back(muon->typeBits & baconhep::kGlobal);
             muonMuNChi2.push_back(muon->muNchi2);
             muonNMatchStn.push_back(muon->nMatchStn);
@@ -580,6 +581,7 @@ Bool_t MultileptonAnalyzer::Process(Long64_t entry)
             new(electronsP4ptr[i]) TLorentzVector(electronP4);
             electronsQ.push_back(electron->q);
             electronsTrkIso.push_back(electron->trkIso);
+            electronCombIso.push_back(GetElectronIsolation(electron, fInfo->rhoJet));
             electronEnergyInv.push_back(fabs(1. - electron->eoverp)/electron->ecalEnergy);
             electronScEta.push_back(electron->scEta);
             electronD0.push_back(electron->d0);
@@ -593,16 +595,6 @@ Bool_t MultileptonAnalyzer::Process(Long64_t entry)
             electronPassID.push_back(particleSelector->PassElectronID(electron, cuts->tightElID));
             electronPassIso.push_back(particleSelector->PassElectronIso(electron, cuts->tightElIso, cuts->EAEl));
             electronPassTrigger.push_back(trigger->passObj("HLT_Ele27_WPTight_Gsf_v*", 1, electron->hltMatchBits));
-
-            int iEta = 0;
-            float etaBins[8] = {0., 1., 1.479, 2.0, 2.2, 2.3, 2.4, 2.5};
-            for (unsigned i = 0; i < 8; ++i) {
-                if (fabs(electron->scEta) > etaBins[i] && fabs(electron->scEta) < etaBins[i+1]) {
-                    iEta = i;
-                    break;
-                }
-            }
-            electronCombIso.push_back(electron->chHadIso + std::max(0.,(double)electron->neuHadIso + electron->gammaIso - fInfo->rhoJet * cuts->EAEl[iEta]));
 
             float eScale;
             if (isData)
@@ -693,4 +685,26 @@ float MultileptonAnalyzer::MetKluge(float met)
     }
     
     return corrections[bin];
+}
+
+float MultileptonAnalyzer::GetMuonIsolation(const baconhep::TMuon* mu)
+{
+    float combIso = (mu->chHadIso + std::max(0.,(double)mu->neuHadIso + mu->gammaIso - 0.5*mu->puIso));
+    return combIso;
+}
+
+float MultileptonAnalyzer::GetElectronIsolation(const baconhep::TElectron* el, const float rho)
+{
+    int iEta = 0;
+    float etaBins[8] = {0., 1., 1.479, 2.0, 2.2, 2.3, 2.4, 2.5};
+    float effArea[8] = {0.1703, 0.1715, 0.1213, 0.1230, 0.1635, 0.1937, 0.2393};
+    for (unsigned i = 0; i < 8; ++i) {
+        if (fabs(el->scEta) > etaBins[i] && fabs(el->scEta) < etaBins[i+1]) {
+            iEta = i;
+            break;
+        }
+    }
+
+    float combIso = el->chHadIso + std::max(0., (double)el->neuHadIso + el->gammaIso - rho*effArea[iEta]);
+    return combIso;
 }

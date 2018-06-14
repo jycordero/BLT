@@ -12,7 +12,8 @@ executable = 'execBatch.sh'
 location   = 'lpc'
 
 data_samples = ['single_mu', 'single_el']
-mc_samples   = ['zjets', 'otman']
+#mc_samples   = ['zjets', 'otman']
+mc_samples   = ['otman']
 
 ''' 
 Set job configurations.  
@@ -173,7 +174,7 @@ mc_dict['otman'] = [
             ),
         cfg(data_name = 'DYJetsToLL_M-10to50',
             path     = '{0}/Summer16_DYJetsToLL_M-10to50_amcatnlo'.format(path),
-            nJobs    = 10,
+            nJobs    = 50,
             suffix   = 'dy_m-10to50'
             ),
         cfg(data_name = 'ttbar_inclusive',

@@ -1,5 +1,9 @@
 #! /bin/sh
 
+# Don't try to do anything if the wrong version of ROOT is loaded
+myROOTSYS="/cvmfs/sft.cern.ch/lcg/releases/ROOT/6.10.02-19565/x86_64-slc6-gcc62-opt"
+if [ $ROOTSYS == $myROOTSYS ]
+then
 
 # Rename data trees and histograms
     for suffix in "electron_2016" "muon_2016"
@@ -8,11 +12,11 @@
         do
             hadd    "$suffix$tag".root    output_"$suffix$tag"_*.root
             root.exe -q -b "../../renameTree.C(\""$suffix$tag".root\", \"tree_"$suffix$tag"\", \"tree_"$suffix"\")"
-            if rootrm  "$suffix$tag".root:tree_"$suffix$tag"
+            if rootrm  "$suffix$tag"".root:tree_""$suffix$tag"
             then
                 echo Deleted tree_"$suffix$tag".
             fi
-            if rootmv  "$suffix$tag".root:TotalEvents_"$suffix$tag"    "$suffix$tag".root:TotalEvents_"$suffix"
+            if rootmv  "$suffix$tag"".root:TotalEvents_""$suffix$tag"    "$suffix$tag"".root:TotalEvents_""$suffix"
             then
                 echo Moved TotalEvents_"$suffix$tag" to TotalEvents_"$suffix".
             fi
@@ -37,10 +41,9 @@
     hadd    dy_m-50_4.root          output_DYJetsToLL_M-50_3?.root
     hadd    dy_m-50_5.root          output_DYJetsToLL_M-50_4?.root
 
-    hadd    zjets_m-10to50_1.root   output_DYJetsToLL_M-10to50_*.root
-
-    hadd    zjets_m-50_1.root       output_DYJetsToLL_M-50_1.root output_DYJetsToLL_M-50_2.root output_DYJetsToLL_M-50_3.root output_DYJetsToLL_M-50_4.root output_DYJetsToLL_M-50_5.root
-    hadd    zjets_m-50_2.root       output_DYJetsToLL_M-50_6.root output_DYJetsToLL_M-50_7.root output_DYJetsToLL_M-50_8.root output_DYJetsToLL_M-50_9.root output_DYJetsToLL_M-50_10.root
+#   hadd    zjets_m-10to50_1.root   output_DYJetsToLL_M-10to50_*.root
+#   hadd    zjets_m-50_1.root       output_DYJetsToLL_M-50_1.root output_DYJetsToLL_M-50_2.root output_DYJetsToLL_M-50_3.root output_DYJetsToLL_M-50_4.root output_DYJetsToLL_M-50_5.root
+#   hadd    zjets_m-50_2.root       output_DYJetsToLL_M-50_6.root output_DYJetsToLL_M-50_7.root output_DYJetsToLL_M-50_8.root output_DYJetsToLL_M-50_9.root output_DYJetsToLL_M-50_10.root
 
     hadd    ttbar_1.root            output_ttbar_inclusive_*.root
     hadd    ttz_2l2nu_1.root        output_TTZToLLNuNu_M-10_*.root
@@ -50,9 +53,14 @@
 
 
 # Move to EOS
-    for suffix in "dy_m-10to50" "dy_m-50" "zjets_m-10to50" "zjets_m-50" "ttbar" "ttz_2l2nu" "ww_2l2nu" "wz_3lnu" "zz_4l" "muon_2016" "electron_2016"
-    do
-        xrdcp -f "$suffix"_*.root root://cmseos.fnal.gov//store/user/jrainbol/Trees/2016/"$suffix"/.
-    done
+#   for suffix in "dy_m-10to50" "dy_m-50" "zjets_m-10to50" "zjets_m-50" "ttbar" "ttz_2l2nu" "ww_2l2nu" "wz_3lnu" "zz_4l" "muon_2016" "electron_2016"
+#   do
+#       xrdcp -f "$suffix"_*.root root://cmseos.fnal.gov//store/user/jrainbol/Trees/2016/"$suffix"/.
+#   done
 
-    echo "Remember to delete!"
+#   echo "Remember to delete!"
+
+
+else
+    echo "Wrong ROOT version!"
+fi

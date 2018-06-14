@@ -91,7 +91,7 @@ public:
 
     // event data
     UInt_t runNumber, lumiSection;
-    UShort_t nPV, nPartons;
+    UShort_t nPV, nPartons, nJets;
     ULong64_t evtNumber;
     Float_t eventWeight, nPU, PUWeight;
     Float_t met, metPhi;
@@ -102,13 +102,13 @@ public:
     TClonesArray &muonsP4ptr = *muonsP4;
     TClonesArray *electronsP4 = new TClonesArray("TLorentzVector");
     TClonesArray &electronsP4ptr = *electronsP4;
-    std::vector<Float_t> muonsTrkIso, electronsTrkIso;
     std::vector<Short_t> muonsQ, electronsQ;
 
     // muon info
-    std::vector<Bool_t> muonIsPFMuon, muonIsGLB, muonPassStdCuts, muonPassTrigger; 
+    std::vector<Bool_t> muonIsPF, muonIsGLB, muonPassStdCuts, muonPassTrigger; 
     std::vector<Float_t> muonIDEff, muonTightIsoEff, muonLooseIsoEff;
     std::vector<Float_t> muonTriggerEffData, muonTriggerEffMC;
+    std::vector<Float_t> muonCombIso, muonsTrkIso;
     std::vector<Float_t> muonSF, muonMuNChi2, muonD0, muonDz;
     std::vector<UShort_t> muonNMatchStn, muonNPixHits, muonNTkLayers;
     std::vector<UShort_t> muonNValidHits;
@@ -117,7 +117,7 @@ public:
     std::vector<Bool_t> electronIsConv, electronPassID, electronPassIso;
     std::vector<Bool_t> electronPassStdCuts, electronPassTrigger;
     std::vector<Float_t> electronRecoEff, electronTriggerEffData, electronTriggerEffMC;
-    std::vector<Float_t> electronCombIso, electronEnergyInv;
+    std::vector<Float_t> electronCombIso, electronsTrkIso, electronEnergyInv;
     std::vector<Float_t> electronSF, electronScEta, electronD0, electronDz, electronSieie;
     std::vector<Float_t> electronHOverE, electronDEtaIn, electronDPhiIn;
     std::vector<UShort_t> electronNMissHits;
@@ -136,8 +136,11 @@ public:
     UShort_t nStdMuons, nStdElectrons, nStdLeptons;
     UShort_t nGenMuons, nGenElectrons, nGenLeptons;
 
-    // MET kluge 
+
+    // Helper functions 
     float MetKluge(float);
+    float GetMuonIsolation(const baconhep::TMuon*);
+    float GetElectronIsolation(const baconhep::TElectron*, float);
 
     //ClassDef(MultileptonAnalyzer,0);
 };
