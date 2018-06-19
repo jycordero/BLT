@@ -127,7 +127,7 @@ public:
     TClonesArray &genMuonsP4ptr = *genMuonsP4;
     TClonesArray *genElectronsP4 = new TClonesArray("TLorentzVector");
     TClonesArray &genElectronsP4ptr = *genElectronsP4;
-    std::vector<Short_t> genMuonsQ, genElectronsQ;
+    std::vector<Short_t> genMuonsQ, genMuonStatus, genElectronsQ, genElectronStatus;
     std::vector<Short_t> genIntermID;
     std::vector<Float_t> genIntermMass;
 

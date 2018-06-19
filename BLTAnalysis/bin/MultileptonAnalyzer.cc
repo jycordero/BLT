@@ -150,8 +150,10 @@ void MultileptonAnalyzer::Begin(TTree *tree)
     // gen-level particles
     outTree->Branch("genMuonP4", &genMuonsP4, 32000, 1);
     outTree->Branch("genMuonQ", &genMuonsQ);
+    outTree->Branch("genMuonStatus", &genMuonStatus);
     outTree->Branch("genElectronP4", &genElectronsP4, 32000, 1);
     outTree->Branch("genElectronQ", &genElectronsQ);
+    outTree->Branch("genElectronStatus", &genElectronStatus);
     outTree->Branch("genIntermID", &genIntermID);
     outTree->Branch("genIntermMass", &genIntermMass);
 
@@ -176,14 +178,14 @@ void MultileptonAnalyzer::Begin(TTree *tree)
 Bool_t MultileptonAnalyzer::Process(Long64_t entry)
 {
     // Clear vectors and TClonesArrays
-    muonsP4ptr.Clear(); muonsQ.clear(); muonsTrkIso.clear(); muonCombIso.clear();
+    muonsP4ptr.Delete(); muonsQ.clear(); muonsTrkIso.clear(); muonCombIso.clear();
     muonIsPF.clear(); muonIsGLB.clear(); muonPassStdCuts.clear(); muonPassTrigger.clear();
     muonIDEff.clear(); muonTightIsoEff.clear(); muonLooseIsoEff.clear();
     muonTriggerEffData.clear(); muonTriggerEffMC.clear();
     muonSF.clear(); muonMuNChi2.clear(); muonD0.clear(); muonDz.clear();
     muonNMatchStn.clear(); muonNPixHits.clear(); muonNTkLayers.clear(); muonNValidHits.clear();
 
-    electronsP4ptr.Clear(); electronsQ.clear(); electronsTrkIso.clear(); electronCombIso.clear();
+    electronsP4ptr.Delete(); electronsQ.clear(); electronsTrkIso.clear(); electronCombIso.clear();
     electronIsConv.clear(); electronPassID.clear(); electronPassIso.clear();
     electronPassStdCuts.clear(); electronPassTrigger.clear();
     electronRecoEff.clear(); electronTriggerEffData.clear(); electronTriggerEffMC.clear();
@@ -191,8 +193,9 @@ Bool_t MultileptonAnalyzer::Process(Long64_t entry)
     electronScEta.clear(); electronD0.clear(); electronDz.clear(); electronSieie.clear();
     electronHOverE.clear(); electronDEtaIn.clear(); electronDPhiIn.clear();
     electronNMissHits.clear();
-    genMuonsP4ptr.Clear(); genElectronsP4ptr.Clear();
-    genMuonsQ.clear(); genElectronsQ.clear();
+
+    genMuonsP4ptr.Delete(); genElectronsP4ptr.Delete();
+    genMuonsQ.clear(); genMuonStatus.clear(); genElectronsQ.clear(); genElectronStatus.clear();
     genIntermID.clear(); genIntermMass.clear();
 
     GetEntry(entry, 1);  // load all branches
@@ -307,23 +310,25 @@ Bool_t MultileptonAnalyzer::Process(Long64_t entry)
                 ++count;
 
             } else if (
-                    particle->status == 23
-                    && abs(particle->pdgId) == 13
+                    abs(particle->pdgId) == 13
+//                  && particle->status == 23
                ) {
                 TLorentzVector mom;
                 mom.SetPtEtaPhiM(particle->pt, particle->eta, particle->phi, particle->mass);
                 new(genMuonsP4ptr[muonIdx]) TLorentzVector(mom);
         		genMuonsQ.push_back(copysign(1, particle->pdgId));
+                genMuonStatus.push_back(particle->status);
                 muonIdx++;
 
             } else if (
-                    particle->status == 23
-                    && abs(particle->pdgId) == 11
+                    abs(particle->pdgId) == 11
+//                  && particle->status == 23
                ) {
                 TLorentzVector mom;
                 mom.SetPtEtaPhiM(particle->pt, particle->eta, particle->phi, particle->mass);
                 new(genElectronsP4ptr[electronIdx]) TLorentzVector(mom);
 	        	genElectronsQ.push_back(copysign(1, particle->pdgId));
+                genElectronStatus.push_back(particle->status);
                 electronIdx++;
 
             } else if (particle->status == 22)

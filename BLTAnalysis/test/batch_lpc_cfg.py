@@ -12,7 +12,6 @@ executable = 'execBatch.sh'
 location   = 'lpc'
 
 data_samples = ['single_mu', 'single_el']
-#mc_samples   = ['zjets', 'otman']
 mc_samples   = ['otman']
 
 ''' 
