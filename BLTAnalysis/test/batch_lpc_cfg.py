@@ -479,7 +479,7 @@ mc_dict['diboson'] = [
 
 batch_list = []
 batch_list += sum([data_dict[n] for n in data_samples], []) 
-batch_list += sum([mc_dict[n] for n in mc_samples], []) 
+#batch_list += sum([mc_dict[n] for n in mc_samples], []) 
 
 #dataList = []
 #dataList.extend([

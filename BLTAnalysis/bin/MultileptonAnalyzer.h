@@ -105,7 +105,7 @@ public:
     std::vector<Short_t> muonsQ, electronsQ;
 
     // muon info
-    std::vector<Bool_t> muonIsPF, muonIsGLB, muonPassStdCuts, muonPassTrigger; 
+    std::vector<Bool_t> muonIsPF, muonIsGLB, muonIsGood, muonIsLoose, muonTriggered; 
     std::vector<Float_t> muonIDEff, muonTightIsoEff, muonLooseIsoEff;
     std::vector<Float_t> muonTriggerEffData, muonTriggerEffMC;
     std::vector<Float_t> muonCombIso, muonsTrkIso;
@@ -115,7 +115,7 @@ public:
 
     // electron info
     std::vector<Bool_t> electronIsConv, electronPassID, electronPassIso;
-    std::vector<Bool_t> electronPassStdCuts, electronPassTrigger;
+    std::vector<Bool_t> electronIsGood, electronTriggered;
     std::vector<Float_t> electronRecoEff, electronTriggerEffData, electronTriggerEffMC;
     std::vector<Float_t> electronCombIso, electronsTrkIso, electronEnergyInv;
     std::vector<Float_t> electronSF, electronScEta, electronD0, electronDz, electronSieie;
@@ -133,7 +133,7 @@ public:
 
     // counters
     UShort_t nMuons, nElectrons, nLeptons;
-    UShort_t nStdMuons, nStdElectrons, nStdLeptons;
+    UShort_t nGoodMuons, nGoodElectrons, nGoodLeptons;
     UShort_t nGenMuons, nGenElectrons, nGenLeptons;
 
 
