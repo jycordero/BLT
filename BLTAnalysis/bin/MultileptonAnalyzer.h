@@ -84,63 +84,85 @@ public:
     std::unique_ptr<baconhep::TTrigger> trigger;
     std::unique_ptr<WeightUtils>        weights;
 
-    std::vector<string> triggerNames;
+//  std::vector<string>                 triggerNames;
 
 
     // Branches in the output file
-
     // event data
-    UInt_t runNumber, lumiSection;
-    UShort_t nPV, nPartons, nJets;
-    ULong64_t evtNumber;
-    Float_t eventWeight, nPU, PUWeight;
+    Int_t runNumber, lumiSection;
+    Long64_t evtNumber;
+    UShort_t nPV;
+    Float_t eventWeight, PUWeight, nPU;
+    UShort_t nPartons;
     Float_t met, metPhi;
-    Bool_t passTrigger, passHLT_IsoMu24, passHLT_IsoTkMu24, passHLT_Ele27_WPTight_Gsf;
-
-    // leptons
-    TClonesArray *muonsP4 = new TClonesArray("TLorentzVector");
-    TClonesArray &muonsP4ptr = *muonsP4;
-    TClonesArray *electronsP4 = new TClonesArray("TLorentzVector");
-    TClonesArray &electronsP4ptr = *electronsP4;
-    std::vector<Short_t> muonsQ, electronsQ;
-
-    // muon info
-    std::vector<Bool_t> muonIsPF, muonIsGLB, muonIsGood, muonIsLoose, muonTriggered; 
-    std::vector<Float_t> muonIDEff, muonTightIsoEff, muonLooseIsoEff;
-    std::vector<Float_t> muonTriggerEffData, muonTriggerEffMC;
-    std::vector<Float_t> muonCombIso, muonsTrkIso;
-    std::vector<Float_t> muonSF, muonMuNChi2, muonD0, muonDz;
-    std::vector<UShort_t> muonNMatchStn, muonNPixHits, muonNTkLayers;
-    std::vector<UShort_t> muonNValidHits;
-
-    // electron info
-    std::vector<Bool_t> electronIsConv, electronPassID, electronPassIso;
-    std::vector<Bool_t> electronIsGood, electronTriggered;
-    std::vector<Float_t> electronRecoEff, electronTriggerEffData, electronTriggerEffMC;
-    std::vector<Float_t> electronCombIso, electronsTrkIso, electronEnergyInv;
-    std::vector<Float_t> electronSF, electronScEta, electronD0, electronDz, electronSieie;
-    std::vector<Float_t> electronHOverE, electronDEtaIn, electronDPhiIn;
-    std::vector<UShort_t> electronNMissHits;
-
-    // gen-level particles
-    TClonesArray *genMuonsP4 = new TClonesArray("TLorentzVector");
-    TClonesArray &genMuonsP4ptr = *genMuonsP4;
-    TClonesArray *genElectronsP4 = new TClonesArray("TLorentzVector");
-    TClonesArray &genElectronsP4ptr = *genElectronsP4;
-    std::vector<Short_t> genMuonsQ, genMuonStatus, genElectronsQ, genElectronStatus;
-    std::vector<Short_t> genIntermID;
-    std::vector<Float_t> genIntermMass;
+    Bool_t evtMuonTriggered, evtElectronTriggered;
 
     // counters
     UShort_t nMuons, nElectrons, nLeptons;
-    UShort_t nGoodMuons, nGoodElectrons, nGoodLeptons;
+    UShort_t nLooseMuons, nLooseElectrons, nLooseLeptons;
+    UShort_t nHZZMuons, nHZZElectrons, nHZZLeptons;
+    UShort_t nTightMuons, nTightElectrons, nTightLeptons;
     UShort_t nGenMuons, nGenElectrons, nGenLeptons;
+
+    // muon info
+    TClonesArray *muonsP4 = new TClonesArray("TLorentzVector"), &muonsP4ptr = *muonsP4;
+    std::vector<Short_t> muonsQ;
+    std::vector<Float_t> muonCombIso, muonsTrkIso;
+
+    std::vector<Bool_t> muonIsPF, muonIsGlobal, muonIsTracker;
+    std::vector<Bool_t> muonIsLoose, muonIsHZZ, muonIsTight, muonTriggered; 
+
+    std::vector<Float_t> muonSF;
+    std::vector<Float_t> muonLooseIDEff, muonHZZIDEff, muonTightIDEff;
+    std::vector<Float_t> muonLooseIsoEff, muonTightIsoEff;
+    std::vector<Float_t> muonTriggerEffData, muonTriggerEffMC;
+
+    std::vector<Float_t> muonD0, muonDz, muonSIP3d;
+    std::vector<Float_t> muonMuNChi2, muonPtErr;
+    std::vector<UShort_t> muonNMatchStn, muonNPixHits, muonNTkLayers;
+    std::vector<Short_t> muonBestTrackType, muonNValidHits;
+
+    // electron info
+    TClonesArray *electronsP4 = new TClonesArray("TLorentzVector"), &electronsP4ptr = *electronsP4;
+    std::vector<Short_t> electronsQ;
+    std::vector<Float_t> electronCombIso, electronsTrkIso;
+
+    std::vector<Bool_t> electronPassID, electronPassIso, electronPassMVA;
+    std::vector<Bool_t> electronIsLoose, electronIsHZZ, electronIsTight, electronTriggered;
+
+    std::vector<Float_t> electronSF;
+    std::vector<Float_t> electronHZZRecoEff, electronRecoEff;
+    std::vector<Float_t> electronTriggerEffData, electronTriggerEffMC;
+
+    std::vector<Float_t> electronD0, electronDz, electronSIP3d;
+    std::vector<Float_t> electronScEta, electronSieie, electronEnergyInv;
+    std::vector<Float_t> electronHOverE, electronDEtaIn, electronDPhiIn;
+    std::vector<UShort_t> electronNMissHits;
+    std::vector<Bool_t> electronIsConv;
+
+    // gen-level particles
+    TClonesArray *genMuonsP4 = new TClonesArray("TLorentzVector"), &genMuonsP4ptr = *genMuonsP4;
+    std::vector<Short_t> genMuonsQ, genMuonStatus;
+
+    TClonesArray *genElectronsP4 = new TClonesArray("TLorentzVector"), &genElectronsP4ptr = *genElectronsP4;
+    std::vector<Short_t> genElectronsQ, genElectronStatus;
+
+//  std::vector<Short_t> genIntermID;
+//  std::vector<Float_t> genIntermMass;
 
 
     // Helper functions 
     float MetKluge(float);
+
     float GetMuonIsolation(const baconhep::TMuon*);
+    float GetRochesterCorrection(const baconhep::TMuon*, RoccoR*, TRandom3*, bool);
+    bool PassMuonTightID(const baconhep::TMuon*);
+    bool PassMuonHZZTightID(const baconhep::TMuon*);
+
     float GetElectronIsolation(const baconhep::TElectron*, float);
+    float GetElectronPtSF(baconhep::TElectron*, EnergyScaleCorrection*, TRandom3*, int);
+    bool PassElectronTightID(const baconhep::TElectron*, std::unique_ptr<ParticleSelector>&, std::unique_ptr<Cuts>&);
+    bool PassElectronHZZTightID(const baconhep::TElectron*, std::unique_ptr<ParticleSelector>&, std::unique_ptr<Cuts>&, float);
 
     //ClassDef(MultileptonAnalyzer,0);
 };

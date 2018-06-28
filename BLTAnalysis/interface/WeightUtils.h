@@ -22,8 +22,15 @@
 #include "TGraphErrors.h"
 #include "TGraphAsymmErrors.h"
 #include "TLorentzVector.h"
+#include "TRandom3.h"
+
+// BaconAna class definitions
+#include "BaconAna/DataFormats/interface/TElectron.hh"
+#include "BaconAna/DataFormats/interface/TMuon.hh"
 
 using namespace std;
+using namespace baconhep;
+
 
 class WeightUtils: public TObject {
     public:
@@ -39,9 +46,12 @@ class WeightUtils: public TObject {
         float   GetPUWeight(float);
         pair<float, float>   GetTriggerEffWeight(string, TLorentzVector&) const;
         float   GetMuonIDEff(TLorentzVector&) const; 
+        float   GetLooseMuonIDEff(TLorentzVector&) const;
         float   GetMuonTightISOEff(TLorentzVector&) const; 
         float   GetMuonLooseISOEff(TLorentzVector&) const; 
+        float   GetHZZMuonIDEff(TLorentzVector&) const;
         float   GetElectronRecoEff(TLorentzVector&) const;
+        float   GetHZZElectronRecoEff(TElectron&) const;
 
         ClassDef(WeightUtils, 0);
 
@@ -52,22 +62,29 @@ class WeightUtils: public TObject {
         string _selection;
         bool   _isRealData;
 
+        //rng
+        TRandom3 *rng;
+
         // pileup
         TGraph  *_puReweight;
 
         // muon trigger and ID/ISO scale factors
         TGraphAsymmErrors *_muSF_IsoMu24_DATA_BCDEF[4], *_muSF_IsoMu24_MC_BCDEF[4];
         TGraphAsymmErrors *_muSF_ID_DATA_BCDEF[4], *_muSF_ID_MC_BCDEF[4];
+        TGraphAsymmErrors *_muSF_Loose_ID_DATA_BCDEF[4], *_muSF_Loose_ID_MC_BCDEF[4];
         TGraphAsymmErrors *_muSF_ISO_DATA_BCDEF[4], *_muSF_ISO_MC_BCDEF[4]; 
         TGraphAsymmErrors *_muSF2012_ISO_DATA_BCDEF[4], *_muSF2012_ISO_MC_BCDEF[4];
 
         TGraphAsymmErrors *_muSF_IsoMu24_DATA_GH[4], *_muSF_IsoMu24_MC_GH[4];  
         TGraphAsymmErrors *_muSF_ID_DATA_GH[4], *_muSF_ID_MC_GH[4]; 
+        TGraphAsymmErrors *_muSF_Loose_ID_DATA_GH[4], *_muSF_Loose_ID_MC_GH[4];
         TGraphAsymmErrors *_muSF_ISO_DATA_GH[4], *_muSF_ISO_MC_GH[4]; 
         TGraphAsymmErrors *_muSF2012_ISO_DATA_GH[4], *_muSF2012_ISO_MC_GH[4];
 
         // electron RECO/ID scale factors (what about ISO?)
-        TGraphErrors *_eleSF_RECO, *_eleSF_ID[5];
+        TGraphErrors *_eleSF_RECO, *_eleSF_ID[5], *_hzz_eleSF_ID[13];
+
+        TH2F *_hzz_muIdSF;
 
         // electron trigger efficiencies (the bins for 2.1 < |eta| < 2.4 are copies of the 1.6 to 2.1 bins
         float _elePtBins[8] = {30, 32, 35, 40, 50, 60, 120, 9999};
