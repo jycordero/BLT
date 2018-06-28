@@ -22,7 +22,7 @@ Set job configurations.
 
 # DATA #
 data_dict = {}
-data_dict['single_mu'] =
+data_dict['single_mu'] = \
 [
    cfg(data_name = 'muon_2016B_v1',
        path      = '{0}/SingleMuon_Run2016B-03Feb2017_ver1-v1'.format(path),
@@ -71,7 +71,7 @@ data_dict['single_mu'] =
        ),
 ]
 
-data_dict['single_el'] =
+data_dict['single_el'] = \
 [
    cfg(data_name = 'electron_2016B_v1',
        nJobs    = 30,
@@ -120,7 +120,7 @@ data_dict['single_el'] =
        ),
 ]
 
-data_dict['mueg'] =
+data_dict['mueg'] = \
 [
     cfg(data_name = 'mueg_2016B_v1',
         path     = '{0}/MuonEG_Run2016B-03Feb2017_ver1-v1'.format(path),
@@ -173,7 +173,7 @@ data_dict['mueg'] =
 # MONTE CARLO #
 path = '/eos/uscms/store/group/lpcbacon/12'
 mc_dict = {}
-mc_dict['selected'] =
+mc_dict['selected'] = \
 [
     cfg(data_name = 'DYJetsToLL_M-10to50',
         path     = '{0}/Summer16_DYJetsToLL_M-10to50_amcatnlo'.format(path),
@@ -223,7 +223,7 @@ mc_dict['selected'] =
 ]
 
 path = '/eos/uscms/store/group/lpcbacon/12d'
-mc_dict['zjets'] =
+mc_dict['zjets'] = \
 [
 #   cfg(data_name = 'DYJetsToLL_M-50',
 #       path     = '{0}/Summer16_DYJetsToLL_M-50_amcatnlo'.format(path),
@@ -287,7 +287,7 @@ mc_dict['zjets'] =
 #      ),
 ]
 
-mc_dict['wjets'] =
+mc_dict['wjets'] = \
 [
     cfg(data_name = 'W1JetsToLNu',
         path     = '{0}/Summer16_W1JetsToLNu'.format(path),
@@ -311,7 +311,7 @@ mc_dict['wjets'] =
         ),
 ]
 
-mc_dict['qcd'] =
+mc_dict['qcd'] = \
 [
     cfg(data_name = 'QCD_HT50to100',
         path     = '{0}/Summer16_QCD_HT50to100'.format(path),
@@ -360,7 +360,7 @@ mc_dict['qcd'] =
         ),
 ]
 
-mc_dict['ttbar'] =
+mc_dict['ttbar'] = \
 [
     cfg(data_name = 'ttbar_inclusive',
         path     = '{0}/Summer16_TT_powheg'.format(path),
@@ -424,7 +424,7 @@ mc_dict['ttbar'] =
        ),
 ]
 
-mc_dict['t'] =
+mc_dict['t'] = \
 [
     cfg(data_name = 'T_s-channel',
         path     = '{0}/Summer16_ST_s-channel_4f_leptonDecays_amcatnlo'.format(path),
@@ -458,7 +458,7 @@ mc_dict['t'] =
         ),
 ]
 
-mc_dict['diboson'] =
+mc_dict['diboson'] = \
 [
     cfg(data_name = 'WW',
         path     = '{0}/Summer16_WWTo2L2Nu_powheg'.format(path),
