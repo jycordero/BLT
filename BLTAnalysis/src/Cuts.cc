@@ -52,147 +52,131 @@ Cuts::Cuts() {
             EAPho[i][j] = EAPhoTemp[i][j];
 
 
-    vetoElID.cutName                      = "vetoElID";
-    vetoElID.dEtaIn[0]                    = 0.007;
-    vetoElID.dPhiIn[0]                    = 0.8;
-    vetoElID.sigmaIetaIeta[0]             = 0.01;
-    vetoElID.HadOverEm[0]                 = 0.15;
-    vetoElID.dxy[0]                       = 0.04;
-    vetoElID.dz[0]                        = 0.2;
-    vetoElID.fabsEPDiff[0]                = 99999;
-    vetoElID.ConversionMissHits[0]        = 99999;
 
-    vetoElID.dEtaIn[1]                    = 0.01;
-    vetoElID.dPhiIn[1]                    = 0.7;
-    vetoElID.sigmaIetaIeta[1]             = 0.03;
-    vetoElID.HadOverEm[1]                 = 999999;
-    vetoElID.dxy[1]                       = 0.04;
-    vetoElID.dz[1]                        = 0.2;
-    vetoElID.fabsEPDiff[1]                = 999999;
-    vetoElID.ConversionMissHits[1]        = 999999;
 
-    // tight electorn ID
+    //--- ELECTRON ID ---//i
+    // https://twiki.cern.ch/twiki/bin/view/CMS/CutBasedElectronIdentificationRun2#Working_points_for_2016_data_for
+
+    // Tight
     tightElID.cutName                    = "tightElID";
-    tightElID.dEtaIn[0]                  = 0.004;
-    tightElID.dPhiIn[0]                  = 0.03;
-    tightElID.sigmaIetaIeta[0]           = 0.01;
-    tightElID.HadOverEm[0]               = 0.12;
-    tightElID.dxy[0]                     = 0.02;
-    tightElID.dz[0]                      = 0.1;
-    tightElID.fabsEPDiff[0]              = 0.05;
-    tightElID.ConversionMissHits[0]      = 0;
 
-    tightElID.dEtaIn[1]                  = 0.007;
-    tightElID.dPhiIn[1]                  = 0.03;
-    tightElID.sigmaIetaIeta[1]           = 0.03;
-    tightElID.HadOverEm[1]               = 0.10;
-    tightElID.dxy[1]                     = 0.02;
-    tightElID.dz[1]                      = 0.1;
-    tightElID.fabsEPDiff[1]              = 0.05;
+    tightElID.sigmaIetaIeta[0]           = 0.00998;     // barrel (|eta| <= 1.479)
+    tightElID.dEtaIn[0]                  = 0.00308;
+    tightElID.dPhiIn[0]                  = 0.0816;
+    tightElID.HadOverEm[0]               = 0.0414;
+    tightElID.fabsEPDiff[0]              = 0.0129;
+    tightElID.ConversionMissHits[0]      = 1;
+
+    tightElID.sigmaIetaIeta[1]           = 0.0292;      // endcap (|eta| > 1.479)
+    tightElID.dEtaIn[1]                  = 0.00605;
+    tightElID.dPhiIn[1]                  = 0.0394;
+    tightElID.HadOverEm[1]               = 0.0641;
+    tightElID.fabsEPDiff[1]              = 0.0129;
     tightElID.ConversionMissHits[1]      = 1;
 
-    // medium electron ID
+
+    // Medium
     mediumElID.cutName                    = "mediumElID";
-    mediumElID.dEtaIn[0]                  = 0.004;
-    mediumElID.dPhiIn[0]                  = 0.06;
-    mediumElID.sigmaIetaIeta[0]           = 0.01;
-    mediumElID.HadOverEm[0]               = 0.12;
-    mediumElID.dxy[0]                     = 0.02;
-    mediumElID.dz[0]                      = 0.1;
-    mediumElID.fabsEPDiff[0]              = 0.05;
+
+    mediumElID.sigmaIetaIeta[0]           = 0.00998;    // barrel (|eta| <= 1.479)
+    mediumElID.dEtaIn[0]                  = 0.00311;
+    mediumElID.dPhiIn[0]                  = 0.103;
+    mediumElID.HadOverEm[0]               = 0.253;
+    mediumElID.fabsEPDiff[0]              = 0.134;
     mediumElID.ConversionMissHits[0]      = 1;
 
-    mediumElID.dEtaIn[1]                  = 0.007;
-    mediumElID.dPhiIn[1]                  = 0.03;
-    mediumElID.sigmaIetaIeta[1]           = 0.03;
-    mediumElID.HadOverEm[1]               = 0.10;
-    mediumElID.dxy[1]                     = 0.02;
-    mediumElID.dz[1]                      = 0.1;
-    mediumElID.fabsEPDiff[1]              = 0.05;
+    mediumElID.sigmaIetaIeta[1]           = 0.0298;     // endcap (|eta| > 1.479)
+    mediumElID.dEtaIn[1]                  = 0.00609;
+    mediumElID.dPhiIn[1]                  = 0.045;
+    mediumElID.HadOverEm[1]               = 0.0878;
+    mediumElID.fabsEPDiff[1]              = 0.13;
     mediumElID.ConversionMissHits[1]      = 1;
 
+
+    // Loose
     looseElID.cutName                     = "looseElID";
-    looseElID.dEtaIn[0]                   = 0.007;
-    looseElID.dPhiIn[0]                   = 0.15;
-    looseElID.sigmaIetaIeta[0]            = 0.01;
-    looseElID.HadOverEm[0]                = 0.12;
-    looseElID.dxy[0]                      = 0.02;
-    looseElID.dz[0]                       = 0.2;
-    looseElID.fabsEPDiff[0]               = 0.05;
+
+    looseElID.sigmaIetaIeta[0]            = 0.011;      // barrel (|eta| <= 1.479)
+    looseElID.dEtaIn[0]                   = 0.00477;
+    looseElID.dPhiIn[0]                   = 0.222;
+    looseElID.HadOverEm[0]                = 0.298;
+    looseElID.fabsEPDiff[0]               = 0.241;
     looseElID.ConversionMissHits[0]       = 1;
 
-    looseElID.dEtaIn[1]                   = 0.009;
-    looseElID.dPhiIn[1]                   = 0.10;
-    looseElID.sigmaIetaIeta[1]            = 0.03;
-    looseElID.HadOverEm[1]                = 0.10;
-    looseElID.dxy[1]                      = 0.02;
-    looseElID.dz[1]                       = 0.2;
-    looseElID.fabsEPDiff[1]               = 0.05;
+    looseElID.sigmaIetaIeta[1]            = 0.0314;     // endcap (|eta| > 1.479)
+    looseElID.dEtaIn[1]                   = 0.00868;
+    looseElID.dPhiIn[1]                   = 0.213;
+    looseElID.HadOverEm[1]                = 0.101;
+    looseElID.fabsEPDiff[1]               = 0.14;
     looseElID.ConversionMissHits[1]       = 1;
 
-    mvaPreElID.cutName                    = "mvaPreElID";
-    mvaPreElID.dEtaIn[0]                  = 99999;
-    mvaPreElID.dPhiIn[0]                  = 9999;
-    mvaPreElID.sigmaIetaIeta[0]           = 0.014;
-    mvaPreElID.HadOverEm[0]               = 0.15;
-    mvaPreElID.dxy[0]                     = 99999;
-    mvaPreElID.dz[0]                      = 99999;
-    mvaPreElID.fabsEPDiff[0]              = 99999;
-    mvaPreElID.ConversionMissHits[0]      = 99999;
-    mvaPreElID.dr03TkSumPt[0]             = 0.2;
-    mvaPreElID.dr03EcalRecHitSumEt[0]     = 0.2;
-    mvaPreElID.dr03HcalTowerSumEt[0]      = 0.2;
-    mvaPreElID.numberOfLostHits[0]        = 0;
 
-    mvaPreElID.dEtaIn[1]                  = 99999;
-    mvaPreElID.dPhiIn[1]                  = 99999;
-    mvaPreElID.sigmaIetaIeta[1]           = 0.035;
-    mvaPreElID.HadOverEm[1]               = 0.10;
-    mvaPreElID.dxy[1]                     = 99999;
-    mvaPreElID.dz[1]                      = 99999;
-    mvaPreElID.fabsEPDiff[1]              = 99999;
-    mvaPreElID.ConversionMissHits[1]      = 99999;
-    mvaPreElID.dr03TkSumPt[1]             = 0.2;
-    mvaPreElID.dr03EcalRecHitSumEt[1]     = 0.2;
-    mvaPreElID.dr03HcalTowerSumEt[1]      = 0.2;
-    mvaPreElID.numberOfLostHits[1]        = 0;
+    // Veto
+    vetoElID.cutName                      = "vetoElID";
 
-    looseElIso.cutName                    = "looseElIso";
-    looseElIso.chIso04                    = 99999;
-    looseElIso.nhIso04                    = 99999;
-    looseElIso.phIso04                    = 99999;
-    looseElIso.relCombIso04               = 0.4;
-    looseElIso.chIso                    = 99999;
-    looseElIso.nhIso                    = 99999;
-    looseElIso.phIso                    = 99999;
-    looseElIso.relCombIso               = 0.15;
+    vetoElID.sigmaIetaIeta[0]             = 0.0115;     // barrel (|eta| <= 1.479)
+    vetoElID.dEtaIn[0]                    = 0.00749;
+    vetoElID.dPhiIn[0]                    = 0.228;
+    vetoElID.HadOverEm[0]                 = 0.356;
+    vetoElID.fabsEPDiff[0]                = 0.299;
+    vetoElID.ConversionMissHits[0]        = 2;
 
-    mediumElIso.cutName                   = "mediumElIso";
-    mediumElIso.chIso04                   = 99999;
-    mediumElIso.nhIso04                   = 99999;
-    mediumElIso.phIso04                   = 99999;
-    mediumElIso.relCombIso04              = 0.15;
-    mediumElIso.chIso                   = 99999;
-    mediumElIso.nhIso                   = 99999;
-    mediumElIso.phIso                   = 99999;
-    mediumElIso.relCombIso              = 0.15;
+    vetoElID.sigmaIetaIeta[1]             = 0.037;      // endcap (|eta| > 1.479)
+    vetoElID.dEtaIn[1]                    = 0.00895;
+    vetoElID.dPhiIn[1]                    = 0.213;
+    vetoElID.HadOverEm[1]                 = 0.211;
+    vetoElID.fabsEPDiff[1]                = 0.15;
+    vetoElID.ConversionMissHits[1]        = 3;
 
-    tightElIso.cutName                   = "tightElIso";
-    tightElIso.chIso04                   = 99999;
-    tightElIso.nhIso04                   = 99999;
-    tightElIso.phIso04                   = 99999;
-    tightElIso.relCombIso04              = 0.1;
-    tightElIso.chIso                   = 99999;
-    tightElIso.nhIso                   = 99999;
-    tightElIso.phIso                   = 99999;
-    tightElIso.relCombIso              = 0.1;
 
-    /* Muon ID */
+    // HZZ MVA (broken)
+    hzzMVAID.cutName                        = "hzzMVAID";
+    hzzMVAID.mvaVal[0]                      =  -0.211;
+    hzzMVAID.mvaVal[1]                      =  -0.396;
+    hzzMVAID.mvaVal[2]                      =  -0.215;
+    hzzMVAID.mvaVal[3]                      = -0.870;
+    hzzMVAID.mvaVal[4]                      = -0.838;
+    hzzMVAID.mvaVal[5]                      =  -0.763;
+    hzzMVAID.pt[0]                          =  5.0;
+    hzzMVAID.pt[1]                          =  10.0;
+    hzzMVAID.eta[0]                         =  0.8;
+    hzzMVAID.eta[1]                         =  1.479;
+    hzzMVAID.eta[2]                         =  2.5;
+
+
+
+    //--- ELECTRON ISO ---//
+
+    // Tight
+    tightElIso.cutName                  = "tightElIso";
+    tightElIso.relCombIso[0]            = 0.0588;       // barrel (|eta| <= 1.479)
+    tightElIso.relCombIso[1]            = 0.0571;       // endcap (|eta| > 1.479)
+
+    // Medium
+    mediumElIso.cutName                 = "mediumElIso";
+    mediumElIso.relCombIso[0]           = 0.0695;       // barrel (|eta| <= 1.479)
+    mediumElIso.relCombIso[1]           = 0.0821;       // endcap (|eta| > 1.479)
+
+    // Loose
+    looseElIso.cutName                  = "looseElIso";
+    looseElIso.relCombIso[0]            = 0.0994;       // barrel (|eta| <= 1.479)
+    looseElIso.relCombIso[1]            = 0.107;        // endcap (|eta| > 1.479)
+    
+    // Veto
+    vetoElIso.cutName                   = "vetoElIso";
+    vetoElIso.relCombIso[0]             = 0.175;        // barrel (|eta| <= 1.479)
+    vetoElIso.relCombIso[1]             = 0.159;        // endcap (|eta| > 1.479)
+
+
+
+    //--- MUON ID ---//
+
+    // Tight
     tightMuID.cutName                     = "tightMuID";
     tightMuID.IsPF                        = 1;
     tightMuID.IsGLB                       = 1;
     tightMuID.IsTRK                       = 1;
-    tightMuID.NormalizedChi2              = 10;
+    tightMuID.NormalizedChi2              = 10.;
     tightMuID.NumberOfValidMuonHits       = 0;
     tightMuID.NumberOfMatchedStations     = 1;
     tightMuID.NumberOfValidPixelHits      = 0;
@@ -200,7 +184,9 @@ Cuts::Cuts() {
     tightMuID.dxy                         = 0.2;
     tightMuID.dz                          = 0.5;
 
-    /* Muon ISO */
+
+
+    //--- MUON ISO ---//
     amumuMuDetIso.cutName                    = "amumuMuDetIso";
     amumuMuDetIso.hcalIso                  = 99999;
     amumuMuDetIso.ecalIso                  = 99999;
@@ -230,6 +216,10 @@ Cuts::Cuts() {
     tightMuIso.nhIso04                    = 99999;
     tightMuIso.phIso04                    = 99999;
     tightMuIso.relCombIso04               = 0.12;
+
+
+
+    //--- PHOTONS ----//
 
     loosePhID.cutName                     = "loosePhID";
     loosePhID.PassedEleSafeVeto[0]        = 1;
@@ -287,19 +277,6 @@ Cuts::Cuts() {
     catPhMVAID.mvaValCat2                 = 0.107;
     catPhMVAID.mvaValCat3                 = 0.126;
     catPhMVAID.mvaValCat4                 = 0.135;
-
-    hzzMVAID.cutName                        = "hzzMVAID";
-    hzzMVAID.mvaVal[0]                      =  -0.211;
-    hzzMVAID.mvaVal[1]                      =  -0.396;
-    hzzMVAID.mvaVal[2]                      =  -0.215;
-    hzzMVAID.mvaVal[3]                      = -0.870;
-    hzzMVAID.mvaVal[4]                      = -0.838;
-    hzzMVAID.mvaVal[5]                      =  -0.763;
-    hzzMVAID.pt[0]                          =  5.0;
-    hzzMVAID.pt[1]                          =  10.0;
-    hzzMVAID.eta[0]                         =  0.8;
-    hzzMVAID.eta[1]                         =  1.479;
-    hzzMVAID.eta[2]                         =  2.5;
 
     vbfJetID.cutName                        = "vbfJetID";
     vbfJetID.betaStarC[0]                   = 0.2;

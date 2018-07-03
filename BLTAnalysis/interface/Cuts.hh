@@ -70,9 +70,10 @@ public:
         float chIso;
         float nhIso;
         float phIso;
-        float relCombIso;
+        //broken into [0] barrel and [1] endcap
+        float relCombIso[2];
         std::string cutName;
-    } looseElIso, mediumElIso, tightElIso;
+    } vetoElIso, looseElIso, mediumElIso, tightElIso;
 
 
     struct phIDCuts {

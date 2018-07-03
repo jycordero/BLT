@@ -100,8 +100,9 @@ public:
     // counters
     UShort_t nMuons, nElectrons, nLeptons;
     UShort_t nLooseMuons, nLooseElectrons, nLooseLeptons;
-    UShort_t nHZZMuons, nHZZElectrons, nHZZLeptons;
+    UShort_t nMediumElectrons;
     UShort_t nTightMuons, nTightElectrons, nTightLeptons;
+    UShort_t nHZZMuons, nHZZElectrons, nHZZLeptons;
     UShort_t nGenMuons, nGenElectrons, nGenLeptons;
 
     // muon info
@@ -110,7 +111,7 @@ public:
     std::vector<Float_t> muonCombIso, muonsTrkIso;
 
     std::vector<Bool_t> muonIsPF, muonIsGlobal, muonIsTracker;
-    std::vector<Bool_t> muonIsLoose, muonIsHZZ, muonIsTight, muonTriggered; 
+    std::vector<Bool_t> muonIsLoose, muonIsTight, muonIsHZZ, muonTriggered; 
 
     std::vector<Float_t> muonSF;
     std::vector<Float_t> muonLooseIDEff, muonHZZIDEff, muonTightIDEff;
@@ -127,8 +128,8 @@ public:
     std::vector<Short_t> electronsQ;
     std::vector<Float_t> electronCombIso, electronsTrkIso;
 
-    std::vector<Bool_t> electronPassID, electronPassIso, electronPassMVA;
-    std::vector<Bool_t> electronIsLoose, electronIsHZZ, electronIsTight, electronTriggered;
+    std::vector<Bool_t> electronPassLooseIso, electronPassMediumIso, electronPassTightIso;
+    std::vector<Bool_t> electronIsLoose, electronIsMedium, electronIsTight, electronIsHZZ, electronTriggered;
 
     std::vector<Float_t> electronSF;
     std::vector<Float_t> electronHZZRecoEff, electronRecoEff;
@@ -161,7 +162,7 @@ public:
 
     float GetElectronIsolation(const baconhep::TElectron*, float);
     float GetElectronPtSF(baconhep::TElectron*, EnergyScaleCorrection*, TRandom3*, int);
-    bool PassElectronTightID(const baconhep::TElectron*, std::unique_ptr<ParticleSelector>&, std::unique_ptr<Cuts>&);
+    bool PassElectronGoodID(const baconhep::TElectron*, std::unique_ptr<ParticleSelector>&, std::unique_ptr<Cuts>&);
     bool PassElectronHZZTightID(const baconhep::TElectron*, std::unique_ptr<ParticleSelector>&, std::unique_ptr<Cuts>&, float);
 
     //ClassDef(MultileptonAnalyzer,0);

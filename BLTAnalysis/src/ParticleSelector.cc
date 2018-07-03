@@ -96,41 +96,35 @@ bool ParticleSelector::PassElectronID(const baconhep::TElectron* el, const Cuts:
     bool elPass = false;
     float energyInverse = fabs(1. - el->eoverp)/el->ecalEnergy;
 
-    if (fabs(el->scEta) < 1.479) 
+    if (fabs(el->scEta) <= 1.479) 
     { // barrel
         if (
-                el->sieie           < 0.00998
-                && fabs(el->dEtaIn) < 0.00308
-                && fabs(el->dPhiIn) < 0.0816
-                && el->hovere       < 0.0414
-                && fabs(el->d0)     < 1.
-                && fabs(el->dz)     < 1.
-                && energyInverse    < 0.0129
-                && el->nMissingHits <= 1
+                el->sieie           < cutLevel.sigmaIetaIeta[0]
+                && fabs(el->dEtaIn) < cutLevel.dEtaIn[0]
+                && fabs(el->dPhiIn) < cutLevel.dPhiIn[0]
+                && el->hovere       < cutLevel.HadOverEm[0]
+                && energyInverse    < cutLevel.fabsEPDiff[0]
+                && el->nMissingHits <= cutLevel.ConversionMissHits[0]
                 && !el->isConv
            ) elPass = true;
     } 
-    else if (fabs(el->scEta) > 1.4446 && fabs(el->scEta) < 1.566) 
-    { // transition
-        return elPass;
-    } 
-    else if (fabs(el->scEta) > 1.566) 
+    else 
     { // endcap
         if (
-                fabs(el->dEtaIn)    < 0.0292
-                && fabs(el->dPhiIn) < 0.00605
-                && el->sieie        < 0.0394
-                && el->hovere       < 0.0641
-                && fabs(el->d0)     < 1.
-                && fabs(el->dz)     < 1.
-                && energyInverse    < 0.0129
-                && el->nMissingHits <= 1
-                && !el->isConv    
+                el->sieie           < cutLevel.sigmaIetaIeta[1]
+                && fabs(el->dEtaIn) < cutLevel.dEtaIn[1]
+                && fabs(el->dPhiIn) < cutLevel.dPhiIn[1]
+                && el->hovere       < cutLevel.HadOverEm[1]
+                && energyInverse    < cutLevel.fabsEPDiff[1]
+                && el->nMissingHits <= cutLevel.ConversionMissHits[1]
+                && !el->isConv
            ) elPass = true;
     }    
     return elPass;
 }
 
+// this is a BIG FAT LIE
+/*
 bool ParticleSelector::PassElectronMVA(const baconhep::TElectron* el, const Cuts::elMVACuts& cutLevel) const {
     bool elPass = false;
 
@@ -161,7 +155,7 @@ bool ParticleSelector::PassElectronMVA(const baconhep::TElectron* el, const Cuts
     }
     return elPass;
 }
-
+*/
 bool ParticleSelector::PassElectronIso(const baconhep::TElectron* el, const Cuts::elIsoCuts& cutLevel, float EAEl[7]) const 
 {
     int iEta = 0;
@@ -181,9 +175,9 @@ bool ParticleSelector::PassElectronIso(const baconhep::TElectron* el, const Cuts
 
     bool isoPass = false;
     if (fabs(el->scEta) <= 1.479) {
-        if (combIso/el->pt < 0.0588) isoPass = true;
+        if (combIso/el->pt < cutLevel.relCombIso[0]) isoPass = true;
     } else {
-        if (combIso/el->pt < 0.0571) isoPass = true;
+        if (combIso/el->pt < cutLevel.relCombIso[1]) isoPass = true;
     }
 
     return isoPass;
