@@ -100,7 +100,7 @@ public:
     // counters
     UShort_t nMuons, nElectrons, nLeptons;
     UShort_t nLooseMuons, nLooseElectrons, nLooseLeptons;
-    UShort_t nMediumElectrons;
+    UShort_t nVetoElectrons, nMediumElectrons;
     UShort_t nTightMuons, nTightElectrons, nTightLeptons;
     UShort_t nHZZMuons, nHZZElectrons, nHZZLeptons;
     UShort_t nGenMuons, nGenElectrons, nGenLeptons;
@@ -128,8 +128,8 @@ public:
     std::vector<Short_t> electronsQ;
     std::vector<Float_t> electronCombIso, electronsTrkIso;
 
-    std::vector<Bool_t> electronPassLooseIso, electronPassMediumIso, electronPassTightIso;
-    std::vector<Bool_t> electronIsLoose, electronIsMedium, electronIsTight, electronIsHZZ, electronTriggered;
+    std::vector<Bool_t> electronPassVetoIso, electronPassLooseIso, electronPassMediumIso, electronPassTightIso;
+    std::vector<Bool_t> electronIsVeto, electronIsLoose, electronIsMedium, electronIsTight, electronIsHZZ, electronTriggered;
 
     std::vector<Float_t> electronSF;
     std::vector<Float_t> electronHZZRecoEff, electronRecoEff;

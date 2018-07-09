@@ -111,6 +111,8 @@ void MultileptonAnalyzer::Begin(TTree *tree)
     outTree->Branch("nElectrons", &nElectrons);
     outTree->Branch("nLeptons", &nLeptons);
 
+    outTree->Branch("nVetoElectrons", &nVetoElectrons);
+
     outTree->Branch("nLooseMuons", &nLooseMuons);
     outTree->Branch("nLooseElectrons", &nLooseElectrons);
     outTree->Branch("nLooseLeptons", &nLooseLeptons);
@@ -169,9 +171,11 @@ void MultileptonAnalyzer::Begin(TTree *tree)
     outTree->Branch("electronCombIso", &electronCombIso);
     outTree->Branch("electronTrkIso", &electronsTrkIso);
 
+    outTree->Branch("electronPassVetoIso", &electronPassVetoIso);
     outTree->Branch("electronPassLooseIso", &electronPassLooseIso);
     outTree->Branch("electronPassMediumIso", &electronPassMediumIso);
     outTree->Branch("electronPassTightIso", &electronPassTightIso);
+    outTree->Branch("electronIsVeto", &electronIsVeto);
     outTree->Branch("electronIsLoose", &electronIsLoose);
     outTree->Branch("electronIsMedium", &electronIsMedium);
     outTree->Branch("electronIsTight", &electronIsTight);
@@ -210,7 +214,9 @@ void MultileptonAnalyzer::Begin(TTree *tree)
 
     // event counter
     string outHistName = params->get_output_treename("TotalEvents");
-    hTotalEvents = new TH1D(outHistName.c_str(),"TotalEvents",10,0.5,10.5);
+    string outHistName2 = params->get_output_treename("AcceptedEvents");
+    hTotalEvents = new TH1D(outHistName.c_str(), "TotalEvents", 10, 0.5, 10.5);
+    hAcceptedEvents = new TH1D(outHistName2.c_str(), "AcceptedEvents", 11, -0.5, 10.5);
 
 
     ReportPostBegin();
@@ -221,15 +227,15 @@ Bool_t MultileptonAnalyzer::Process(Long64_t entry)
     /* Clear counters & containers */
     nMuons = 0;                         nElectrons = 0;                     nLeptons = 0; 
     nLooseMuons = 0;                    nLooseElectrons = 0;                nLooseLeptons = 0; 
-                                        nMediumElectrons = 0;
+    nVetoElectrons = 0;                 nMediumElectrons = 0;
     nHZZMuons = 0;                      nHZZElectrons = 0;                  nHZZLeptons = 0; 
     nTightMuons = 0;                    nTightElectrons = 0;                nTightLeptons = 0; 
     nGenMuons = 0;                      nGenElectrons = 0;                  nGenLeptons = 0; 
 
     muonsP4ptr.Delete();                muonsQ.clear();                     muonCombIso.clear();                muonsTrkIso.clear();
     muonIsPF.clear();                   muonIsGlobal.clear();               muonIsTracker.clear();
-    muonIsLoose.clear();                muonIsTight.clear();                muonIsHZZ.clear();
-    muonTriggered.clear(); 
+    muonIsLoose.clear();                muonIsTight.clear();
+    muonIsHZZ.clear();                  muonTriggered.clear(); 
     muonSF.clear();                     muonLooseIDEff.clear();             muonTightIDEff.clear();             muonHZZIDEff.clear();
     muonLooseIsoEff.clear();            muonTightIsoEff.clear();            muonTriggerEffData.clear();         muonTriggerEffMC.clear();
     muonD0.clear();                     muonDz.clear();                     muonSIP3d.clear();
@@ -238,9 +244,9 @@ Bool_t MultileptonAnalyzer::Process(Long64_t entry)
     muonBestTrackType.clear();          muonNValidHits.clear();
                                                                                                         
     electronsP4ptr.Delete();            electronsQ.clear();                 electronCombIso.clear();            electronsTrkIso.clear();
-    electronPassLooseIso.clear();       electronPassMediumIso.clear();      electronPassTightIso.clear();
-    electronIsLoose.clear();            electronIsMedium.clear();           electronIsTight.clear();            electronIsHZZ.clear(); 
-    electronTriggered.clear();                                             
+    electronPassVetoIso.clear();        electronPassLooseIso.clear();       electronPassMediumIso.clear();      electronPassTightIso.clear();
+    electronIsVeto.clear();             electronIsLoose.clear();            electronIsMedium.clear();           electronIsTight.clear();
+    electronIsHZZ.clear();              electronTriggered.clear(); 
     electronSF.clear();                 electronRecoEff.clear();            electronHZZRecoEff.clear();     
     electronTriggerEffData.clear();     electronTriggerEffMC.clear();
     electronD0.clear();                 electronDz.clear();                 electronSIP3d.clear();
@@ -300,25 +306,81 @@ Bool_t MultileptonAnalyzer::Process(Long64_t entry)
 
     if (!isData)
     {
+        unsigned testCount = 0, testID = 0;
+        TLorentzVector testMass;
+        hAcceptedEvents->Fill(testCount);
+
+
         // Set data period for 2016 MC scale factors
         if (rng->Rndm() < 0.468)
             weights->SetDataPeriod("2016BtoF");    
         else
             weights->SetDataPeriod("2016GH");
 
+
         // Save gen weight for amc@nlo Drell-Yan sample
         eventWeight = fGenEvtInfo->weight > 0 ? 1 : -1; 
         if (eventWeight < 0)
             hTotalEvents->Fill(10);
 
-        // Parton counting for jet-binned Drell-Yan samples
+
         for (int i = 0; i < fGenParticleArr->GetEntries(); ++i)
         {
             TGenParticle* particle = (TGenParticle*) fGenParticleArr->At(i);
 
+            // Parton counting for jet-binned Drell-Yan samples
             if (particle->status == 23 && particle->parent != -2 && (abs(particle->pdgId) < 6 || particle->pdgId == 21)) 
                 nPartons++;
+
+
+            // This will find final state leptons (fix this to discriminate between decays)
+            if (
+                    (abs(particle->pdgId) == 11 || abs(particle->pdgId) == 13)
+                    && particle->status == 1
+                    && particle->parent != -2
+               ) {
+                    testCount++;
+                    testID += particle->pdgId;
+                    double pMass = 0;
+                    if (abs(particle->pdgId) == 11)
+                        pMass = ELE_MASS;
+                    else if (abs(particle->pdgId) == 13)
+                        pMass = MUON_MASS;
+                    TLorentzVector newVec;
+                    newVec.SetPtEtaPhiM(particle->pt, particle->eta, particle->phi, pMass);
+                    testMass += newVec;
+/* 
+                // Find if the lepton comes from a Z
+                TGenParticle* mother = (TGenParticle*) fGenParticleArr->At(particle->parent);
+                int origin = abs(mother->pdgId);
+
+                if (origin == 23)
+                    testCount++;
+
+                int intermediary = origin;
+                while (origin != 6 && mother->parent != -2) {
+                    mother = (TGenParticle*) fGenParticleArr->At(mother->parent);
+                    origin = abs(mother->pdgId);
+                    if (origin <= 5) { // remove leptons that have been radiated from light quarks
+                        intermediary = -1; 
+                        break;
+                    } else if (origin == 15) {
+                        intermediary = 15;
+                    } else if (intermediary != 15 && origin == 24) {
+                        intermediary = 24;
+                    }
+                }
+
+                if (origin == 6 && (intermediary == 24 || intermediary == 15)) {
+                    genParticles.push_back(particle);
+                    genMotherId.push_back(intermediary);
+                }
+*/
+            }
         }
+        if (testID == 0 && testMass.M() < 100 && testMass.M() > 80)
+                hAcceptedEvents->Fill(testCount);
+
 
         // Pileup reweighting
         nPU = fInfo->nPUmean;
@@ -347,10 +409,11 @@ Bool_t MultileptonAnalyzer::Process(Long64_t entry)
     if (sync_print)
         cout << "trigger status: " << passTrigger << "\n" << endl;
 
-    if (!passTrigger) // &isData)
-        return kTRUE;
-    
-    hTotalEvents->Fill(3);
+//  if (!passTrigger) // &isData)
+//      return kTRUE;
+
+    if (passTrigger)    
+        hTotalEvents->Fill(3);
 
 
 
@@ -481,6 +544,8 @@ Bool_t MultileptonAnalyzer::Process(Long64_t entry)
         electronP4.SetPtEtaPhiM(electron->pt, electron->eta, electron->phi, ELE_MASS);
 
         // Check electron ID
+        if (particleSelector->PassElectronID(electron, cuts->vetoElID))
+            nVetoElectrons++;
         if (particleSelector->PassElectronID(electron, cuts->looseElID))
             nLooseElectrons++;
         if (particleSelector->PassElectronID(electron, cuts->mediumElID))
@@ -582,10 +647,12 @@ Bool_t MultileptonAnalyzer::Process(Long64_t entry)
             electronCombIso.push_back(GetElectronIsolation(electron, fInfo->rhoJet));
             electronsTrkIso.push_back(electron->trkIso);
 
+            electronPassVetoIso.push_back(particleSelector->PassElectronIso(electron, cuts->vetoElIso, cuts->EAEl));
             electronPassLooseIso.push_back(particleSelector->PassElectronIso(electron, cuts->looseElIso, cuts->EAEl));
             electronPassMediumIso.push_back(particleSelector->PassElectronIso(electron, cuts->mediumElIso, cuts->EAEl));
             electronPassTightIso.push_back(particleSelector->PassElectronIso(electron, cuts->tightElIso, cuts->EAEl));
 
+            electronIsVeto.push_back(particleSelector->PassElectronID(electron, cuts->vetoElID));
             electronIsLoose.push_back(particleSelector->PassElectronID(electron, cuts->looseElID));
             electronIsMedium.push_back(particleSelector->PassElectronID(electron, cuts->mediumElID));
             electronIsTight.push_back(particleSelector->PassElectronID(electron, cuts->tightElID));
