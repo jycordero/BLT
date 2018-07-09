@@ -216,7 +216,7 @@ void MultileptonAnalyzer::Begin(TTree *tree)
     string outHistName = params->get_output_treename("TotalEvents");
     string outHistName2 = params->get_output_treename("AcceptedEvents");
     hTotalEvents = new TH1D(outHistName.c_str(), "TotalEvents", 10, 0.5, 10.5);
-    hAcceptedEvents = new TH1D(outHistName2.c_str(), "AcceptedEvents", 11, -0.5, 10.5);
+    hAcceptedEvents = new TH1D(outHistName2.c_str(), "AcceptedEvents", 12, -1.5, 10.5);
 
 
     ReportPostBegin();
@@ -306,11 +306,6 @@ Bool_t MultileptonAnalyzer::Process(Long64_t entry)
 
     if (!isData)
     {
-        unsigned testCount = 0, testID = 0;
-        TLorentzVector testMass;
-        hAcceptedEvents->Fill(testCount);
-
-
         // Set data period for 2016 MC scale factors
         if (rng->Rndm() < 0.468)
             weights->SetDataPeriod("2016BtoF");    
@@ -324,62 +319,60 @@ Bool_t MultileptonAnalyzer::Process(Long64_t entry)
             hTotalEvents->Fill(10);
 
 
+        unsigned lepCount = 0, idSum = 0;
+        TLorentzVector lepSum;
+        hAcceptedEvents->Fill(-1, eventWeight);
+
         for (int i = 0; i < fGenParticleArr->GetEntries(); ++i)
         {
             TGenParticle* particle = (TGenParticle*) fGenParticleArr->At(i);
+
 
             // Parton counting for jet-binned Drell-Yan samples
             if (particle->status == 23 && particle->parent != -2 && (abs(particle->pdgId) < 6 || particle->pdgId == 21)) 
                 nPartons++;
 
 
-            // This will find final state leptons (fix this to discriminate between decays)
-            if (
-                    (abs(particle->pdgId) == 11 || abs(particle->pdgId) == 13)
-                    && particle->status == 1
-                    && particle->parent != -2
-               ) {
-                    testCount++;
-                    testID += particle->pdgId;
+            // Find final state leptons
+            if ((abs(particle->pdgId) == 11 || abs(particle->pdgId) == 13)
+                && (particle->status == 23 || particle->status == 1 || particle->status == 2)
+                && particle->parent != -2)
+            {
+                // Find if the lepton comes from a Z
+                TGenParticle* mother = (TGenParticle*) fGenParticleArr->At(particle->parent);
+                int origin = abs(mother->pdgId);
+
+                if (origin == 23 || particle->status == 23)
+                {
+                    lepCount++;
+                    idSum += particle->pdgId;
+
                     double pMass = 0;
                     if (abs(particle->pdgId) == 11)
                         pMass = ELE_MASS;
                     else if (abs(particle->pdgId) == 13)
                         pMass = MUON_MASS;
-                    TLorentzVector newVec;
-                    newVec.SetPtEtaPhiM(particle->pt, particle->eta, particle->phi, pMass);
-                    testMass += newVec;
-/* 
-                // Find if the lepton comes from a Z
-                TGenParticle* mother = (TGenParticle*) fGenParticleArr->At(particle->parent);
-                int origin = abs(mother->pdgId);
 
-                if (origin == 23)
-                    testCount++;
-
-                int intermediary = origin;
-                while (origin != 6 && mother->parent != -2) {
-                    mother = (TGenParticle*) fGenParticleArr->At(mother->parent);
-                    origin = abs(mother->pdgId);
-                    if (origin <= 5) { // remove leptons that have been radiated from light quarks
-                        intermediary = -1; 
-                        break;
-                    } else if (origin == 15) {
-                        intermediary = 15;
-                    } else if (intermediary != 15 && origin == 24) {
-                        intermediary = 24;
-                    }
+                    TLorentzVector lepVec;
+                    lepVec.SetPtEtaPhiM(particle->pt, particle->eta, particle->phi, pMass);
+                    lepSum += lepVec;
                 }
-
-                if (origin == 6 && (intermediary == 24 || intermediary == 15)) {
-                    genParticles.push_back(particle);
-                    genMotherId.push_back(intermediary);
-                }
-*/
             }
         }
-        if (testID == 0 && testMass.M() < 100 && testMass.M() > 80)
-                hAcceptedEvents->Fill(testCount);
+        if (idSum == 0 && lepSum.M() < 100 && lepSum.M() > 80)
+            hAcceptedEvents->Fill(lepCount, eventWeight);
+/* 
+        if (lepCount != 2)
+        {
+            cout << "Index \tStatus\tID    \tParent" << endl;
+            for (int i = 0; i < fGenParticleArr->GetEntries(); ++i)
+            {
+                TGenParticle* particle = (TGenParticle*) fGenParticleArr->At(i);
+                cout << i << "\t" << particle->status << "\t" << particle->pdgId << "\t" << particle->parent << endl;
+            }           
+            cout << endl << endl;
+        }
+*/
 
 
         // Pileup reweighting
@@ -409,8 +402,8 @@ Bool_t MultileptonAnalyzer::Process(Long64_t entry)
     if (sync_print)
         cout << "trigger status: " << passTrigger << "\n" << endl;
 
-//  if (!passTrigger) // &isData)
-//      return kTRUE;
+    if (!passTrigger) // &isData)
+        return kTRUE;
 
     if (passTrigger)    
         hTotalEvents->Fill(3);
