@@ -214,9 +214,9 @@ void MultileptonAnalyzer::Begin(TTree *tree)
 
     // event counter
     string outHistName = params->get_output_treename("TotalEvents");
-    string outHistName2 = params->get_output_treename("AcceptedEvents");
     hTotalEvents = new TH1D(outHistName.c_str(), "TotalEvents", 10, 0.5, 10.5);
-    hAcceptedEvents = new TH1D(outHistName2.c_str(), "AcceptedEvents", 12, -1.5, 10.5);
+    outHistName = params->get_output_treename("AcceptedEvents");
+    hAcceptedEvents = new TH1D(outHistName.c_str(), "AcceptedEvents", 10, 0.5, 10.5);
 
 
     ReportPostBegin();
@@ -319,9 +319,10 @@ Bool_t MultileptonAnalyzer::Process(Long64_t entry)
             hTotalEvents->Fill(10);
 
 
-        unsigned lepCount = 0, idSum = 0;
-        TLorentzVector lepSum;
-        hAcceptedEvents->Fill(-1, eventWeight);
+        unsigned muCount = 0, eCount = 0;
+        int idSum = 0;
+        TLorentzVector lepSum, muSum, eSum;
+        hAcceptedEvents->Fill(1, eventWeight);
 
         for (int i = 0; i < fGenParticleArr->GetEntries(); ++i)
         {
@@ -344,23 +345,43 @@ Bool_t MultileptonAnalyzer::Process(Long64_t entry)
 
                 if (origin == 23 || particle->status == 23)
                 {
-                    lepCount++;
                     idSum += particle->pdgId;
 
-                    double pMass = 0;
-                    if (abs(particle->pdgId) == 11)
-                        pMass = ELE_MASS;
-                    else if (abs(particle->pdgId) == 13)
-                        pMass = MUON_MASS;
-
                     TLorentzVector lepVec;
-                    lepVec.SetPtEtaPhiM(particle->pt, particle->eta, particle->phi, pMass);
+                    if (abs(particle->pdgId) == 11)
+                    {
+                        eCount++;
+                        lepVec.SetPtEtaPhiM(particle->pt, particle->eta, particle->phi, ELE_MASS);
+                        eSum += lepVec;
+                    }
+                    else if (abs(particle->pdgId) == 13)
+                    {
+                        muCount++;
+                        lepVec.SetPtEtaPhiM(particle->pt, particle->eta, particle->phi, MUON_MASS);
+                        muSum += lepVec;
+                    }
+
                     lepSum += lepVec;
                 }
             }
         }
         if (idSum == 0 && lepSum.M() < 100 && lepSum.M() > 80)
-            hAcceptedEvents->Fill(lepCount, eventWeight);
+        {
+            if (muCount == 2 && eCount == 0)            // mumu = 3
+                hAcceptedEvents->Fill(3, eventWeight);
+            else if (muCount == 0 && eCount == 2)       // ee   = 4
+                hAcceptedEvents->Fill(4, eventWeight);
+            else if (muCount == 4 && eCount == 0)       // 4m   = 6
+                hAcceptedEvents->Fill(6, eventWeight);
+            else if (muCount == 2 && eCount == 2        // 2m2e = 7
+                     && muSum.M() > eSum.M())
+                hAcceptedEvents->Fill(7, eventWeight);
+            else if (muCount == 2 && eCount == 2        // 2e2m = 8
+                     && muSum.M() < eSum.M())
+                hAcceptedEvents->Fill(8, eventWeight);
+            else if (muCount == 0 && eCount == 4)       // 4e   = 9
+                hAcceptedEvents->Fill(9, eventWeight);
+        }
 /* 
         if (lepCount != 2)
         {
