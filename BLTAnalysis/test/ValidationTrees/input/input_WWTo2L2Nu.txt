@@ -1,1 +1,0 @@
-root://cmseos.fnal.gov//store/user/lpcbacon/12/Summer16_WWTo2L2Nu_powheg/Summer16_WWTo2L2Nu_powheg_bacon.root

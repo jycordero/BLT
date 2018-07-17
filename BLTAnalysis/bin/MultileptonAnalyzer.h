@@ -92,7 +92,7 @@ public:
     Int_t runNumber, lumiSection;
     Long64_t evtNumber;
     UShort_t nPV;
-    Float_t eventWeight, PUWeight, nPU;
+    Float_t eventWeight, PUWeight, PUVar, nPU;
     UShort_t nPartons;
     Float_t met, metPhi;
     Bool_t evtMuonTriggered, evtElectronTriggered;
@@ -114,9 +114,9 @@ public:
     std::vector<Bool_t> muonIsLoose, muonIsTight, muonIsHZZ, muonTriggered; 
 
     std::vector<Float_t> muonSF;
-    std::vector<Float_t> muonLooseIDEff, muonHZZIDEff, muonTightIDEff;
-    std::vector<Float_t> muonLooseIsoEff, muonTightIsoEff;
-    std::vector<Float_t> muonTriggerEffData, muonTriggerEffMC;
+    std::vector<Float_t> muonLooseIDWeight, muonLooseIDVar, muonTightIDWeight, muonTightIDVar, muonHZZIDWeight, muonHZZIDVar;
+    std::vector<Float_t> muonLooseIsoWeight, muonLooseIsoVar, muonTightIsoWeight, muonTightIsoVar;
+    std::vector<Float_t> muonTriggerEffData, muonTriggerEffMC, muonTriggerErrData, muonTriggerErrMC;
 
     std::vector<Float_t> muonD0, muonDz, muonSIP3d;
     std::vector<Float_t> muonMuNChi2, muonPtErr;
@@ -132,8 +132,8 @@ public:
     std::vector<Bool_t> electronIsVeto, electronIsLoose, electronIsMedium, electronIsTight, electronIsHZZ, electronTriggered;
 
     std::vector<Float_t> electronSF;
-    std::vector<Float_t> electronHZZRecoEff, electronRecoEff;
-    std::vector<Float_t> electronTriggerEffData, electronTriggerEffMC;
+    std::vector<Float_t> electronRecoWeight, electronRecoVar, electronHZZRecoWeight, electronHZZRecoVar;
+    std::vector<Float_t> electronTriggerEffData, electronTriggerEffMC, electronTriggerErrData, electronTriggerErrMC;
 
     std::vector<Float_t> electronD0, electronDz, electronSIP3d;
     std::vector<Float_t> electronScEta, electronSieie, electronEnergyInv;

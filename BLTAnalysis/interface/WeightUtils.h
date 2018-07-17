@@ -22,7 +22,6 @@
 #include "TGraphErrors.h"
 #include "TGraphAsymmErrors.h"
 #include "TLorentzVector.h"
-#include "TRandom3.h"
 
 // BaconAna class definitions
 #include "BaconAna/DataFormats/interface/TElectron.hh"
@@ -30,6 +29,23 @@
 
 using namespace std;
 using namespace baconhep;
+
+
+class EfficiencyContainer: public TObject{
+    public:
+        EfficiencyContainer();
+        EfficiencyContainer(float, float, float, float);
+        virtual ~EfficiencyContainer() {};
+        void SetData(float, float, float, float);
+        pair<double, double> GetEff() {return make_pair(_dataEff, _mcEff);};
+        pair<double, double> GetErr() {return make_pair(_dataErr, _mcErr);};
+        float GetWeight() {return (_dataEff/_mcEff);};
+        float GetVar() {return pow(_dataEff/_mcEff, 2)*(pow(_dataErr/_dataEff, 2) + pow(_mcErr/_mcEff, 2));};
+
+    private:
+        float _dataEff, _mcEff;
+        float _dataErr, _mcErr;
+};
 
 
 class WeightUtils: public TObject {
@@ -43,15 +59,15 @@ class WeightUtils: public TObject {
         void    SetDataPeriod(string);
         void    SetSelection(string);
 
-        float   GetPUWeight(float);
-        pair<float, float>   GetTriggerEffWeight(string, TLorentzVector&) const;
-        float   GetMuonIDEff(TLorentzVector&) const; 
-        float   GetLooseMuonIDEff(TLorentzVector&) const;
-        float   GetMuonTightISOEff(TLorentzVector&) const; 
-        float   GetMuonLooseISOEff(TLorentzVector&) const; 
-        float   GetHZZMuonIDEff(TLorentzVector&) const;
-        float   GetElectronRecoEff(TLorentzVector&) const;
-        float   GetHZZElectronRecoEff(TElectron&) const;
+        EfficiencyContainer GetPUEff(float);
+        EfficiencyContainer GetTriggerEffWeight(string, TLorentzVector&) const;
+        EfficiencyContainer GetMuonIDEff(TLorentzVector&) const; 
+        EfficiencyContainer GetLooseMuonIDEff(TLorentzVector&) const;
+        EfficiencyContainer GetMuonTightISOEff(TLorentzVector&) const; 
+        EfficiencyContainer GetMuonLooseISOEff(TLorentzVector&) const; 
+        EfficiencyContainer GetHZZMuonIDEff(TLorentzVector&) const;
+        EfficiencyContainer GetElectronRecoEff(TLorentzVector&) const;
+        EfficiencyContainer GetHZZElectronRecoEff(TElectron&) const;
 
         ClassDef(WeightUtils, 0);
 
@@ -61,9 +77,6 @@ class WeightUtils: public TObject {
         string _sampleName;
         string _selection;
         bool   _isRealData;
-
-        //rng
-        TRandom3 *rng;
 
         // pileup
         TGraph  *_puReweight;
@@ -81,10 +94,10 @@ class WeightUtils: public TObject {
         TGraphAsymmErrors *_muSF_ISO_DATA_GH[4], *_muSF_ISO_MC_GH[4]; 
         TGraphAsymmErrors *_muSF2012_ISO_DATA_GH[4], *_muSF2012_ISO_MC_GH[4];
 
+        TH2F *_hzz_muIdSF, *_hzz_muIdErr;
+
         // electron RECO/ID scale factors (what about ISO?)
         TGraphErrors *_eleSF_RECO, *_eleSF_ID[5], *_hzz_eleSF_ID[13];
-
-        TH2F *_hzz_muIdSF;
 
         // electron trigger efficiencies (the bins for 2.1 < |eta| < 2.4 are copies of the 1.6 to 2.1 bins
         float _elePtBins[8] = {30, 32, 35, 40, 50, 60, 120, 9999};
