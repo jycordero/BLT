@@ -1,0 +1,1 @@
+root://cmseos.fnal.gov//store/user/jbueghly/2017_mc/DYJetsToLL_M-50_amcatnlo/Output_0.root

@@ -69,12 +69,11 @@ void MultileptonAnalyzer::Begin(TTree *tree)
     weights.reset(new WeightUtils(params->period, params->selection, false)); // Lumi mask
     // Set up object to handle good run-lumi filtering if necessary
     lumiMask = RunLumiRangeMap();
-    string jsonFileName = cmssw_base + "/src/BLT/BLTAnalysis/data/Cert_271036-284044_13TeV_23Sep2016ReReco_Collisions16_JSON.txt";
-                                    // "/src/BLT/BLTAnalysis/data/Cert_271036-284044_13TeV_PromptReco_Collisions16_JSON.txt";
+    string jsonFileName = cmssw_base + "/src/BLT/BLTAnalysis/data/Cert_294927-306462_13TeV_EOY2017ReReco_Collisions17_JSON.txt"; // should verify this is the right one!
     lumiMask.AddJSONFile(jsonFileName);
 
     // muon momentum corrections
-    muonCorr = new RoccoR(cmssw_base + "/src/BLT/BLTAnalysis/data/rcdata.2016.v3");
+    muonCorr = new RoccoR(cmssw_base + "/src/BLT/BLTAnalysis/data/RoccoR2017v0.txt");
 
     // electron scale corrections
     electronScaler = new EnergyScaleCorrection(cmssw_base + "/src/BLT/BLTAnalysis/data");
@@ -432,8 +431,8 @@ Bool_t MultileptonAnalyzer::Process(Long64_t entry)
 
 
     /* Trigger selection */
-    evtMuonTriggered     = trigger->pass("HLT_IsoMu24_v*", fInfo->triggerBits) || trigger->pass("HLT_IsoTkMu24_v*", fInfo->triggerBits);
-    evtElectronTriggered = trigger->pass("HLT_Ele27_WPTight_Gsf_v*", fInfo->triggerBits);
+    evtMuonTriggered     = trigger->pass("HLT_IsoMu27_v*", fInfo->triggerBits);                         // unprescaled?
+    evtElectronTriggered = trigger->pass("HLT_Ele32_WPTight_Gsf_L1DoubleEG_v*", fInfo->triggerBits);    // unprescaled?
 
     bool passTrigger = evtMuonTriggered || evtElectronTriggered;
 
@@ -502,6 +501,7 @@ Bool_t MultileptonAnalyzer::Process(Long64_t entry)
         new(muonsP4ptr[i]) TLorentzVector(muonP4);
 
         // Apply Rochester correction
+        // NEEDS FIXING
         muonSF.push_back(GetRochesterCorrection(muon, muonCorr, rng, isData));
         muon->pt *= muonSF.back();
         muonP4.SetPtEtaPhiM(muon->pt, muon->eta, muon->phi, MUON_MASS);
@@ -643,7 +643,7 @@ Bool_t MultileptonAnalyzer::Process(Long64_t entry)
             muonIsLoose.push_back(muon->pogIDBits & baconhep::kPOGLooseMuon);
             muonIsTight.push_back(PassMuonTightID(muon));
             muonIsHZZ.push_back(PassMuonHZZTightID(muon));
-            muonTriggered.push_back(trigger->passObj("HLT_IsoMu24_v*", 1, muon->hltMatchBits) || trigger->passObj("HLT_IsoTkMu24_v*", 1, muon->hltMatchBits));
+            muonTriggered.push_back(trigger->passObj("HLT_IsoMu27_v*", 1, muon->hltMatchBits));
 
             // Efficiency SFs and errors
             EfficiencyContainer effCont;
@@ -664,11 +664,11 @@ Bool_t MultileptonAnalyzer::Process(Long64_t entry)
             muonTightIsoWeight.push_back(effCont.GetWeight());
             muonTightIsoVar.push_back(effCont.GetVar());
 
-            effCont = weights->GetHZZMuonIDEff(muonP4);
+            effCont = weights->GetHZZMuonIDEff(muonP4);     // broken?
             muonHZZIDWeight.push_back(effCont.GetWeight());
             muonHZZIDVar.push_back(effCont.GetVar());
 
-            effCont = weights->GetTriggerEffWeight("HLT_IsoMu24_v*", muonP4);
+            effCont = weights->GetTriggerEffWeight("HLT_IsoMu27_v*", muonP4);
             pair<float, float> trigEff = effCont.GetEff(), trigErr = effCont.GetErr();
             muonTriggerEffData.push_back(trigEff.first);
             muonTriggerEffMC.push_back(trigEff.second);
@@ -713,7 +713,7 @@ Bool_t MultileptonAnalyzer::Process(Long64_t entry)
             electronIsMedium.push_back(particleSelector->PassElectronID(electron, cuts->mediumElID));
             electronIsTight.push_back(particleSelector->PassElectronID(electron, cuts->tightElID));
             electronIsHZZ.push_back(PassElectronHZZTightID(electron, particleSelector, cuts, fInfo->rhoJet));
-            electronTriggered.push_back(trigger->passObj("HLT_Ele27_WPTight_Gsf_v*", 1, electron->hltMatchBits));
+            electronTriggered.push_back(trigger->passObj("HLT_Ele32_WPTight_Gsf_L1DoubleEG_v*", 1, electron->hltMatchBits));
 
             // Efficiency SFs and errors
             EfficiencyContainer effCont;
@@ -726,7 +726,7 @@ Bool_t MultileptonAnalyzer::Process(Long64_t entry)
             electronHZZRecoWeight.push_back(effCont.GetWeight());
             electronHZZRecoVar.push_back(effCont.GetVar());
 
-            effCont = weights->GetTriggerEffWeight("HLT_Ele27_WPTight_Gsf_v*", electronP4);
+            effCont = weights->GetTriggerEffWeight("HLT_Ele32_WPTight_Gsf_L1DoubleEG_v*", electronP4);
             pair<float, float> trigEff = effCont.GetEff(), trigErr = effCont.GetErr();
             electronTriggerEffData.push_back(trigEff.first);
             electronTriggerEffMC.push_back(trigEff.second);
@@ -880,13 +880,22 @@ float MultileptonAnalyzer::GetMuonIsolation(const baconhep::TMuon* mu)
 
 
 
+// NEEDS FIXING
 float MultileptonAnalyzer::GetRochesterCorrection(const baconhep::TMuon* muon, RoccoR* muonCorr, TRandom3* rng, bool isData)
 {
     if (isData)
         return muonCorr->kScaleDT(muon->q, muon->pt, muon->eta, muon->phi, 0, 0);
     else
+    {
+        int nTkLayers;
+        if (muon->nTkLayers < 6)
+            nTkLayers = 6;
+        else
+            nTkLayers = muon->nTkLayers;
+
         return muonCorr->kScaleAndSmearMC(muon->q, muon->pt, muon->eta, muon->phi,
-                  muon->nTkLayers, rng->Rndm(), rng->Rndm(), 0, 0);
+                  nTkLayers, rng->Rndm(), rng->Rndm(), 0, 0);
+    }
 }
 
 

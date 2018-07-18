@@ -35,7 +35,7 @@ WeightUtils::WeightUtils(string dataPeriod, string selection, bool isRealData)
     const std::string cmssw_base = getenv("CMSSW_BASE");
 
     // PU weights
-    std::string puFileName = cmssw_base + "/src/BLT/BLTAnalysis/data/pileup_sf_2016_full.root";
+    std::string puFileName = cmssw_base + "/src/BLT/BLTAnalysis/data/pileup_sf_2017_full.root";
     TFile* puFile = new TFile(puFileName.c_str(), "OPEN");
     _puReweight = (TGraph*)puFile->Get("pileup_sf");
 
@@ -607,13 +607,13 @@ EfficiencyContainer WeightUtils::GetHZZElectronRecoEff(TElectron& electron) cons
     int ptBin = 0;
     for (int i = 0; i < 13; i++)
     {
-        if (fabs(electron.calibPt) > binningPt[i] && fabs(electron.calibPt) <= binningPt[i+1])
+        if (fabs(electron.pt) > binningPt[i] && fabs(electron.pt) <= binningPt[i+1])
         {
             ptBin = i;      break;
         }
     }
 
-    if (electron.calibPt < 200.)
+    if (electron.pt < 200.)
     {
         float sfReco = _eleSF_RECO->Eval(electron.scEta);
         float sfId   = _hzz_eleSF_ID[ptBin]->Eval(electron.scEta);
