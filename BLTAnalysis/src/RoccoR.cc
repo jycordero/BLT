@@ -246,6 +246,8 @@ double RoccoR::kScaleMC(int Q, double pt, double eta, double phi, int s, int m) 
 }
 
 double RoccoR::kScaleAndSmearMC(int Q, double pt, double eta, double phi, int n, double u, double w, int s, int m) const{
+    if (n < 6) { n = 6; }       // BROKEN
+
     const auto& rc=RC[s][m];
     int H = etaBin(eta);
     int F = phiBin(phi);

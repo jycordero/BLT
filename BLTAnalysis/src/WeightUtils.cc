@@ -34,10 +34,12 @@ WeightUtils::WeightUtils(string dataPeriod, string selection, bool isRealData)
 
     const std::string cmssw_base = getenv("CMSSW_BASE");
 
+
     // PU weights
     std::string puFileName = cmssw_base + "/src/BLT/BLTAnalysis/data/pileup_sf_2017_full.root";
     TFile* puFile = new TFile(puFileName.c_str(), "OPEN");
     _puReweight = (TGraph*)puFile->Get("pileup_sf");
+
 
     // muon trigger sf (BCDEF)
 //  std::string triggerFileName = cmssw_base + "/src/BLT/BLTAnalysis/data/muon_trigger/EfficienciesAndSF_BCDEF.root";
@@ -55,6 +57,7 @@ WeightUtils::WeightUtils(string dataPeriod, string selection, bool isRealData)
     _muSF_IsoMu24_MC_BCDEF[1] = (TGraphAsymmErrors*)triggerFile_BCDEF->Get((filePath + "pt_PLOT_abseta_bin1_&_Tight2012_pass_&_tag_IsoMu24_pass_MC").c_str());
     _muSF_IsoMu24_MC_BCDEF[2] = (TGraphAsymmErrors*)triggerFile_BCDEF->Get((filePath + "pt_PLOT_abseta_bin2_&_Tight2012_pass_&_tag_IsoMu24_pass_MC").c_str());
     _muSF_IsoMu24_MC_BCDEF[3] = (TGraphAsymmErrors*)triggerFile_BCDEF->Get((filePath + "pt_PLOT_abseta_bin3_&_Tight2012_pass_&_tag_IsoMu24_pass_MC").c_str());
+
 
     // muon trigger sf (GH)
 //  triggerFileName = cmssw_base + "/src/BLT/BLTAnalysis/data/muon_trigger/EfficienciesAndSF_GH.root";
@@ -102,6 +105,7 @@ WeightUtils::WeightUtils(string dataPeriod, string selection, bool isRealData)
     _muSF_ID_MC_BCDEF[2] = (TGraphAsymmErrors*)f_muRecoSF2012_ID->Get((filePath + "pt_PLOT_abseta_bin2_MC").c_str());
     _muSF_ID_MC_BCDEF[3] = (TGraphAsymmErrors*)f_muRecoSF2012_ID->Get((filePath + "pt_PLOT_abseta_bin3_MC").c_str());
 
+
     // muon tight ID sf (GH)
     idFileName = cmssw_base + "/src/BLT/BLTAnalysis/data/muon_id/EfficienciesAndSF_GH.root";
     TFile* f_muRecoSF_ID_GH = new TFile(idFileName.c_str(), "OPEN"); 
@@ -117,6 +121,7 @@ WeightUtils::WeightUtils(string dataPeriod, string selection, bool isRealData)
     _muSF_ID_MC_GH[1] = (TGraphAsymmErrors*)f_muRecoSF_ID_GH->Get((filePath + "pt_PLOT_abseta_bin1_MC").c_str());
     _muSF_ID_MC_GH[2] = (TGraphAsymmErrors*)f_muRecoSF_ID_GH->Get((filePath + "pt_PLOT_abseta_bin2_MC").c_str());
     _muSF_ID_MC_GH[3] = (TGraphAsymmErrors*)f_muRecoSF_ID_GH->Get((filePath + "pt_PLOT_abseta_bin3_MC").c_str());
+
 
     // muon loose ID sf (BCDEF)
     idFileName = cmssw_base + "/src/BLT/BLTAnalysis/data/muon_id/EfficienciesAndSF_BCDEF.root";
@@ -134,6 +139,7 @@ WeightUtils::WeightUtils(string dataPeriod, string selection, bool isRealData)
     _muSF_Loose_ID_MC_BCDEF[2] = (TGraphAsymmErrors*)f_muRecoSF_Loose_ID_BCDEF->Get((filePath + "pt_PLOT_abseta_bin2_MC").c_str());
     _muSF_Loose_ID_MC_BCDEF[3] = (TGraphAsymmErrors*)f_muRecoSF_Loose_ID_BCDEF->Get((filePath + "pt_PLOT_abseta_bin3_MC").c_str());
 
+
     // muon loose ID sf (GH)
     idFileName = cmssw_base + "/src/BLT/BLTAnalysis/data/muon_id/EfficienciesAndSF_GH.root";
     TFile* f_muRecoSF_Loose_ID_GH = new TFile(idFileName.c_str(), "OPEN"); 
@@ -149,6 +155,7 @@ WeightUtils::WeightUtils(string dataPeriod, string selection, bool isRealData)
     _muSF_Loose_ID_MC_GH[1] = (TGraphAsymmErrors*)f_muRecoSF_Loose_ID_GH->Get((filePath + "pt_PLOT_abseta_bin1_MC").c_str());
     _muSF_Loose_ID_MC_GH[2] = (TGraphAsymmErrors*)f_muRecoSF_Loose_ID_GH->Get((filePath + "pt_PLOT_abseta_bin2_MC").c_str());
     _muSF_Loose_ID_MC_GH[3] = (TGraphAsymmErrors*)f_muRecoSF_Loose_ID_GH->Get((filePath + "pt_PLOT_abseta_bin3_MC").c_str());
+
 
     // loose muon ISO sf (BCDEF)
     std::string isoFileName = cmssw_base + "/src/BLT/BLTAnalysis/data/muon_iso/EfficienciesAndSF_BCDEF.root";
@@ -166,13 +173,15 @@ WeightUtils::WeightUtils(string dataPeriod, string selection, bool isRealData)
     _muSF2012_ISO_MC_BCDEF[2] = (TGraphAsymmErrors*)f_muRecoSF2012_ISO->Get((filePath + "pair_newTuneP_probe_pt_PLOT_abseta_bin2_&_HighPt_pass_MC").c_str());
     _muSF2012_ISO_MC_BCDEF[3] = (TGraphAsymmErrors*)f_muRecoSF2012_ISO->Get((filePath + "pair_newTuneP_probe_pt_PLOT_abseta_bin3_&_HighPt_pass_MC").c_str());
   
+
     // hzz muon id efficiencies
-    // (from topic_wbranch)
+    // (from topic_jbueghly)
     fileName = cmssw_base + "/src/BLT/BLTAnalysis/data/muon_id/hzz_muon_id_sf.root";
     TFile* f_hzz_muIdSF = new TFile(fileName.c_str(), "OPEN");
     _hzz_muIdSF = (TH2F*)f_hzz_muIdSF->Get("FINAL");
     _hzz_muIdErr = (TH2F*)f_hzz_muIdSF->Get("ERROR");
   
+
     // tight muon ISO sf (BCDEF)
     filePath = "TightISO_TightID_pt_eta/efficienciesDATA/";
     _muSF_ISO_DATA_BCDEF[0] = (TGraphAsymmErrors*)f_muRecoSF2012_ISO->Get((filePath + "pt_PLOT_abseta_bin0_&_Tight2012_pass_DATA").c_str());
@@ -185,6 +194,7 @@ WeightUtils::WeightUtils(string dataPeriod, string selection, bool isRealData)
     _muSF_ISO_MC_BCDEF[1] = (TGraphAsymmErrors*)f_muRecoSF2012_ISO->Get((filePath + "pt_PLOT_abseta_bin1_&_Tight2012_pass_MC").c_str());
     _muSF_ISO_MC_BCDEF[2] = (TGraphAsymmErrors*)f_muRecoSF2012_ISO->Get((filePath + "pt_PLOT_abseta_bin2_&_Tight2012_pass_MC").c_str());
     _muSF_ISO_MC_BCDEF[3] = (TGraphAsymmErrors*)f_muRecoSF2012_ISO->Get((filePath + "pt_PLOT_abseta_bin3_&_Tight2012_pass_MC").c_str());
+
 
     // tight muon ISO sf (GH)
     isoFileName = cmssw_base + "/src/BLT/BLTAnalysis/data/muon_iso/EfficienciesAndSF_GH.root";
@@ -202,6 +212,7 @@ WeightUtils::WeightUtils(string dataPeriod, string selection, bool isRealData)
     _muSF_ISO_MC_GH[2] = (TGraphAsymmErrors*)f_muRecoSF_ISO_GH->Get((filePath + "pt_PLOT_abseta_bin2_&_Tight2012_pass_MC").c_str());
     _muSF_ISO_MC_GH[3] = (TGraphAsymmErrors*)f_muRecoSF_ISO_GH->Get((filePath + "pt_PLOT_abseta_bin3_&_Tight2012_pass_MC").c_str());
 
+
     // loose muon ISO sf (BCDEF)
     filePath = "tkLooseISO_highptID_newpt_eta/efficienciesDATA/";
     _muSF2012_ISO_DATA_GH[0] = (TGraphAsymmErrors*)f_muRecoSF_ISO_GH->Get((filePath + "pair_newTuneP_probe_pt_PLOT_abseta_bin0_&_HighPt_pass_DATA").c_str());
@@ -215,11 +226,13 @@ WeightUtils::WeightUtils(string dataPeriod, string selection, bool isRealData)
     _muSF2012_ISO_MC_GH[2] = (TGraphAsymmErrors*)f_muRecoSF_ISO_GH->Get((filePath + "pair_newTuneP_probe_pt_PLOT_abseta_bin2_&_HighPt_pass_MC").c_str());
     _muSF2012_ISO_MC_GH[3] = (TGraphAsymmErrors*)f_muRecoSF_ISO_GH->Get((filePath + "pair_newTuneP_probe_pt_PLOT_abseta_bin3_&_HighPt_pass_MC").c_str());
 
+
     // electron reco efficiencies
     // (from topic_wbranch)
     fileName = cmssw_base + "/src/BLT/BLTAnalysis/data/egamma_eff_reco_2016.root";
     TFile* f_eleRecoSF = new TFile(fileName.c_str(), "OPEN"); 
     _eleSF_RECO = (TGraphErrors*)f_eleRecoSF->Get("grSF1D_0");
+
 
     // electron id efficiencies
     // (from topic_wbranch)
@@ -230,6 +243,7 @@ WeightUtils::WeightUtils(string dataPeriod, string selection, bool isRealData)
     _eleSF_ID[2] = (TGraphErrors*)f_eleIdSF->Get("grSF1D_2");
     _eleSF_ID[3] = (TGraphErrors*)f_eleIdSF->Get("grSF1D_3");
     _eleSF_ID[4] = (TGraphErrors*)f_eleIdSF->Get("grSF1D_4");
+
 
     // hzz electron id efficiencies
     // (from topic_jbueghly)

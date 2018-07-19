@@ -4,12 +4,12 @@ import sys
 
 
 ''' Specify parameters '''
-cfg        = bm.JobConfig
-selection = 'mumu'
-period     = '2017'
+cfg         = bm.JobConfig
+selection   = 'emu'
+period      = '2017'
 #path       = '/eos/uscms/store/user/jbueghly/jbueghly_data_multicrab/DoubleMuon/'
 #path       = '/eos/uscms/store/user/jbueghly/sync_data/'
-#path        = '/eos/uscms/store/group/lpcbacon/12d/'
+#path       = '/eos/uscms/store/group/lpcbacon/12d/'
 path        = '/eos/uscms/store/user/jbueghly/2017_data'
 #path       = '/eos/uscms/store/user/jbueghly/jbueghly_data_multicrab/DoubleEG/'
 #path       = '/eos/uscms/store/user/jbueghly/jbueghly_data_multicrab/Charmonium/'
@@ -73,27 +73,27 @@ data_list.extend([
     cfg(data_name = 'muon_2017B_v1',
         path     = '{0}/DoubleMuon_Run2017B-31Mar2018-v1'.format(path),
         nJobs    = 51,
-        suffix   = 'muon_2017B'
+        suffix   = 'mumu_2017B'
        ),
     cfg(data_name = 'muon_2017C_v1',
         path     = '{0}/DoubleMuon_Run2017C-31Mar2018-v1'.format(path),
         nJobs    = 51,
-        suffix   = 'muon_2017C'
+        suffix   = 'mumu_2017C'
        ),
     cfg(data_name = 'muon_2017D_v1',
         path     = '{0}/DoubleMuon_Run2017D-31Mar2018-v1'.format(path),
         nJobs    = 51,
-        suffix   = 'muon_2017D'
+        suffix   = 'mumu_2017D'
        ),
     cfg(data_name = 'muon_2017E_v1',
         path     = '{0}/DoubleMuon_Run2017E-31Mar2018-v1'.format(path),
         nJobs    = 51,
-        suffix   = 'muon_2017E'
+        suffix   = 'mumu_2017E'
        ),
     cfg(data_name = 'muon_2017F_v1',
         path     = '{0}/DoubleMuon_Run2017F-31Mar2018-v1'.format(path),
         nJobs    = 51,
-        suffix   = 'muon_2017F'
+        suffix   = 'mumu_2017F'
        ),
 
     # Double electron data
@@ -259,7 +259,7 @@ mc_list.extend([
     cfg(data_name = 'DYJetsToLL_M-50', 
         path      = '{0}/DYJetsToLL_M-50_amcatnlo'.format(path),
         nJobs     = 51,
-        suffix    = 'zjets_m-50_amc'
+        suffix    = 'zjets_m-50'
         ),
 
     #cfg(data_name = 'ZGTo2LG', 
@@ -395,43 +395,11 @@ mc_list.extend([
     #   ),
     ])
 
-path       = '/eos/uscms/store/user/jbueghly/sync_mc'
-sig_list = []
-sig_list.extend([
-#    cfg(data_name = 'zjpsi_singlet',
-#        path      = '{0}/zjpsi_singlet'.format(path),
-#        nJobs     = 5,
-#        suffix    = 'zjpsi_singlet'
-#        ),
-    cfg(data_name = 'hzg_gluglu',
-        path      = '{0}/GluGluHToZG_M-125_powheg_calib'.format(path),
-        nJobs     = 9,
-        suffix    = 'hzg_gluglu'
-        ),
-    cfg(data_name = 'hzg_vbf',
-        path      = '{0}/VBFHToZG_M-125_powheg_calib'.format(path),
-        nJobs     = 26,
-        suffix    = 'hzg_vbf'
-        ),
-    #cfg(data_name = 'zg_llg',
-    #    path      = '{0}/ZGTo2LG_amcatnlo'.format(path),
-    #    nJobs     = 26,
-    #    suffix    = 'zg_llg'
-    #    ),
-    ])
 
 batch_list = []
 batch_list += data_list
 batch_list += mc_list
-#batch_list += sig_list
 
-#batch = bm.BatchMaster(configList = data_list, 
-#                      shortQueue = False,
-#                      stageDir   = 'batch',
-#                      executable = executable,
-#                      selection  = selection,
-#                      location   = 'lpc'
-#                     )
 batch = bm.BatchMaster(config_list = batch_list, 
                        stage_dir   = 'batch',
                        selection   = selection,
