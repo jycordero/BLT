@@ -11,7 +11,8 @@ path       = '/eos/uscms/store/group/lpcbacon/12a'
 executable = 'execBatch.sh'
 location   = 'lpc'
 
-data_samples = ['single_mu', 'single_el']
+#data_samples = ['single_mu', 'single_el']
+data_samples = ['single_mu']
 mc_samples   = ['selected', 'zjets']
 
 
@@ -501,7 +502,7 @@ mc_dict['diboson'] = \
 
 batch_list = []
 batch_list += sum([data_dict[n] for n in data_samples], []) 
-batch_list += sum([mc_dict[n] for n in mc_samples], []) 
+#batch_list += sum([mc_dict[n] for n in mc_samples], []) 
 
 batch = bm.BatchMaster(config_list = batch_list, 
                       stage_dir   = 'batch',
