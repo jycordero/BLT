@@ -129,7 +129,7 @@ Cuts::Cuts() {
     vetoElID.ConversionMissHits[1]        = 3;
 
 
-    // HZZ MVA (broken)
+    // HZZ electron MVA
     hzzMVAID.cutName                        = "hzzMVAID";
     hzzMVAID.mvaVal[0]                      =  -0.211;
     hzzMVAID.mvaVal[1]                      =  -0.396;

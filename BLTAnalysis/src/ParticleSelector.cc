@@ -123,8 +123,7 @@ bool ParticleSelector::PassElectronID(const baconhep::TElectron* el, const Cuts:
     return elPass;
 }
 
-// this is a BIG FAT LIE
-/*
+
 bool ParticleSelector::PassElectronMVA(const baconhep::TElectron* el, const Cuts::elMVACuts& cutLevel) const {
     bool elPass = false;
 
@@ -155,7 +154,8 @@ bool ParticleSelector::PassElectronMVA(const baconhep::TElectron* el, const Cuts
     }
     return elPass;
 }
-*/
+
+
 bool ParticleSelector::PassElectronIso(const baconhep::TElectron* el, const Cuts::elIsoCuts& cutLevel, float EAEl[7]) const 
 {
     int iEta = 0;

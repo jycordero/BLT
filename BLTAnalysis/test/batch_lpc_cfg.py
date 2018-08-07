@@ -7,13 +7,14 @@ import sys
 cfg        = bm.JobConfig
 selection  = 'emu'
 period     = '2016'
-path       = '/eos/uscms/store/group/lpcbacon/12a'
 executable = 'execBatch.sh'
 location   = 'lpc'
 
 #data_samples = ['single_mu', 'single_el']
-data_samples = ['single_mu']
-mc_samples   = ['selected', 'zjets']
+#mc_samples   = ['selected', 'zjets']
+
+data_samples = ['double_mu', 'double_eg']
+mc_samples   = ['zjets_12d', 'ttbar_12d', 'diboson_12d']
 
 
 
@@ -23,6 +24,97 @@ Set job configurations.
 
 # DATA #
 data_dict = {}
+
+path = '/eos/uscms/store/group/lpcbacon/12d'
+data_dict['double_mu'] = \
+[
+    cfg(data_name = 'muon_2016B_v2',
+        path     = '{0}/DoubleMuon_Run2016B-03Feb2017_ver2-v2'.format(path),
+        nJobs    = 51,
+        suffix   = 'muon_2016B'
+       ),
+    cfg(data_name = 'muon_2016C_v1',
+        path     = '{0}/DoubleMuon_Run2016C-03Feb2017-v1'.format(path),
+        nJobs    = 67,
+        suffix   = 'muon_2016C'
+       ),
+    cfg(data_name = 'muon_2016D_v1',
+        path     = '{0}/DoubleMuon_Run2016D-03Feb2017-v1'.format(path),
+        nJobs    = 51,
+        suffix   = 'muon_2016D'
+       ),
+    cfg(data_name = 'muon_2016E_v1',
+        path     = '{0}/DoubleMuon_Run2016E-03Feb2017-v1'.format(path),
+        nJobs    = 51,
+        suffix   = 'muon_2016E'
+       ),
+    cfg(data_name = 'muon_2016F_v1',
+        path     = '{0}/DoubleMuon_Run2016F-03Feb2017-v1'.format(path),
+        nJobs    = 51,
+        suffix   = 'muon_2016F'
+       ),
+    cfg(data_name = 'muon_2016G_v1',
+        path     = '{0}/DoubleMuon_Run2016G-03Feb2017-v1'.format(path),
+        nJobs    = 51,
+        suffix   = 'muon_2016G'
+       ),
+    cfg(data_name = 'muon_2016H_v2',
+        path     = '{0}/DoubleMuon_Run2016H-03Feb2017_ver2-v1'.format(path),
+        nJobs    = 51,
+        suffix   = 'muon_2016H'
+       ),
+    cfg(data_name = 'muon_2016H_v3',
+        path     = '{0}/DoubleMuon_Run2016H-03Feb2017_ver3-v1'.format(path),
+        nJobs    = 28,
+        suffix   = 'muon_2016H'
+       ),
+]
+
+data_dict['double_eg'] = \
+[
+    cfg(data_name = 'electron_2016B_v2',
+        path     = '{0}/DoubleEG_Run2016B-03Feb2017_ver2-v2'.format(path),
+        nJobs    = 51,
+        suffix   = 'electron_2016B'
+        ),
+    cfg(data_name = 'electron_2016C_v1',
+        path     = '{0}/DoubleEG_Run2016C-03Feb2017-v1'.format(path),
+        nJobs    = 36,
+        suffix   = 'electron_2016C'
+        ),
+    cfg(data_name = 'electron_2016D_v1',
+        path     = '{0}/DoubleEG_Run2016D-03Feb2017-v1'.format(path),
+        nJobs    = 51,
+        suffix   = 'electron_2016D'
+        ),
+    cfg(data_name = 'electron_2016E_v1',
+        path     = '{0}/DoubleEG_Run2016E-03Feb2017-v1'.format(path),
+        nJobs    = 51,
+        suffix   = 'electron_2016E'
+        ),
+    cfg(data_name = 'electron_2016F_v1',
+        path     = '{0}/DoubleEG_Run2016F-03Feb2017-v1'.format(path),
+        nJobs    = 51,
+        suffix   = 'electron_2016F'
+        ),
+    cfg(data_name = 'electron_2016G_v1',
+        path     = '{0}/DoubleEG_Run2016G-03Feb2017-v1'.format(path),
+        nJobs    = 51,
+        suffix   = 'electron_2016G'
+        ),
+    cfg(data_name = 'electron_2016H_v2',
+        path     = '{0}/DoubleEG_Run2016H-03Feb2017_ver2-v1'.format(path),
+        nJobs    = 51,
+        suffix   = 'electron_2016H'
+        ),
+    cfg(data_name = 'electron_2016H_v3',
+        path     = '{0}/DoubleEG_Run2016H-03Feb2017_ver3-v1'.format(path),
+        nJobs    = 29,
+        suffix   = 'electron_2016H'
+        ),
+]
+
+path = '/eos/uscms/store/group/lpcbacon/12a'
 data_dict['single_mu'] = \
 [
    cfg(data_name = 'muon_2016B_v1',
@@ -172,8 +264,121 @@ data_dict['mueg'] = \
 
 
 # MONTE CARLO #
-path = '/eos/uscms/store/group/lpcbacon/12'
 mc_dict = {}
+path = '/eos/uscms/store/group/lpcbacon/12d'
+mc_dict['zjets_12d'] = \
+[
+    cfg(data_name = 'DYJetsToLL_M-50',
+        path     = '{0}/DYJetsToLL_M-50_madgraph'.format(path),
+        nJobs    = 50,
+        suffix   = 'zjets_50'
+       ),
+    cfg(data_name = 'DYJetsToLL_M-10to50',
+        path     = '{0}/DYJetsToLL_M-10to50_madgraph'.format(path),
+        nJobs    = 10,
+        suffix   = 'zjets_10to50'
+       ),
+    cfg(data_name = 'DY1JetsToLL_M-50',
+        path     = '{0}/DY1JetsToLL_M-50_madgraph'.format(path),
+        nJobs    = 10,
+        suffix   = 'z1jets_50'
+       ),
+    cfg(data_name = 'DY1JetsToLL_M-10to50',
+        path     = '{0}/DY1JetsToLL_M-10to50_madgraph'.format(path),
+        nJobs    = 10,
+        suffix   = 'z1jets_10to50'
+       ),
+    cfg(data_name = 'DY2JetsToLL_M-50',
+        path     = '{0}/DY2JetsToLL_M-50_madgraph'.format(path),
+        nJobs    = 10,
+        suffix   = 'z2jets_50'
+       ),
+    cfg(data_name = 'DY2JetsToLL_M-10to50',
+        path     = '{0}/DY2JetsToLL_M-10to50_madgraph'.format(path),
+        nJobs    = 10,
+        suffix   = 'z2jets_10to50'
+       ),
+    cfg(data_name = 'DY3JetsToLL_M-50',
+        path     = '{0}/DY3JetsToLL_M-50_madgraph'.format(path),
+        nJobs    = 10,
+        suffix   = 'z3jets_50'
+       ),
+    cfg(data_name = 'DY3JetsToLL_M-10to50',
+        path     = '{0}/DY3JetsToLL_M-10to50_madgraph'.format(path),
+        nJobs    = 10,
+        suffix   = 'z3jets_10to50'
+       ),
+    cfg(data_name = 'DY4JetsToLL_M-50',
+        path     = '{0}/DY4JetsToLL_M-50_madgraph'.format(path),
+        nJobs    = 10,
+        suffix   = 'z4jets_50'
+       ),
+    cfg(data_name = 'DY4JetsToLL_M-10to50',
+        path     = '{0}/DY4JetsToLL_M-10to50_madgraph'.format(path),
+        nJobs    = 10,
+        suffix   = 'z4jets_10to50'
+       ),
+]
+
+mc_dict['ttbar_12d'] = \
+[
+        cfg(data_name = 'ttbar_inclusive',
+            path     = '{0}/TT_powheg'.format(path),
+            nJobs    = 51,
+            suffix   = 'ttbar'
+            ),
+]
+
+mc_dict['diboson_12d'] = \
+[
+    cfg(data_name = 'WW',
+        path     = '{0}/WWTo2L2Nu_powheg'.format(path),
+        nJobs    = 10,
+        suffix   = 'ww'
+       ),
+    cfg(data_name = 'WZJetsTo2L2Q',
+        path     = '{0}/WZTo2L2Q_amcatnlo'.format(path),
+        nJobs    = 51,
+        suffix   = 'wz_2l2q'
+        ),
+    cfg(data_name = 'WZJetsTo3LNu',
+        path     = '{0}/WZTo3LNu_powheg'.format(path),
+        nJobs    = 27,
+        suffix   = 'wz_3lnu'
+        ),
+    cfg(data_name = 'ZZJetsTo2L2Nu',
+        path     = '{0}/ZZTo2L2Nu_powheg'.format(path),
+        nJobs    = 10,
+        suffix   = 'zz_2l2nu'
+       ),
+    cfg(data_name = 'ZZJetsTo2L2Q',
+        path     = '{0}/ZZTo2L2Q_amcatnlo'.format(path),
+        nJobs    = 10,
+        suffix   = 'zz_2l2q'
+        ),
+    cfg(data_name = 'ZZJetsTo4L',
+        path     = '{0}/ZZTo4L_amcatnlo'.format(path),
+        nJobs    = 10,
+        suffix   = 'zz_4l'
+        ),
+]
+
+mc_dict['higgs_12d'] = \
+[
+    cfg(data_name = 'GluGluHToZZTo4L',
+        path     = '{0}/GluGlu_HToZZTo4L'.format(path),
+        nJobs    = 50,
+        suffix   = 'ggH_zz_4l'
+       ),
+    cfg(data_name = 'VBFHToZZTo4L',
+        path     = '{0}/VBF_HToZZTo4L'.format(path),
+        nJobs    = 50,
+        suffix   = 'H_zz_4l'
+       ),
+]
+
+
+path = '/eos/uscms/store/group/lpcbacon/12'
 mc_dict['selected'] = \
 [
     cfg(data_name = 'DYJetsToLL_M-10to50',
@@ -502,7 +707,7 @@ mc_dict['diboson'] = \
 
 batch_list = []
 batch_list += sum([data_dict[n] for n in data_samples], []) 
-#batch_list += sum([mc_dict[n] for n in mc_samples], []) 
+batch_list += sum([mc_dict[n] for n in mc_samples], []) 
 
 batch = bm.BatchMaster(config_list = batch_list, 
                       stage_dir   = 'batch',

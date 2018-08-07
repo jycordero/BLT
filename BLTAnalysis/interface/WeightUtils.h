@@ -28,7 +28,6 @@
 #include "BaconAna/DataFormats/interface/TMuon.hh"
 
 using namespace std;
-using namespace baconhep;
 
 
 class EfficiencyContainer: public TObject{
@@ -39,7 +38,7 @@ class EfficiencyContainer: public TObject{
         void SetData(float, float, float, float);
         pair<double, double> GetEff() {return make_pair(_dataEff, _mcEff);};
         pair<double, double> GetErr() {return make_pair(_dataErr, _mcErr);};
-        float GetWeight() {return (_dataEff/_mcEff);};
+        float GetSF() {return (_dataEff/_mcEff);};
         float GetVar() {return pow(_dataEff/_mcEff, 2)*(pow(_dataErr/_dataEff, 2) + pow(_mcErr/_mcEff, 2));};
 
     private:
@@ -59,47 +58,50 @@ class WeightUtils: public TObject {
         void    SetDataPeriod(string);
         void    SetSelection(string);
 
-        EfficiencyContainer GetPUEff(float);
-        EfficiencyContainer GetTriggerEffWeight(string, TLorentzVector&) const;
+        float               GetPUWeight(float);
+        EfficiencyContainer GetDoubleMuonTriggerEff(string, int, TLorentzVector&) const;
+        EfficiencyContainer GetDoubleElectronTriggerEff(string, int, const baconhep::TElectron*) const;
+        EfficiencyContainer GetTriggerEff(string, TLorentzVector&) const;
         EfficiencyContainer GetMuonIDEff(TLorentzVector&) const; 
         EfficiencyContainer GetLooseMuonIDEff(TLorentzVector&) const;
         EfficiencyContainer GetMuonTightISOEff(TLorentzVector&) const; 
         EfficiencyContainer GetMuonLooseISOEff(TLorentzVector&) const; 
         EfficiencyContainer GetHZZMuonIDEff(TLorentzVector&) const;
         EfficiencyContainer GetElectronRecoEff(TLorentzVector&) const;
-        EfficiencyContainer GetHZZElectronRecoEff(TElectron&) const;
+        EfficiencyContainer GetHZZElectronRecoEff(const baconhep::TElectron*) const;
 
         ClassDef(WeightUtils, 0);
 
     private:
-        //input parameters
+        // Input parameters
         string _dataPeriod;
         string _sampleName;
         string _selection;
         bool   _isRealData;
 
-        // pileup
+        // Pileup
         TGraph  *_puReweight;
 
-        // muon trigger and ID/ISO scale factors
+        // Muon triggers, ID, iso
         TGraphAsymmErrors *_muSF_IsoMu24_DATA_BCDEF[4], *_muSF_IsoMu24_MC_BCDEF[4];
-        TGraphAsymmErrors *_muSF_ID_DATA_BCDEF[4], *_muSF_ID_MC_BCDEF[4];
-        TGraphAsymmErrors *_muSF_Loose_ID_DATA_BCDEF[4], *_muSF_Loose_ID_MC_BCDEF[4];
-        TGraphAsymmErrors *_muSF_ISO_DATA_BCDEF[4], *_muSF_ISO_MC_BCDEF[4]; 
-        TGraphAsymmErrors *_muSF2012_ISO_DATA_BCDEF[4], *_muSF2012_ISO_MC_BCDEF[4];
-
         TGraphAsymmErrors *_muSF_IsoMu24_DATA_GH[4], *_muSF_IsoMu24_MC_GH[4];  
-        TGraphAsymmErrors *_muSF_ID_DATA_GH[4], *_muSF_ID_MC_GH[4]; 
+        TGraphAsymmErrors *_eff_doubleMu_leg1_DATA[4], *_eff_doubleMu_leg1_MC[4];
+        TGraphAsymmErrors *_eff_doubleMu_leg2_DATA[4], *_eff_doubleMu_leg2_MC[4];
+        TGraphAsymmErrors *_muSF_Tight_ID_DATA_BCDEF[4], *_muSF_Tight_ID_MC_BCDEF[4];
+        TGraphAsymmErrors *_muSF_Tight_ID_DATA_GH[4], *_muSF_Tight_ID_MC_GH[4]; 
+        TGraphAsymmErrors *_muSF_Loose_ID_DATA_BCDEF[4], *_muSF_Loose_ID_MC_BCDEF[4];
         TGraphAsymmErrors *_muSF_Loose_ID_DATA_GH[4], *_muSF_Loose_ID_MC_GH[4];
-        TGraphAsymmErrors *_muSF_ISO_DATA_GH[4], *_muSF_ISO_MC_GH[4]; 
-        TGraphAsymmErrors *_muSF2012_ISO_DATA_GH[4], *_muSF2012_ISO_MC_GH[4];
-
+        TGraphAsymmErrors *_muSF_Tight_ISO_DATA_BCDEF[4], *_muSF_Tight_ISO_MC_BCDEF[4]; 
+        TGraphAsymmErrors *_muSF_Tight_ISO_DATA_GH[4], *_muSF_Tight_ISO_MC_GH[4]; 
+        TGraphAsymmErrors *_muSF_Loose_ISO_DATA_BCDEF[4], *_muSF_Loose_ISO_MC_BCDEF[4]; 
+        TGraphAsymmErrors *_muSF_Loose_ISO_DATA_GH[4], *_muSF_Loose_ISO_MC_GH[4]; 
         TH2F *_hzz_muIdSF, *_hzz_muIdErr;
 
-        // electron RECO/ID scale factors (what about ISO?)
-        TGraphErrors *_eleSF_RECO, *_eleSF_ID[5], *_hzz_eleSF_ID[13];
+        // Electron RECO/ID scale factors (what about ISO?)
+        TGraphErrors *_eleSF_RECO, *_eleSF_ID[5];
+        TH2F *_hzz_eleIdSF;
 
-        // electron trigger efficiencies (the bins for 2.1 < |eta| < 2.4 are copies of the 1.6 to 2.1 bins
+        // Electron trigger efficiencies (the bins for 2.1 < |eta| < 2.4 are copies of the 1.6 to 2.1 bins
         float _elePtBins[8] = {30, 32, 35, 40, 50, 60, 120, 9999};
         float _eleEtaBins[13] = {-2.4, -2.1, -1.6, -1.4, -0.8, -0.4, 0., 0.4, 0.8, 1.4, 1.6, 2.1, 2.4};
         float _ele_trigEff_data[12][7] = {
@@ -130,6 +132,8 @@ class WeightUtils: public TObject {
             {0.802, 0.848, 0.889, 0.914, 0.929, 0.944, 0.975},
             {0.802, 0.848, 0.889, 0.914, 0.929, 0.944, 0.975} // not real
         };
+        TH2F *_eff_doubleEle_leg1_DATA, *_eff_doubleEle_leg1_MC;
+        TH2F *_eff_doubleEle_leg2_DATA, *_eff_doubleEle_leg2_MC;
 };
 
 #endif

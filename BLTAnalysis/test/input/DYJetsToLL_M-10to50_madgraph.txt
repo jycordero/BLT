@@ -1,0 +1,1 @@
+root://cmseos.fnal.gov//store/group/lpcbacon/12d/DYJetsToLL_M-10to50_madgraph/Output_0.root

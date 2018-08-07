@@ -1,0 +1,1 @@
+root://cmseos.fnal.gov//store/group/lpcbacon/12d/DoubleEG_Run2016C-03Feb2017-v1/Output_0.root

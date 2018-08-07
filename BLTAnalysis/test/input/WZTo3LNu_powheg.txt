@@ -1,0 +1,1 @@
+root://cmseos.fnal.gov//store/group/lpcbacon/12d/WZTo3LNu_powheg/Output_0.root

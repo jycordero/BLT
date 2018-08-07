@@ -47,30 +47,18 @@ void MultileptonAnalyzer::Begin(TTree *tree)
     const std::string cmssw_base = getenv("CMSSW_BASE");
     std::string trigfilename = cmssw_base + "/src/BaconAna/DataFormats/data/HLTFile_25ns";
     trigger.reset(new baconhep::TTrigger(trigfilename));
-/*
-    if (params->selection == "mumu" || params->selection == "emu")
-    {
-        //triggerNames.push_back("HLT_IsoMu22_v*");
-        //triggerNames.push_back("HLT_IsoTkMu22_v*");
-        triggerNames.push_back("HLT_IsoMu24_v*");
-        triggerNames.push_back("HLT_IsoTkMu24_v*");
-        //triggerNames.push_back("HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_v*");
-        //triggerNames.push_back("HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v*");
-        //triggerNames.push_back("HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_v*");
-        //triggerNames.push_back("HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v*");
-    }
-    else if (params->selection == "ee")
-    {
-        triggerNames.push_back("HLT_Ele17_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_Ele8_CaloIdT_CaloIsoVL_TrkIdVL_TrkIsoVL_v*");
-    }
-*/
+    muonTriggerNames.push_back("HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_v*");
+    muonTriggerNames.push_back("HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v*");
+    muonTriggerNames.push_back("HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_v*");
+    muonTriggerNames.push_back("HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v*");
+    electronTriggerNames.push_back("HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v*");
+    electronTriggerNames.push_back("HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_v*");
 
     // Weight utility class
     weights.reset(new WeightUtils(params->period, params->selection, false)); // Lumi mask
     // Set up object to handle good run-lumi filtering if necessary
     lumiMask = RunLumiRangeMap();
     string jsonFileName = cmssw_base + "/src/BLT/BLTAnalysis/data/Cert_271036-284044_13TeV_23Sep2016ReReco_Collisions16_JSON.txt";
-                                    // "/src/BLT/BLTAnalysis/data/Cert_271036-284044_13TeV_PromptReco_Collisions16_JSON.txt";
     lumiMask.AddJSONFile(jsonFileName);
 
     // muon momentum corrections
@@ -88,16 +76,18 @@ void MultileptonAnalyzer::Begin(TTree *tree)
     outFile->cd();
     outTree = new TTree(outTreeName.c_str(), "bltTree");
 
-    // Branches
-    // event data
+
+
+    //--- BRANCHES ---//
+
+    // Event
     outTree->Branch("runNumber", &runNumber);
     outTree->Branch("evtNumber", &evtNumber, "eventNumber/l");
     outTree->Branch("lumiSection", &lumiSection);
     outTree->Branch("nPV", &nPV);
 
-    outTree->Branch("eventWeight", &eventWeight);
+    outTree->Branch("genWeight", &genWeight);
     outTree->Branch("PUWeight", &PUWeight);
-    outTree->Branch("PUVar", &PUVar);
     outTree->Branch("nPU", &nPU);
     outTree->Branch("nPartons", &nPartons);
 
@@ -107,22 +97,14 @@ void MultileptonAnalyzer::Begin(TTree *tree)
     outTree->Branch("evtMuonTriggered", &evtMuonTriggered);
     outTree->Branch("evtElectronTriggered", &evtElectronTriggered);
 
-    // object counters
+
+    // Counters
     outTree->Branch("nMuons", &nMuons);
     outTree->Branch("nElectrons", &nElectrons);
     outTree->Branch("nLeptons", &nLeptons);
 
-    outTree->Branch("nVetoElectrons", &nVetoElectrons);
-
+    outTree->Branch("nMVAElectrons", &nMVAElectrons);
     outTree->Branch("nLooseMuons", &nLooseMuons);
-    outTree->Branch("nLooseElectrons", &nLooseElectrons);
-    outTree->Branch("nLooseLeptons", &nLooseLeptons);
-
-    outTree->Branch("nMediumElectrons", &nMediumElectrons);
-
-    outTree->Branch("nTightMuons", &nTightMuons);
-    outTree->Branch("nTightElectrons", &nTightElectrons);
-    outTree->Branch("nTightLeptons", &nTightLeptons);
 
     outTree->Branch("nHZZMuons", &nHZZMuons);
     outTree->Branch("nHZZElectrons", &nHZZElectrons);
@@ -132,36 +114,25 @@ void MultileptonAnalyzer::Begin(TTree *tree)
     outTree->Branch("nGenElectrons", &nGenElectrons);
     outTree->Branch("nGenLeptons", &nGenLeptons);
 
-    // muons
+
+    // Muons
     outTree->Branch("muonP4", &muonsP4, 32000, 1);
     outTree->Branch("muonQ", &muonsQ);
+    outTree->Branch("muonFiredLeg1", &muonFiredLeg1);
+    outTree->Branch("muonFiredLeg2", &muonFiredLeg2);
+
+    outTree->Branch("muonIsLoose", &muonIsLoose);
+    outTree->Branch("muonIsHZZ", &muonIsHZZ);
+
+    outTree->Branch("muonEnergySF", &muonEnergySF);
+    outTree->Branch("muonHZZIDSF", &muonHZZIDSF);
+    outTree->Branch("muonTrigEffLeg1Data", &muonTrigEffLeg1Data);
+    outTree->Branch("muonTrigEffLeg1MC", &muonTrigEffLeg1MC);
+    outTree->Branch("muonTrigEffLeg2Data", &muonTrigEffLeg2Data);
+    outTree->Branch("muonTrigEffLeg2MC", &muonTrigEffLeg2MC);
+
     outTree->Branch("muonCombIso", &muonCombIso);
     outTree->Branch("muonTrkIso", &muonsTrkIso);
-
-    outTree->Branch("muonIsPF", &muonIsPF);
-    outTree->Branch("muonIsGlobal", &muonIsGlobal);
-    outTree->Branch("muonIsTracker", &muonIsTracker);
-    outTree->Branch("muonIsLoose", &muonIsLoose);
-    outTree->Branch("muonIsTight", &muonIsTight);
-    outTree->Branch("muonIsHZZ", &muonIsHZZ);
-    outTree->Branch("muonTriggered", &muonTriggered);
-
-    outTree->Branch("muonSF", &muonSF);
-    outTree->Branch("muonLooseIDWeight", &muonLooseIDWeight);
-    outTree->Branch("muonLooseIDVar", &muonLooseIDVar);
-    outTree->Branch("muonTightIDWeight", &muonTightIDWeight);
-    outTree->Branch("muonTightIDVar", &muonTightIDVar);
-    outTree->Branch("muonHZZIDWeight", &muonHZZIDWeight);
-    outTree->Branch("muonHZZIDVar", &muonHZZIDVar);
-    outTree->Branch("muonLooseIsoWeight", &muonLooseIsoWeight);
-    outTree->Branch("muonLooseIsoVar", &muonLooseIsoVar);
-    outTree->Branch("muonTightIsoWeight", &muonTightIsoWeight);
-    outTree->Branch("muonTightIsoVar", &muonTightIsoVar);
-    outTree->Branch("muonTriggerEffData", &muonTriggerEffData);
-    outTree->Branch("muonTriggerEffMC", &muonTriggerEffMC);
-    outTree->Branch("muonTriggerErrData", &muonTriggerErrData);
-    outTree->Branch("muonTriggerErrMC", &muonTriggerErrMC);
-
     outTree->Branch("muonD0", &muonD0);
     outTree->Branch("muonDz", &muonDz);
     outTree->Branch("muonSIP3d", &muonSIP3d);
@@ -170,36 +141,31 @@ void MultileptonAnalyzer::Begin(TTree *tree)
     outTree->Branch("muonNMatchStn", &muonNMatchStn);
     outTree->Branch("muonNPixHits", &muonNPixHits);
     outTree->Branch("muonNTkLayers", &muonNTkLayers);
+    outTree->Branch("muonIsGlobal", &muonIsGlobal);
+    outTree->Branch("muonIsTracker", &muonIsTracker);
     outTree->Branch("muonBestTrackType", &muonBestTrackType);
     outTree->Branch("muonNValidHits", &muonNValidHits);
 
-    // electrons
+
+    // Electrons
     outTree->Branch("electronP4", &electronsP4, 32000, 1);
     outTree->Branch("electronQ", &electronsQ);
+    outTree->Branch("electronFiredLeg1", &electronFiredLeg1);
+    outTree->Branch("electronFiredLeg2", &electronFiredLeg2);
+
+    outTree->Branch("electronIsMVA", &electronIsMVA);
+    outTree->Branch("electronIsHZZ", &electronIsHZZ);
+
+    outTree->Branch("electronEnergySF", &electronEnergySF);
+    outTree->Branch("electronHZZIDSF", &electronHZZIDSF);
+    outTree->Branch("electronTrigEffLeg1Data", &electronTrigEffLeg1Data);
+    outTree->Branch("electronTrigEffLeg1MC", &electronTrigEffLeg1MC);
+    outTree->Branch("electronTrigEffLeg2Data", &electronTrigEffLeg2Data);
+    outTree->Branch("electronTrigEffLeg2MC", &electronTrigEffLeg2MC);
+
     outTree->Branch("electronCombIso", &electronCombIso);
     outTree->Branch("electronTrkIso", &electronsTrkIso);
-
-    outTree->Branch("electronPassVetoIso", &electronPassVetoIso);
-    outTree->Branch("electronPassLooseIso", &electronPassLooseIso);
-    outTree->Branch("electronPassMediumIso", &electronPassMediumIso);
-    outTree->Branch("electronPassTightIso", &electronPassTightIso);
-    outTree->Branch("electronIsVeto", &electronIsVeto);
-    outTree->Branch("electronIsLoose", &electronIsLoose);
-    outTree->Branch("electronIsMedium", &electronIsMedium);
-    outTree->Branch("electronIsTight", &electronIsTight);
-    outTree->Branch("electronIsHZZ", &electronIsHZZ);
-    outTree->Branch("electronTriggered", &electronTriggered);
-
-    outTree->Branch("electronSF", &electronSF);
-    outTree->Branch("electronRecoWeight", &electronRecoWeight);
-    outTree->Branch("electronRecoVar", &electronRecoVar);
-    outTree->Branch("electronHZZRecoWeight", &electronHZZRecoWeight);
-    outTree->Branch("electronHZZRecoVar", &electronHZZRecoVar);
-    outTree->Branch("electronTriggerEffData", &electronTriggerEffData);
-    outTree->Branch("electronTriggerEffMC", &electronTriggerEffMC);
-    outTree->Branch("electronTriggerErrData", &electronTriggerErrData);
-    outTree->Branch("electronTriggerErrMC", &electronTriggerErrMC);
-
+    outTree->Branch("electronMVA", &electronMVA);
     outTree->Branch("electronD0", &electronD0);
     outTree->Branch("electronDz", &electronDz);
     outTree->Branch("electronSIP3d", &electronSIP3d);
@@ -212,7 +178,8 @@ void MultileptonAnalyzer::Begin(TTree *tree)
     outTree->Branch("electronNMissHits", &electronNMissHits);
     outTree->Branch("electronIsConv", &electronIsConv);
 
-    // gen-level particles
+
+    // Gen particles
     outTree->Branch("genMuonP4", &genMuonsP4, 32000, 1);
     outTree->Branch("genMuonQ", &genMuonsQ);
     outTree->Branch("genMuonStatus", &genMuonStatus);
@@ -221,10 +188,8 @@ void MultileptonAnalyzer::Begin(TTree *tree)
     outTree->Branch("genElectronQ", &genElectronsQ);
     outTree->Branch("genElectronStatus", &genElectronStatus);
 
-//  outTree->Branch("genIntermID", &genIntermID);
-//  outTree->Branch("genIntermMass", &genIntermMass);
 
-    // event counter
+    // Histograms
     string outHistName = params->get_output_treename("TotalEvents");
     hTotalEvents = new TH1D(outHistName.c_str(), "TotalEvents", 10, 0.5, 10.5);
     outHistName = params->get_output_treename("AcceptedEvents");
@@ -236,41 +201,33 @@ void MultileptonAnalyzer::Begin(TTree *tree)
 
 Bool_t MultileptonAnalyzer::Process(Long64_t entry)
 {
-    /* Clear counters & containers */
+
+
+    //--- CLEAR CONTAINERS ---//
+
     nMuons = 0;                         nElectrons = 0;                     nLeptons = 0; 
-    nLooseMuons = 0;                    nLooseElectrons = 0;                nLooseLeptons = 0; 
-    nVetoElectrons = 0;                 nMediumElectrons = 0;
+    nLooseMuons = 0;                    nMVAElectrons = 0;              
     nHZZMuons = 0;                      nHZZElectrons = 0;                  nHZZLeptons = 0; 
-    nTightMuons = 0;                    nTightElectrons = 0;                nTightLeptons = 0; 
     nGenMuons = 0;                      nGenElectrons = 0;                  nGenLeptons = 0; 
 
-    muonsP4ptr.Delete();                muonsQ.clear();                     muonCombIso.clear();                muonsTrkIso.clear();
-    muonIsPF.clear();                   muonIsGlobal.clear();               muonIsTracker.clear();
-    muonIsLoose.clear();                muonIsTight.clear();
-    muonIsHZZ.clear();                  muonTriggered.clear();              muonSF.clear();
-    muonLooseIDWeight.clear();          muonLooseIDVar.clear();             muonTightIDWeight.clear();          muonTightIDVar.clear();
-    muonHZZIDWeight.clear();            muonHZZIDVar.clear();
-    muonLooseIsoWeight.clear();         muonLooseIsoVar.clear();            muonTightIsoWeight.clear();         muonTightIsoVar.clear();
-    muonTriggerEffData.clear();         muonTriggerEffMC.clear();           muonTriggerErrData.clear();         muonTriggerErrMC.clear();
-    muonD0.clear();                     muonDz.clear();                     muonSIP3d.clear();
-    muonMuNChi2.clear();                muonPtErr.clear();
-    muonNMatchStn.clear();              muonNPixHits.clear();               muonNTkLayers.clear();
-    muonBestTrackType.clear();          muonNValidHits.clear();
+    muonsP4ptr.Delete();                muonsQ.clear();                     muonFiredLeg1.clear();              muonFiredLeg2.clear();
+    muonIsLoose.clear();                muonIsHZZ.clear();                  muonEnergySF.clear();               muonHZZIDSF.clear();
+    muonTrigEffLeg1Data.clear();        muonTrigEffLeg1MC.clear();          muonTrigEffLeg2Data.clear();        muonTrigEffLeg2MC.clear(); 
+    muonCombIso.clear();                muonsTrkIso.clear();                muonD0.clear();                     muonDz.clear();                     
+    muonSIP3d.clear();                  muonPtErr.clear();                  muonBestTrackType.clear();          muonMuNChi2.clear();
+    muonNMatchStn.clear();              muonNPixHits.clear();               muonNTkLayers.clear();              muonNValidHits.clear();
+    muonIsGlobal.clear();               muonIsTracker.clear();
                                                                                                         
-    electronsP4ptr.Delete();            electronsQ.clear();                 electronCombIso.clear();            electronsTrkIso.clear();
-    electronPassVetoIso.clear();        electronPassLooseIso.clear();       electronPassMediumIso.clear();      electronPassTightIso.clear();
-    electronIsVeto.clear();             electronIsLoose.clear();            electronIsMedium.clear();           electronIsTight.clear();
-    electronIsHZZ.clear();              electronTriggered.clear();          electronSF.clear();
-    electronRecoWeight.clear();         electronRecoVar.clear();            electronHZZRecoWeight.clear();      electronHZZRecoVar.clear();
-    electronTriggerEffData.clear();     electronTriggerEffMC.clear();       electronTriggerErrData.clear();     electronTriggerErrMC.clear();
-    electronD0.clear();                 electronDz.clear();                 electronSIP3d.clear();
-    electronScEta.clear();              electronSieie.clear();
-    electronEnergyInv.clear();          electronHOverE.clear();             electronDEtaIn.clear();             electronDPhiIn.clear();
+    electronsP4ptr.Delete();            electronsQ.clear();                 electronFiredLeg1.clear();          electronFiredLeg2.clear();
+    electronIsMVA.clear();              electronIsHZZ.clear();              electronEnergySF.clear();           electronHZZIDSF.clear();
+    electronTrigEffLeg1Data.clear();    electronTrigEffLeg1MC.clear();      electronTrigEffLeg2Data.clear();    electronTrigEffLeg2MC.clear();
+    electronCombIso.clear();            electronsTrkIso.clear();            electronD0.clear();                 electronDz.clear();
+    electronSIP3d.clear();              electronMVA.clear();                electronEnergyInv.clear();          electronHOverE.clear();
+    electronDEtaIn.clear();             electronDPhiIn.clear();             electronScEta.clear();              electronSieie.clear();
     electronNMissHits.clear();          electronIsConv.clear();
 
     genMuonsP4ptr.Delete();             genMuonsQ.clear();                  genMuonStatus.clear();
     genElectronsP4ptr.Delete();         genElectronsQ.clear();              genElectronStatus.clear();
-//  genIntermID.clear();                genIntermMass.clear();
 
 
 
@@ -308,16 +265,16 @@ Bool_t MultileptonAnalyzer::Process(Long64_t entry)
    
 
 
-    /* Event weights */
-    eventWeight   = 1.;
-    PUWeight      = 1.;
-    PUVar         = 0;
-    nPU           = 0;
-    nPartons      = 0;
-    runNumber     = fInfo->runNum;
-    evtNumber     = fInfo->evtNum;
-    lumiSection   = fInfo->lumiSec;
-    nPV           = fPVArr->GetEntries();
+    //--- EVENT WEIGHTS ---//
+
+    genWeight   = 1.;
+    PUWeight    = 1.;
+    nPU         = 0;
+    nPartons    = 0;
+    runNumber   = fInfo->runNum;
+    evtNumber   = fInfo->evtNum;
+    lumiSection = fInfo->lumiSec;
+    nPV         = fPVArr->GetEntries();
 
     if (!isData)
     {
@@ -329,15 +286,15 @@ Bool_t MultileptonAnalyzer::Process(Long64_t entry)
 
 
         // Save gen weight for amc@nlo Drell-Yan sample
-        eventWeight = fGenEvtInfo->weight > 0 ? 1 : -1; 
-        if (eventWeight < 0)
+        genWeight = fGenEvtInfo->weight > 0 ? 1 : -1; 
+        if (genWeight < 0)
             hTotalEvents->Fill(10);
 
 
         unsigned muCount = 0, eCount = 0;
         int idSum = 0;
         TLorentzVector lepSum, muSum, eSum;
-        hAcceptedEvents->Fill(1, eventWeight);
+        hAcceptedEvents->Fill(1, genWeight);
 
         for (int i = 0; i < fGenParticleArr->GetEntries(); ++i)
         {
@@ -383,19 +340,19 @@ Bool_t MultileptonAnalyzer::Process(Long64_t entry)
         if (idSum == 0 && lepSum.M() < 100 && lepSum.M() > 80)
         {
             if (muCount == 2 && eCount == 0)            // mumu = 3
-                hAcceptedEvents->Fill(3, eventWeight);
+                hAcceptedEvents->Fill(3, genWeight);
             else if (muCount == 0 && eCount == 2)       // ee   = 4
-                hAcceptedEvents->Fill(4, eventWeight);
+                hAcceptedEvents->Fill(4, genWeight);
             else if (muCount == 4 && eCount == 0)       // 4m   = 6
-                hAcceptedEvents->Fill(6, eventWeight);
+                hAcceptedEvents->Fill(6, genWeight);
             else if (muCount == 2 && eCount == 2        // 2m2e = 7
                      && muSum.M() > eSum.M())
-                hAcceptedEvents->Fill(7, eventWeight);
+                hAcceptedEvents->Fill(7, genWeight);
             else if (muCount == 2 && eCount == 2        // 2e2m = 8
                      && muSum.M() < eSum.M())
-                hAcceptedEvents->Fill(8, eventWeight);
+                hAcceptedEvents->Fill(8, genWeight);
             else if (muCount == 0 && eCount == 4)       // 4e   = 9
-                hAcceptedEvents->Fill(9, eventWeight);
+                hAcceptedEvents->Fill(9, genWeight);
         }
 /* 
         if (lepCount != 2)
@@ -413,14 +370,11 @@ Bool_t MultileptonAnalyzer::Process(Long64_t entry)
 
         // Pileup reweighting
         nPU = fInfo->nPUmean;
-        EfficiencyContainer effCont = weights->GetPUEff(fInfo->nPUmean);
-        PUWeight = effCont.GetWeight();
-        PUVar = effCont.GetVar();
+        PUWeight = weights->GetPUWeight(fInfo->nPUmean);
     }
 
 
-
-    /* Lumi mask */
+    // Lumi mask
     if (isData)
     {
         RunLumiRangeMap::RunLumiPairType rl(fInfo->runNum, fInfo->lumiSec);
@@ -431,9 +385,21 @@ Bool_t MultileptonAnalyzer::Process(Long64_t entry)
 
 
 
-    /* Trigger selection */
-    evtMuonTriggered     = trigger->pass("HLT_IsoMu24_v*", fInfo->triggerBits) || trigger->pass("HLT_IsoTkMu24_v*", fInfo->triggerBits);
-    evtElectronTriggered = trigger->pass("HLT_Ele27_WPTight_Gsf_v*", fInfo->triggerBits);
+    //--- TRIGGER SELECTION ---//
+
+    evtMuonTriggered = kFALSE;
+    for (unsigned i = 0; i < muonTriggerNames.size(); i++)
+    {
+        if (trigger->pass(muonTriggerNames[i], fInfo->triggerBits))
+            evtMuonTriggered = kTRUE;
+    }
+
+    evtElectronTriggered = kFALSE;
+    for (unsigned i = 0; i < electronTriggerNames.size(); i++)
+    {
+        if (trigger->pass(electronTriggerNames[i], fInfo->triggerBits))
+            evtElectronTriggered = kTRUE;
+    }
 
     bool passTrigger = evtMuonTriggered || evtElectronTriggered;
 
@@ -449,11 +415,13 @@ Bool_t MultileptonAnalyzer::Process(Long64_t entry)
 
 
 
-    ///////////////////
-    // Select objects//
-    ///////////////////
+    ////////////////////
+    // SELECT OBJECTS //
+    ////////////////////
 
-    /* VERTICES */
+
+    //--- VERTICES ---//
+
     if (fInfo->hasGoodPV)
     {
         assert(fPVArr->GetEntries() != 0);
@@ -470,7 +438,8 @@ Bool_t MultileptonAnalyzer::Process(Long64_t entry)
 
 
 
-    /* MUONS */
+    //--- MUONS ---//
+
     vector<TMuon*> muons;
     for (int i=0; i < fMuonArr->GetEntries(); i++)
     {
@@ -487,6 +456,7 @@ Bool_t MultileptonAnalyzer::Process(Long64_t entry)
     }
     sort(muons.begin(), muons.end(), sort_by_higher_pt<TMuon>);
 
+
     // Second pass: store P4 & SF; identify loose, HZZ, & tight muons
     for (unsigned i = 0; i < nMuons; i++)
     {
@@ -498,13 +468,16 @@ Bool_t MultileptonAnalyzer::Process(Long64_t entry)
             cout << "(" << muonP4.Pt() << ", " << muon->pt << ", " << muon->eta << ", " << muon->phi 
                  << ") , " << muon->q << ", " << muon->trkIso << endl;
 
+
         // Store P4 before corrections
         new(muonsP4ptr[i]) TLorentzVector(muonP4);
 
+
         // Apply Rochester correction
-        muonSF.push_back(GetRochesterCorrection(muon, muonCorr, rng, isData));
-        muon->pt *= muonSF.back();
+        muonEnergySF.push_back(GetRochesterCorrection(muon, muonCorr, rng, isData));
+        muon->pt *= muonEnergySF.back();
         muonP4.SetPtEtaPhiM(muon->pt, muon->eta, muon->phi, MUON_MASS);
+
 
         // Remove muons with very small deltaR
         float minDeltaR = 1e6;
@@ -516,6 +489,7 @@ Bool_t MultileptonAnalyzer::Process(Long64_t entry)
             if (dr < minDeltaR)
                 minDeltaR = dr;
         }
+
 
         // Remove muon track pt from muon track isolation variable
         for (unsigned j = i + 1; j < nMuons; j++)
@@ -532,11 +506,10 @@ Bool_t MultileptonAnalyzer::Process(Long64_t entry)
         if (sync_print)
             cout << "(pt, pt_raw, eta, phi), q, trk_iso" << endl;
 
+
         // Check muon ID
         if (muon->pogIDBits & baconhep::kPOGLooseMuon)
             nLooseMuons++;
-        if (PassMuonTightID(muon))
-            nTightMuons++;
         if (PassMuonHZZTightID(muon))
             nHZZMuons++;
     }
@@ -544,7 +517,8 @@ Bool_t MultileptonAnalyzer::Process(Long64_t entry)
 
 
 
-    /* ELECTRONS */
+    //--- ELECTRONS ---//
+
     vector<TElectron*> electrons;
     for (int i = 0; i < fElectronArr->GetEntries(); i++)
     {
@@ -559,6 +533,7 @@ Bool_t MultileptonAnalyzer::Process(Long64_t entry)
     }
     sort(electrons.begin(), electrons.end(), sort_by_higher_pt<TElectron>);
 
+
     // Second pass: store P4 & SF; identify loose, HZZ, & tight electrons
     for (unsigned i = 0; i < nElectrons; i++)
     {
@@ -570,31 +545,24 @@ Bool_t MultileptonAnalyzer::Process(Long64_t entry)
         new(electronsP4ptr[i]) TLorentzVector(electronP4);
 
         // Apply electron energy correction
-        electronSF.push_back(GetElectronPtSF(electron, electronScaler, rng, runNumber));
-        electron->pt *= electronSF.back();
+        electronEnergySF.push_back(GetElectronPtSF(electron, electronScaler, rng, runNumber));
+        electron->pt *= electronEnergySF.back();
         electronP4.SetPtEtaPhiM(electron->pt, electron->eta, electron->phi, ELE_MASS);
 
         // Check electron ID
-        if (particleSelector->PassElectronID(electron, cuts->vetoElID))
-            nVetoElectrons++;
-        if (particleSelector->PassElectronID(electron, cuts->looseElID))
-            nLooseElectrons++;
-        if (particleSelector->PassElectronID(electron, cuts->mediumElID))
-            nMediumElectrons++;
-        if (particleSelector->PassElectronID(electron, cuts->tightElID))
-            nTightElectrons++;
+        if (particleSelector->PassElectronMVA(electron, cuts->hzzMVAID))
+            nMVAElectrons++;
         if (PassElectronHZZTightID(electron, particleSelector, cuts, fInfo->rhoJet))
             nHZZElectrons++;
     }
 
     nLeptons        = nMuons + nElectrons;
-    nLooseLeptons   = nLooseMuons + nLooseElectrons;
-    nTightLeptons   = nTightMuons + nTightElectrons;
     nHZZLeptons     = nHZZMuons + nHZZElectrons;
 
 
 
-    /* MET */
+    //--- MET ---//
+
     met    = fInfo->pfMETC;
     metPhi = fInfo->pfMETCphi;
 
@@ -610,9 +578,9 @@ Bool_t MultileptonAnalyzer::Process(Long64_t entry)
 
 
 
-    ///////////////////////////////
-    // Apply analysis selections //
-    ///////////////////////////////
+    ///////////////
+    // SELECTION //
+    ///////////////
 
     if (params->selection == "emu")
     {
@@ -623,7 +591,13 @@ Bool_t MultileptonAnalyzer::Process(Long64_t entry)
 
 
 
-        /* MUONS */
+        /////////////////////
+        // FILL CONTAINERS //
+        /////////////////////
+
+
+        //--- MUONS ---//
+
         for (unsigned i = 0; i < nMuons; i++)
         {
             // Basic quantities
@@ -632,50 +606,55 @@ Bool_t MultileptonAnalyzer::Process(Long64_t entry)
             copy_p4(muons[i], MUON_MASS, muonP4);
 
             muonsQ.push_back(muon->q);
-            muonCombIso.push_back(GetMuonIsolation(muon));
-            muonsTrkIso.push_back(muon->trkIso);
+
 
             // Boolean ID
-            muonIsPF.push_back(muon->typeBits & baconhep::kPFMuon);
-            muonIsGlobal.push_back(muon->typeBits & baconhep::kGlobal);
-            muonIsTracker.push_back(muon->typeBits & baconhep::kTracker);
-
             muonIsLoose.push_back(muon->pogIDBits & baconhep::kPOGLooseMuon);
-            muonIsTight.push_back(PassMuonTightID(muon));
             muonIsHZZ.push_back(PassMuonHZZTightID(muon));
-            muonTriggered.push_back(trigger->passObj("HLT_IsoMu24_v*", 1, muon->hltMatchBits) || trigger->passObj("HLT_IsoTkMu24_v*", 1, muon->hltMatchBits));
 
-            // Efficiency SFs and errors
             EfficiencyContainer effCont;
+            pair<float, float> trigEff;
            
-            effCont = weights->GetLooseMuonIDEff(muonP4);
-            muonLooseIDWeight.push_back(effCont.GetWeight());
-            muonLooseIDVar.push_back(effCont.GetVar());
-
-            effCont = weights->GetMuonIDEff(muonP4);
-            muonTightIDWeight.push_back(effCont.GetWeight());
-            muonTightIDVar.push_back(effCont.GetVar());
-
-            effCont = weights->GetMuonLooseISOEff(muonP4);
-            muonLooseIsoWeight.push_back(effCont.GetWeight());
-            muonLooseIsoVar.push_back(effCont.GetVar());
-
-            effCont = weights->GetMuonTightISOEff(muonP4);
-            muonTightIsoWeight.push_back(effCont.GetWeight());
-            muonTightIsoVar.push_back(effCont.GetVar());
-
             effCont = weights->GetHZZMuonIDEff(muonP4);
-            muonHZZIDWeight.push_back(effCont.GetWeight());
-            muonHZZIDVar.push_back(effCont.GetVar());
+            muonHZZIDSF.push_back(effCont.GetSF());
 
-            effCont = weights->GetTriggerEffWeight("HLT_IsoMu24_v*", muonP4);
-            pair<float, float> trigEff = effCont.GetEff(), trigErr = effCont.GetErr();
-            muonTriggerEffData.push_back(trigEff.first);
-            muonTriggerEffMC.push_back(trigEff.second);
-            muonTriggerErrData.push_back(trigErr.first);
-            muonTriggerErrMC.push_back(trigErr.second);
+            
+            // Trigger
+            bool firedLeg1 = kFALSE, firedLeg2 = kFALSE;
+            for (unsigned i = 0; i < muonTriggerNames.size(); i++)
+            {
+                if (trigger->passObj(muonTriggerNames[i], 1, muon->hltMatchBits))
+                    firedLeg1 = kTRUE;
+                if (trigger->passObj(muonTriggerNames[i], 2, muon->hltMatchBits))
+                    firedLeg2 = kTRUE;
+            }
+            muonFiredLeg1.push_back(firedLeg1);
+            muonFiredLeg2.push_back(firedLeg2);
+
+            effCont = weights->GetDoubleMuonTriggerEff("HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_v*", 1, muonP4);
+            trigEff = effCont.GetEff();
+            if (!firedLeg1)
+            {
+                trigEff.first = 0;
+                trigEff.second = 0;
+            }
+            muonTrigEffLeg1Data.push_back(trigEff.first);
+            muonTrigEffLeg1MC.push_back(trigEff.second);
+
+            effCont = weights->GetDoubleMuonTriggerEff("HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_v*", 2, muonP4);
+            trigEff = effCont.GetEff();
+            if (!firedLeg2)
+            {
+                trigEff.first = 0;
+                trigEff.second = 0;
+            }
+            muonTrigEffLeg2Data.push_back(trigEff.first);
+            muonTrigEffLeg2MC.push_back(trigEff.second);
+
 
             // ID criteria
+            muonCombIso.push_back(GetMuonIsolation(muon));
+            muonsTrkIso.push_back(muon->trkIso);
             muonD0.push_back(muon->d0);
             muonDz.push_back(muon->dz);
             muonSIP3d.push_back(muon->sip3d);
@@ -684,13 +663,16 @@ Bool_t MultileptonAnalyzer::Process(Long64_t entry)
             muonNMatchStn.push_back(muon->nMatchStn);
             muonNPixHits.push_back(muon->nPixHits);
             muonNTkLayers.push_back(muon->nTkLayers);
+            muonIsGlobal.push_back(muon->typeBits & baconhep::kGlobal);
+            muonIsTracker.push_back(muon->typeBits & baconhep::kTracker);
             muonBestTrackType.push_back(muon->btt);
             muonNValidHits.push_back(muon->nValidHits);
         }
 
 
 
-        /* ELECTRONS */
+        //--- ELECTRONS ---//
+
         for (unsigned i = 0; i < nElectrons; i++)
         {
             // Basic quantities
@@ -699,44 +681,59 @@ Bool_t MultileptonAnalyzer::Process(Long64_t entry)
             copy_p4(electrons[i], ELE_MASS, electronP4);
 
             electronsQ.push_back(electron->q);
-            electronCombIso.push_back(GetElectronIsolation(electron, fInfo->rhoJet));
-            electronsTrkIso.push_back(electron->trkIso);
 
-            // Boolean ID/iso
-            electronPassVetoIso.push_back(particleSelector->PassElectronIso(electron, cuts->vetoElIso, cuts->EAEl));
-            electronPassLooseIso.push_back(particleSelector->PassElectronIso(electron, cuts->looseElIso, cuts->EAEl));
-            electronPassMediumIso.push_back(particleSelector->PassElectronIso(electron, cuts->mediumElIso, cuts->EAEl));
-            electronPassTightIso.push_back(particleSelector->PassElectronIso(electron, cuts->tightElIso, cuts->EAEl));
 
-            electronIsVeto.push_back(particleSelector->PassElectronID(electron, cuts->vetoElID));
-            electronIsLoose.push_back(particleSelector->PassElectronID(electron, cuts->looseElID));
-            electronIsMedium.push_back(particleSelector->PassElectronID(electron, cuts->mediumElID));
-            electronIsTight.push_back(particleSelector->PassElectronID(electron, cuts->tightElID));
+            // Boolean ID
+            electronIsMVA.push_back(particleSelector->PassElectronMVA(electron, cuts->hzzMVAID));
             electronIsHZZ.push_back(PassElectronHZZTightID(electron, particleSelector, cuts, fInfo->rhoJet));
-            electronTriggered.push_back(trigger->passObj("HLT_Ele27_WPTight_Gsf_v*", 1, electron->hltMatchBits));
 
-            // Efficiency SFs and errors
             EfficiencyContainer effCont;
+            pair<float, float> trigEff;
 
-            effCont = weights->GetElectronRecoEff(electronP4);
-            electronRecoWeight.push_back(effCont.GetWeight());
-            electronRecoVar.push_back(effCont.GetVar());
+            effCont = weights->GetHZZElectronRecoEff(electron);
+            electronHZZIDSF.push_back(effCont.GetSF());
+           
 
-            effCont = weights->GetHZZElectronRecoEff(*electron);
-            electronHZZRecoWeight.push_back(effCont.GetWeight());
-            electronHZZRecoVar.push_back(effCont.GetVar());
+            // Trigger
+            bool firedLeg1 = kFALSE, firedLeg2 = kFALSE;
+            for (unsigned i = 0; i < electronTriggerNames.size(); i++)
+            {
+                if (trigger->passObj(electronTriggerNames[i], 1, electron->hltMatchBits))
+                    firedLeg1 = kTRUE;
+                if (trigger->passObj(electronTriggerNames[i], 2, electron->hltMatchBits))
+                    firedLeg2 = kTRUE;
+            }
+            electronFiredLeg1.push_back(firedLeg1);
+            electronFiredLeg2.push_back(firedLeg2);
 
-            effCont = weights->GetTriggerEffWeight("HLT_Ele27_WPTight_Gsf_v*", electronP4);
-            pair<float, float> trigEff = effCont.GetEff(), trigErr = effCont.GetErr();
-            electronTriggerEffData.push_back(trigEff.first);
-            electronTriggerEffMC.push_back(trigEff.second);
-            electronTriggerErrData.push_back(trigErr.first);
-            electronTriggerErrMC.push_back(trigErr.second);
+            effCont = weights->GetDoubleElectronTriggerEff("HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_v*", 1, electron);
+            trigEff = effCont.GetEff();
+            if (!firedLeg1)
+            {
+                trigEff.first = 0;
+                trigEff.second = 0;
+            }
+            electronTrigEffLeg1Data.push_back(trigEff.first);
+            electronTrigEffLeg1MC.push_back(trigEff.second);
+
+            effCont = weights->GetDoubleElectronTriggerEff("HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_v*", 2, electron);
+            trigEff = effCont.GetEff();
+            if (!firedLeg2)
+            {
+                trigEff.first = 0;
+                trigEff.second = 0;
+            }
+            electronTrigEffLeg2Data.push_back(trigEff.first);
+            electronTrigEffLeg2MC.push_back(trigEff.second);
+
 
             // ID criteria
+            electronCombIso.push_back(GetElectronIsolation(electron, fInfo->rhoJet));
+            electronsTrkIso.push_back(electron->trkIso);
             electronD0.push_back(electron->d0);
             electronDz.push_back(electron->dz);
             electronSIP3d.push_back(electron->sip3d);
+            electronMVA.push_back(electron->mvaHZZ);
             electronScEta.push_back(electron->scEta);
             electronSieie.push_back(electron->sieie);
             electronEnergyInv.push_back(fabs(1. - electron->eoverp) / electron->ecalEnergy);
@@ -749,7 +746,8 @@ Bool_t MultileptonAnalyzer::Process(Long64_t entry)
 
 
 
-        /* GEN PARTICLES */
+        //--- GEN PARTICLES ---//
+
         if (!isData)
         {
             unsigned muonIdx = 0, electronIdx = 0;
@@ -786,11 +784,6 @@ Bool_t MultileptonAnalyzer::Process(Long64_t entry)
                     genElectronStatus.push_back(particle->status);
                     electronIdx++;
                 }
-//              else if (particle->status == 22)
-//              {
-//                  genIntermID.push_back(particle->pdgId);
-//                  genIntermMass.push_back(particle->mass);
-//              }
 
                 nGenLeptons = nGenMuons + nGenElectrons;
 
@@ -992,7 +985,7 @@ bool MultileptonAnalyzer::PassElectronHZZTightID(const baconhep::TElectron* elec
     electronP4.SetPtEtaPhiM(electron->pt, electron->eta, electron->phi, ELE_MASS);
 
     if (    electron->pt > 5.   &&  fabs(electron->scEta) < 2.5
-//      &&  particleSelector->PassElectronMVA(electron, cuts->hzzMVAID)
+        &&  particleSelector->PassElectronMVA(electron, cuts->hzzMVAID)
         &&  fabs(electron->d0)  < 0.5   &&  fabs(electron->dz)  < 1.0
         &&  fabs(electron->sip3d) < 4.0 
         &&  GetElectronIsolation(electron, rho)/electronP4.Pt() < 0.35)
