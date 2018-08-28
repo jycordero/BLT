@@ -62,7 +62,7 @@ void MultileptonAnalyzer::Begin(TTree *tree)
     lumiMask.AddJSONFile(jsonFileName);
 
     // muon momentum corrections
-    muonCorr = new RoccoR(cmssw_base + "/src/BLT/BLTAnalysis/data/rcdata.2016.v3");
+    muonCorr = new RoccoR(cmssw_base + "/src/BLT/BLTAnalysis/data/RoccoR2016v1.txt");
 
     // electron scale corrections
     electronScaler = new EnergyScaleCorrection(cmssw_base + "/src/BLT/BLTAnalysis/data");

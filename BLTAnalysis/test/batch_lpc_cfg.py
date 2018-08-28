@@ -13,9 +13,10 @@ location   = 'lpc'
 #data_samples = ['single_mu', 'single_el']
 #mc_samples   = ['selected', 'zjets']
 
-data_samples = ['double_mu', 'double_eg']
-mc_samples   = ['zjets_12d', 'ttbar_12d', 'diboson_12d']
+#data_samples = ['double_mu', 'double_eg']
+#mc_samples   = ['zjets_12d', 'ttbar_12d', 'diboson_12d']
 
+data_samples = ['double_eg']
 
 
 ''' 
@@ -72,36 +73,36 @@ data_dict['double_mu'] = \
 
 data_dict['double_eg'] = \
 [
-    cfg(data_name = 'electron_2016B_v2',
-        path     = '{0}/DoubleEG_Run2016B-03Feb2017_ver2-v2'.format(path),
-        nJobs    = 51,
-        suffix   = 'electron_2016B'
-        ),
-    cfg(data_name = 'electron_2016C_v1',
-        path     = '{0}/DoubleEG_Run2016C-03Feb2017-v1'.format(path),
-        nJobs    = 36,
-        suffix   = 'electron_2016C'
-        ),
-    cfg(data_name = 'electron_2016D_v1',
-        path     = '{0}/DoubleEG_Run2016D-03Feb2017-v1'.format(path),
-        nJobs    = 51,
-        suffix   = 'electron_2016D'
-        ),
-    cfg(data_name = 'electron_2016E_v1',
-        path     = '{0}/DoubleEG_Run2016E-03Feb2017-v1'.format(path),
-        nJobs    = 51,
-        suffix   = 'electron_2016E'
-        ),
-    cfg(data_name = 'electron_2016F_v1',
-        path     = '{0}/DoubleEG_Run2016F-03Feb2017-v1'.format(path),
-        nJobs    = 51,
-        suffix   = 'electron_2016F'
-        ),
-    cfg(data_name = 'electron_2016G_v1',
-        path     = '{0}/DoubleEG_Run2016G-03Feb2017-v1'.format(path),
-        nJobs    = 51,
-        suffix   = 'electron_2016G'
-        ),
+#   cfg(data_name = 'electron_2016B_v2',
+#       path     = '{0}/DoubleEG_Run2016B-03Feb2017_ver2-v2'.format(path),
+#       nJobs    = 51,
+#       suffix   = 'electron_2016B'
+#       ),
+#   cfg(data_name = 'electron_2016C_v1',
+#       path     = '{0}/DoubleEG_Run2016C-03Feb2017-v1'.format(path),
+#       nJobs    = 36,
+#       suffix   = 'electron_2016C'
+#       ),
+#   cfg(data_name = 'electron_2016D_v1',
+#       path     = '{0}/DoubleEG_Run2016D-03Feb2017-v1'.format(path),
+#       nJobs    = 51,
+#       suffix   = 'electron_2016D'
+#       ),
+#   cfg(data_name = 'electron_2016E_v1',
+#       path     = '{0}/DoubleEG_Run2016E-03Feb2017-v1'.format(path),
+#       nJobs    = 51,
+#       suffix   = 'electron_2016E'
+#       ),
+#   cfg(data_name = 'electron_2016F_v1',
+#       path     = '{0}/DoubleEG_Run2016F-03Feb2017-v1'.format(path),
+#       nJobs    = 51,
+#       suffix   = 'electron_2016F'
+#       ),
+#   cfg(data_name = 'electron_2016G_v1',
+#       path     = '{0}/DoubleEG_Run2016G-03Feb2017-v1'.format(path),
+#       nJobs    = 51,
+#       suffix   = 'electron_2016G'
+#       ),
     cfg(data_name = 'electron_2016H_v2',
         path     = '{0}/DoubleEG_Run2016H-03Feb2017_ver2-v1'.format(path),
         nJobs    = 51,
@@ -707,7 +708,7 @@ mc_dict['diboson'] = \
 
 batch_list = []
 batch_list += sum([data_dict[n] for n in data_samples], []) 
-batch_list += sum([mc_dict[n] for n in mc_samples], []) 
+#batch_list += sum([mc_dict[n] for n in mc_samples], []) 
 
 batch = bm.BatchMaster(config_list = batch_list, 
                       stage_dir   = 'batch',
