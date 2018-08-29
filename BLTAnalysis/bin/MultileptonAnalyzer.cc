@@ -64,9 +64,6 @@ void MultileptonAnalyzer::Begin(TTree *tree)
     // muon momentum corrections
     muonCorr = new RoccoR(cmssw_base + "/src/BLT/BLTAnalysis/data/RoccoR2016v1.txt");
 
-    // electron scale corrections
-    electronScaler = new EnergyScaleCorrection(cmssw_base + "/src/BLT/BLTAnalysis/data");
-
 
     // Prepare the output tree
     string outFileName = params->get_output_filename("output");
@@ -545,9 +542,9 @@ Bool_t MultileptonAnalyzer::Process(Long64_t entry)
         new(electronsP4ptr[i]) TLorentzVector(electronP4);
 
         // Apply electron energy correction
-        electronEnergySF.push_back(GetElectronPtSF(electron, electronScaler, rng, runNumber));
-        electron->pt *= electronEnergySF.back();
+        electronEnergySF.push_back(GetElectronPtSF(electron));
         electronP4.SetPtEtaPhiM(electron->pt, electron->eta, electron->phi, ELE_MASS);
+        electronP4 *= electronEnergySF.back();
 
         // Check electron ID
         if (particleSelector->PassElectronMVA(electron, cuts->hzzMVAID))
@@ -872,14 +869,14 @@ float MultileptonAnalyzer::GetMuonIsolation(const baconhep::TMuon* mu)
 }
 
 
-
+// double mcSF = rc.kSpreadMC(Q, pt, eta, phi, genPt, s=0, m=0); //(recommended), MC scale and resolution correction when matched gen muon is available
+// double mcSF = rc.kSmearMC(Q, pt, eta, phi, nl, u, s=0, m=0); //MC scale and extra smearing when matched gen muon is not available
 float MultileptonAnalyzer::GetRochesterCorrection(const baconhep::TMuon* muon, RoccoR* muonCorr, TRandom3* rng, bool isData)
 {
-    if (isData)
-        return muonCorr->kScaleDT(muon->q, muon->pt, muon->eta, muon->phi, 0, 0);
-    else
-        return muonCorr->kScaleAndSmearMC(muon->q, muon->pt, muon->eta, muon->phi,
-                  muon->nTkLayers, rng->Rndm(), rng->Rndm(), 0, 0);
+        if (isData)
+                    return muonCorr->kScaleDT(muon->q, muon->pt, muon->eta, muon->phi, 0, 0);
+            else
+                        return muonCorr->kSmearMC(muon->q, muon->pt, muon->eta, muon->phi, muon->nTkLayers, rng->Rndm(), 0, 0);
 }
 
 
@@ -949,20 +946,9 @@ float MultileptonAnalyzer::GetElectronIsolation(const baconhep::TElectron* el, f
 
 
 
-float MultileptonAnalyzer::GetElectronPtSF(baconhep::TElectron* electron, EnergyScaleCorrection* electronScaler, TRandom3* rng, int runNumber)
+float MultileptonAnalyzer::GetElectronPtSF(baconhep::TElectron* electron)
 {
-    bool isData = (runNumber != 1);
-
-    if (isData)
-    {
-        scaleData sdata = electronScaler->GetScaleData(electron, runNumber);
-        return sdata.scale;
-    }
-    else
-    {
-        float sFactor = electronScaler->GetSmearingFactor(electron, 0, 0);
-        return rng->Gaus(1, sFactor);
-    }
+    return electron->calibPt / electron->pt;
 }
 
 

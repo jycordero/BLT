@@ -171,7 +171,7 @@ WeightUtils::WeightUtils(string dataPeriod, string selection, bool isRealData)
     //      ID      //
     //////////////////
 
-
+/*
     //--- TIGHT MUON ---//
 
     // BCDEF
@@ -237,7 +237,7 @@ WeightUtils::WeightUtils(string dataPeriod, string selection, bool isRealData)
     _muSF_Loose_ID_MC_GH[1] = (TGraphAsymmErrors*)f_muSF_ID_GH->Get((filePath + "pt_PLOT_abseta_bin1_MC").c_str());
     _muSF_Loose_ID_MC_GH[2] = (TGraphAsymmErrors*)f_muSF_ID_GH->Get((filePath + "pt_PLOT_abseta_bin2_MC").c_str());
     _muSF_Loose_ID_MC_GH[3] = (TGraphAsymmErrors*)f_muSF_ID_GH->Get((filePath + "pt_PLOT_abseta_bin3_MC").c_str());
-
+*/
 
 
     //--- HZZ MUON ---//
@@ -248,7 +248,7 @@ WeightUtils::WeightUtils(string dataPeriod, string selection, bool isRealData)
     _hzz_muIdErr = (TH2F*)f_hzz_muIdSF->Get("ERROR");
 
 
-
+/*
     //--- (TIGHT?) ELECTRON ---//
 
     fileName = cmssw_base + "/src/BLT/BLTAnalysis/data/egamma_eff_ID_2016.root";
@@ -258,7 +258,7 @@ WeightUtils::WeightUtils(string dataPeriod, string selection, bool isRealData)
     _eleSF_ID[2] = (TGraphErrors*)f_eleIdSF->Get("grSF1D_2");
     _eleSF_ID[3] = (TGraphErrors*)f_eleIdSF->Get("grSF1D_3");
     _eleSF_ID[4] = (TGraphErrors*)f_eleIdSF->Get("grSF1D_4");
-
+*/
 
 
     //--- HZZ ELECTRON ---//
@@ -277,10 +277,9 @@ WeightUtils::WeightUtils(string dataPeriod, string selection, bool isRealData)
 
     //--- ELECTRON ---//
 
-    fileName = cmssw_base + "/src/BLT/BLTAnalysis/data/egamma_eff_reco_2016.root";
-    TFile* f_eleRecoSF = new TFile(fileName.c_str(), "OPEN"); 
-
-    _eleSF_RECO = (TGraphErrors*)f_eleRecoSF->Get("grSF1D_0");
+    fileName = cmssw_base + "/src/BLT/BLTAnalysis/data/electron_id/egammaEffi.txt_EGM2D.root";
+    TFile* f_eleRecoSF = new TFile(fileName.c_str(), "OPEN");
+    _eleSF_RECO = (TH2F*) f_eleRecoSF->Get("EGamma_SF2D");
 
 
 
@@ -566,7 +565,7 @@ EfficiencyContainer WeightUtils::GetDoubleElectronTriggerEff(string triggerName,
 //      ID      //
 //////////////////
 
-
+/*
 //--- TIGHT MUON ---//
 
 EfficiencyContainer WeightUtils::GetMuonIDEff(TLorentzVector& muon) const
@@ -662,11 +661,13 @@ EfficiencyContainer WeightUtils::GetLooseMuonIDEff(TLorentzVector& muon) const
     EfficiencyContainer effCont(effData, effMC, errData, errMC);
     return effCont;
 }
-
+*/
 
 
 //--- HZZ MUON ---//
 
+// https://twiki.cern.ch/twiki/bin/view/CMS/HiggsZZ4l2017#Muon_scale_factors
+// Using Moriond 17
 EfficiencyContainer WeightUtils::GetHZZMuonIDEff(TLorentzVector& muon) const
 {
     float effData = 1, errData = 0, effMC = 1, errMC = 0;
@@ -707,6 +708,7 @@ EfficiencyContainer WeightUtils::GetHZZMuonIDEff(TLorentzVector& muon) const
 
 //--- HZZ ELECTRON ---//
 
+// https://twiki.cern.ch/twiki/bin/view/CMS/HiggsZZ4l2017#Electron_scale_factors
 EfficiencyContainer WeightUtils::GetHZZElectronRecoEff(const baconhep::TElectron* electron) const 
 {
     float effData = 1, errData = 0, effMC = 1, errMC = 0;
@@ -717,27 +719,57 @@ EfficiencyContainer WeightUtils::GetHZZElectronRecoEff(const baconhep::TElectron
         return effCont;
     }
 
-    float binningEta[] = {-2.5, -2, -1.479, -0.8, 0, 0.8, 1.479, 2, 2.5};
-    float binningPt[] = {7, 15, 20, 30, 40, 50, 60, 70, 80, 100, 120, 140, 160, 9999};
-    unsigned etaBin = 0, ptBin = 0;
-    for (unsigned i = 0; i < 8; i++)
-    {
-        if (electron->scEta >= binningEta[i] && electron->scEta < binningEta[i+1])
+
+    // ID
+    float maxPt = 500, maxEta = 2.5;
+    float sfID = 1, errID = 0;
+    int bin;
+    if (fabs(electron->scEta) < maxEta)
+    {   
+        if (kFALSE) // (electron->isGap)
         {
-            etaBin = i + 1;
-            break;
+            if (electron->calibPt > maxPt)
+                bin = _hzz_eleIdSF_gap->FindBin(electron->scEta, 0.99 * maxPt);
+            else
+                bin = _hzz_eleIdSF_gap->FindBin(electron->scEta, electron->calibPt);
+
+            sfID = _hzz_eleIdSF_gap->GetBinContent(bin);
+            errID = _hzz_eleIdSF_gap->GetBinError(bin);
+        }
+        else
+        {
+            if (electron->calibPt > maxPt)
+                bin = _hzz_eleIdSF->FindBin(electron->scEta, 0.99 * maxPt);
+            else
+                bin = _hzz_eleIdSF->FindBin(electron->scEta, electron->calibPt);
+
+            sfID = _hzz_eleIdSF->GetBinContent(bin);
+            errID = _hzz_eleIdSF->GetBinError(bin);
         }
     }
-    for (unsigned i = 0; i < 13; i++)
+
+    // Reco
+    float minPt = 25, lowPt = 20, highPt = 75;
+    float sfReco = 1, errReco = 0;
+    if (fabs(electron->scEta) < maxEta)
     {
-        if (electron->pt >= binningPt[i] && electron->pt < binningPt[i+1])
-        {
-            ptBin = i + 1;
-            break;
-        }
+        if (electron->calibPt > maxPt)
+            bin = _eleSF_RECO->FindBin(electron->scEta, 0.99 * maxPt);
+        else if (electron->calibPt < minPt)
+            bin = _eleSF_RECO->FindBin(electron->scEta, 1.01 * minPt);
+        else
+            bin = _eleSF_RECO->FindBin(electron->scEta, electron->calibPt);
+
+        sfReco = _eleSF_RECO->GetBinContent(bin);
+        errReco = _eleSF_RECO->GetBinError(bin);
+
+        // Additional 1% error
+        if (electron->calibPt < lowPt || electron->calibPt > highPt)
+            errReco += sfReco * 0.01;
     }
-    effData = _hzz_eleIdSF->GetBinContent(etaBin, ptBin);
-    errData = _hzz_eleIdSF->GetBinError(etaBin, ptBin);
+
+    effData = sfID * sfReco;
+    errData = sqrt(errID * errID + errReco * errReco);
 
     EfficiencyContainer effCont(effData, effMC, errData, errMC);
     return effCont;
@@ -745,53 +777,7 @@ EfficiencyContainer WeightUtils::GetHZZElectronRecoEff(const baconhep::TElectron
 
 
 
-
-//////////////////
-//     RECO     //
-//////////////////
-
-
-//--- ELECTRON ---//
-
-EfficiencyContainer WeightUtils::GetElectronRecoEff(TLorentzVector& electron) const
-{
-    float effData = 1, errData = 0, effMC = 1, errMC = 0;
-
-    if (_isRealData)
-    {
-        EfficiencyContainer effCont(effData, effMC, errData, errMC);
-        return effCont;
-    }
-
-    float binningPt[] = {10., 20., 35., 50., 90., 500.};
-    int ptBin = 0;
-    for (int i = 0; i < 5; i++)
-    {
-        if (fabs(electron.Pt()) > binningPt[i] && fabs(electron.Pt()) <= binningPt[i+1])
-        {
-            ptBin = i;      break;
-        }
-    }
-
-    float sfReco = _eleSF_RECO->Eval(electron.Eta());
-    float sfId   = _eleSF_ID[ptBin]->Eval(electron.Eta());
-    effData = sfReco * sfId;
-
-    int etaBin;
-    etaBin = GetBinNumber<TGraphErrors*>(_eleSF_RECO, electron.Eta()); 
-    float errReco = _eleSF_RECO->GetErrorY(etaBin);
-
-    etaBin = GetBinNumber<TGraphErrors*>(_eleSF_ID[ptBin], electron.Eta()); 
-    float errId  = _eleSF_ID[ptBin]->GetErrorY(etaBin);
-    errData = sfReco * sfId * (pow(errReco/sfReco, 2) + pow(errId/sfId, 2));
-
-    EfficiencyContainer effCont(effData, effMC, errData, errMC);
-    return effCont;
-}
-
-
-
-
+/*
 //////////////////
 //     ISO      //
 //////////////////
@@ -888,7 +874,7 @@ EfficiencyContainer WeightUtils::GetMuonLooseISOEff(TLorentzVector& muon) const
     EfficiencyContainer effCont(effData, effMC, errData, errMC);
     return effCont;
 }
-
+*/
 
 
 
