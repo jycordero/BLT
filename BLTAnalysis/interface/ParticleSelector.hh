@@ -47,7 +47,7 @@ public:
 
     // Electrons
     bool PassElectronID(const baconhep::TElectron* el, const Cuts::elIDCuts& cutLevel) const;
-//  bool PassElectronMVA(const baconhep::TElectron* el, const Cuts::elMVACuts& cutLevel) const; // does not work!!!!
+    bool PassElectronMVA(const baconhep::TElectron* el, const Cuts::elMVACuts& cutLevel) const; // does not work!!!!
     bool PassElectronIso(const baconhep::TElectron* el, const Cuts::elIsoCuts& cutLevel, float EAEl[7]) const;
 
     // Photons
@@ -58,7 +58,7 @@ public:
     // Jets
     bool PassJetID(const baconhep::TJet* jet, const Cuts::jetIDCuts& cutLevel) const;
     bool PassJetPUID(const baconhep::TJet* jet) const;
-    bool BTagModifier(const baconhep::TJet* jet, string) const;     // broken?
+    bool BTagModifier(const baconhep::TJet* jet, string) const;
     double JetCorrector(const baconhep::TJet* jet, string) const;
 
 private:

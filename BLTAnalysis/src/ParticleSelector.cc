@@ -123,39 +123,39 @@ bool ParticleSelector::PassElectronID(const baconhep::TElectron* el, const Cuts:
     return elPass;
 }
 
-// this is a BIG FAT LIE
-/*
+
 bool ParticleSelector::PassElectronMVA(const baconhep::TElectron* el, const Cuts::elMVACuts& cutLevel) const {
     bool elPass = false;
 
     if (cutLevel.cutName == "hzzMVAID") {
         if (el->pt > cutLevel.pt[0] && el->pt < cutLevel.pt[1]) {
             if (fabs(el->scEta) < cutLevel.eta[0]) {
-                if (el->mvaHZZ > cutLevel.mvaVal[0])
+                if (el->mva > cutLevel.mvaVal[0])
                     elPass = true;
             } else if (fabs(el->scEta) < cutLevel.eta[1]) {
-                if (el->mvaHZZ > cutLevel.mvaVal[1])  
+                if (el->mva > cutLevel.mvaVal[1])  
                     elPass = true;
             } else if (fabs(el->scEta) < cutLevel.eta[2]) {
-                if (el->mvaHZZ > cutLevel.mvaVal[2])  
+                if (el->mva > cutLevel.mvaVal[2])  
                     elPass = true;
             }
         } else if (el->pt > cutLevel.pt[1]) {
             if (fabs(el->scEta) < cutLevel.eta[0]) {
-                if (el->mvaHZZ > cutLevel.mvaVal[3])
+                if (el->mva > cutLevel.mvaVal[3])
                     elPass = true;
             } else if (fabs(el->scEta) < cutLevel.eta[1]) {
-                if (el->mvaHZZ > cutLevel.mvaVal[4])  
+                if (el->mva > cutLevel.mvaVal[4])  
                     elPass = true;
             } else if (fabs(el->scEta) < cutLevel.eta[2]) {
-                if (el->mvaHZZ > cutLevel.mvaVal[5])
+                if (el->mva > cutLevel.mvaVal[5])
                     elPass = true;
             }
         }
     }
     return elPass;
 }
-*/
+
+
 bool ParticleSelector::PassElectronIso(const baconhep::TElectron* el, const Cuts::elIsoCuts& cutLevel, float EAEl[7]) const 
 {
     int iEta = 0;
