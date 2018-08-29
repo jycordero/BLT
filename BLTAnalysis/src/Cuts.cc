@@ -52,11 +52,32 @@ Cuts::Cuts() {
             EAPho[i][j] = EAPhoTemp[i][j];
 
 
-    // mva???
+
+    //--- ELECTRON MVA ---//
+
+    //https://twiki.cern.ch/twiki/bin/view/CMS/HiggsZZ4l2018#Electrons
+    // FIXME? these are from jbueghly_2017
+
+    // V1 (no iso)
+    hzzMVAID.cutName                        = "hzzMVAID";
+    hzzMVAID.mvaVal[0]                      =  -0.211;
+    hzzMVAID.mvaVal[1]                      =  -0.396;
+    hzzMVAID.mvaVal[2]                      =  -0.215;
+    hzzMVAID.mvaVal[3]                      = -0.870;
+    hzzMVAID.mvaVal[4]                      = -0.838;
+    hzzMVAID.mvaVal[5]                      =  -0.763;
+    hzzMVAID.pt[0]                          =  5.0;
+    hzzMVAID.pt[1]                          =  10.0;
+    hzzMVAID.eta[0]                         =  0.8;
+    hzzMVAID.eta[1]                         =  1.479;
+    hzzMVAID.eta[2]                         =  2.5;
 
 
-    //--- ELECTRON ID ---//i
+
+    //--- ELECTRON CUT-BASED ID ---//
+
     // https://twiki.cern.ch/twiki/bin/view/CMS/CutBasedElectronIdentificationRun2#Working_points_for_2016_data_for
+    // FIXME; these are 2016 values!!
 
     // Tight
     tightElID.cutName                    = "tightElID";
@@ -128,21 +149,6 @@ Cuts::Cuts() {
     vetoElID.HadOverEm[1]                 = 0.211;
     vetoElID.fabsEPDiff[1]                = 0.15;
     vetoElID.ConversionMissHits[1]        = 3;
-
-
-    // HZZ MVA (broken)
-    hzzMVAID.cutName                        = "hzzMVAID";
-    hzzMVAID.mvaVal[0]                      =  -0.211;
-    hzzMVAID.mvaVal[1]                      =  -0.396;
-    hzzMVAID.mvaVal[2]                      =  -0.215;
-    hzzMVAID.mvaVal[3]                      = -0.870;
-    hzzMVAID.mvaVal[4]                      = -0.838;
-    hzzMVAID.mvaVal[5]                      =  -0.763;
-    hzzMVAID.pt[0]                          =  5.0;
-    hzzMVAID.pt[1]                          =  10.0;
-    hzzMVAID.eta[0]                         =  0.8;
-    hzzMVAID.eta[1]                         =  1.479;
-    hzzMVAID.eta[2]                         =  2.5;
 
 
 

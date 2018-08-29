@@ -64,9 +64,6 @@ void MultileptonAnalyzer::Begin(TTree *tree)
     // muon momentum corrections
     muonCorr = new RoccoR(cmssw_base + "/src/BLT/BLTAnalysis/data/RoccoR2017v1.txt");
 
-    // electron scale corrections
-    electronScaler = new EnergyScaleCorrection(cmssw_base + "/src/BLT/BLTAnalysis/data");
-
 
     // Prepare the output tree
     string outFileName = params->get_output_filename("output");
@@ -545,9 +542,9 @@ Bool_t MultileptonAnalyzer::Process(Long64_t entry)
         new(electronsP4ptr[i]) TLorentzVector(electronP4);
 
         // Apply electron energy correction
-        electronEnergySF.push_back(GetElectronPtSF(electron, electronScaler, rng, runNumber));
-        electron->pt *= electronEnergySF.back();
+        electronEnergySF.push_back(GetElectronPtSF(electron));
         electronP4.SetPtEtaPhiM(electron->pt, electron->eta, electron->phi, ELE_MASS);
+        electronP4 *= electronEnergySF.back();
 
         // Check electron ID
         if (particleSelector->PassElectronMVA(electron, cuts->hzzMVAID))
@@ -865,61 +862,60 @@ float MultileptonAnalyzer::MetKluge(float met)
 
 
 
+// FIXME DeltaBeta correction?
+// https://twiki.cern.ch/twiki/bin/view/CMS/HiggsZZ4l2018#Muons
 float MultileptonAnalyzer::GetMuonIsolation(const baconhep::TMuon* mu)
 {
-    float combIso = (mu->chHadIso + std::max(0.,(double)mu->neuHadIso + mu->gammaIso - 0.5*mu->puIso));
+    float combIso = (mu->chHadIso03 + std::max(0.,(double)mu->neuHadIso03 + mu->gammaIso03 - 0.5*mu->puIso03));
     return combIso;
 }
 
 
 
+// roccor.Run2.v1.tgz: https://twiki.cern.ch/twiki/bin/view/CMS/RochcorMuon
+// From README:
+// double mcSF = rc.kSpreadMC(Q, pt, eta, phi, genPt, s=0, m=0); //(recommended), MC scale and resolution correction when matched gen muon is available
+// double mcSF = rc.kSmearMC(Q, pt, eta, phi, nl, u, s=0, m=0); //MC scale and extra smearing when matched gen muon is not available
 float MultileptonAnalyzer::GetRochesterCorrection(const baconhep::TMuon* muon, RoccoR* muonCorr, TRandom3* rng, bool isData)
-{
-    if (isData)
-        return muonCorr->kScaleDT(muon->q, muon->pt, muon->eta, muon->phi, 0, 0);
+{   
+    // https://twiki.cern.ch/twiki/bin/view/CMS/HiggsZZ4l2018#Muon_scale_and_resolution_correc
+    if (muon->pt < 200 && muon->btt == 1 && muon->nTkLayers > 5)
+    {
+        if (isData)
+            return muonCorr->kScaleDT(muon->q, muon->pt, muon->eta, muon->phi, 0, 0);
+        else
+            return muonCorr->kSmearMC(muon->q, muon->pt, muon->eta, muon->phi, muon->nTkLayers, rng->Rndm(), 0, 0);
+    }
     else
-        return muonCorr->kScaleAndSmearMC(muon->q, muon->pt, muon->eta, muon->phi,
-                  muon->nTkLayers, rng->Rndm(), rng->Rndm(), 0, 0);
+        return 1;
 }
 
 
 
-bool MultileptonAnalyzer::PassMuonTightID(const baconhep::TMuon* muon)
-{
-    TLorentzVector muonP4;
-    muonP4.SetPtEtaPhiM(muon->pt, muon->eta, muon->phi, MUON_MASS);
-
-    if (    muonP4.Pt()     > 10.   &&  fabs(muonP4.Eta()) < 2.4
-        &&  (muon->typeBits & baconhep::kPFMuon) && (muon->typeBits & baconhep::kGlobal)
-        &&  muon->muNchi2    < 10.  &&  muon->nMatchStn  > 1    &&  muon->nPixHits   > 0
-        &&  fabs(muon->d0)   < 0.2  &&  fabs(muon->dz)   < 0.5
-        &&  muon->nTkLayers  > 5    &&  muon->nValidHits > 0
-        &&  GetMuonIsolation(muon)/muonP4.Pt()  < 0.15)
-        return kTRUE;
-    else
-        return kFALSE;
-}
-
-
-
+// https://twiki.cern.ch/twiki/bin/view/CMS/HiggsZZ4l2018#Muons
+// No change since 2016
 bool MultileptonAnalyzer::PassMuonHZZTightID(const baconhep::TMuon* muon)
 {
     TLorentzVector muonP4;
     muonP4.SetPtEtaPhiM(muon->pt, muon->eta, muon->phi, MUON_MASS);
 
-    if (    muonP4.Pt()     > 5.    &&  fabs(muonP4.Eta()) < 2.4
-        &&  (((muon->typeBits & baconhep::kGlobal) || 
-             ((muon->typeBits & baconhep::kTracker) && muon->nMatchStn > 0)) &&
-               (muon->btt != 2)) // Global muon or (arbitrated) tracker muon
-        &&  fabs(muon->d0)  < 0.5   &&  fabs(muon->dz) < 1.0
+    if (    muonP4.Pt() > 5
+        &&  fabs(muonP4.Eta()) < 2.4
+        &&  ((muon->typeBits & baconhep::kGlobal) || (muon->typeBits & baconhep::kTracker) && muon->nMatchStn > 0) // Global muon or (arbitrated) tracker muon
+        &&  muon->btt != 2
+        &&  fabs(muon->d0) < 0.5        // These are corrected: https://github.com/NWUHEP/BaconProd/blob/jbueghly_2017/Ntupler/src/FillerMuon.cc
+        &&  fabs(muon->dz) < 1.0
         &&  fabs(muon->sip3d) < 4.0                 
         &&  GetMuonIsolation(muon)/muonP4.Pt()  < 0.35)
     {
         if (muon->pogIDBits & baconhep::kPOGLooseMuon)
             return kTRUE;
-        else if (   muonP4.Pt() > 200.0 && (muon->ptErr/muon->pt) < 0.3
-                 && muon->nMatchStn > 1 && muon->nPixHits > 0
-                 && fabs(muon->d0)  < 0.2   &&  fabs(muon->dz)  < 0.5
+        else if (   muonP4.Pt() > 200
+                 && (muon->ptErr/muon->pt) < 0.3
+                 && muon->nMatchStn > 1
+                 && muon->nPixHits > 0
+                 && fabs(muon->d0) < 0.2
+                 && fabs(muon->dz) < 0.5
                  && muon->nTkLayers > 5)
             return kTRUE;
         else
@@ -930,7 +926,10 @@ bool MultileptonAnalyzer::PassMuonHZZTightID(const baconhep::TMuon* muon)
 }
 
 
-
+// FIXME
+// https://twiki.cern.ch/twiki/bin/view/CMS/HiggsZZ4l2018#Electrons
+// seems to have typos?  So this is unchanged from 2016
+// https://twiki.cern.ch/twiki/bin/view/CMS/HiggsZZ4l2017#Electrons
 float MultileptonAnalyzer::GetElectronIsolation(const baconhep::TElectron* el, float rho)
 {
     int iEta = 0;
@@ -948,49 +947,26 @@ float MultileptonAnalyzer::GetElectronIsolation(const baconhep::TElectron* el, f
 }
 
 
-
-float MultileptonAnalyzer::GetElectronPtSF(baconhep::TElectron* electron, EnergyScaleCorrection* electronScaler, TRandom3* rng, int runNumber)
+// FIXME
+// https://twiki.cern.ch/twiki/bin/viewauth/CMS/EgammaMiniAODV2#Energy_Scale_and_Smearing
+float MultileptonAnalyzer::GetElectronPtSF(baconhep::TElectron* electron)
 {
-    bool isData = (runNumber != 1);
-
-    if (isData)
-    {
-        scaleData sdata = electronScaler->GetScaleData(electron, runNumber);
-        return sdata.scale;
-    }
-    else
-    {
-        float sFactor = electronScaler->GetSmearingFactor(electron, 0, 0);
-        return rng->Gaus(1, sFactor);
-    }
+    return electron->calibPt / electron->pt;
 }
 
 
-
-bool MultileptonAnalyzer::PassElectronGoodID(const baconhep::TElectron* electron, std::unique_ptr<ParticleSelector>& particleSelector, std::unique_ptr<Cuts>& cuts)
-{
-    if (    electron->pt > 10.  &&  fabs(electron->scEta) < 2.5
-        &&  particleSelector->PassElectronID(electron, cuts->tightElID)
-        &&  particleSelector->PassElectronIso(electron, cuts->tightElIso, cuts->EAEl))
-        return kTRUE;
-    else
-        return kFALSE;
-}
-
-
-
+// FIXME
+// https://twiki.cern.ch/twiki/bin/view/CMS/HiggsZZ4l2018#Electrons
 bool MultileptonAnalyzer::PassElectronHZZTightID(const baconhep::TElectron* electron, std::unique_ptr<ParticleSelector>& particleSelector, std::unique_ptr<Cuts>& cuts, float rho)
 {
-    TLorentzVector electronP4;
-    electronP4.SetPtEtaPhiM(electron->pt, electron->eta, electron->phi, ELE_MASS);
-
-    if (    electron->pt > 5.   &&  fabs(electron->scEta) < 2.5
-        &&  particleSelector->PassElectronMVA(electron, cuts->hzzMVAID)
-        &&  fabs(electron->d0)  < 0.5   &&  fabs(electron->dz)  < 1.0
-        &&  fabs(electron->sip3d) < 4.0 
-        &&  GetElectronIsolation(electron, rho)/electronP4.Pt() < 0.35)
+    if (    electron->calibPt > 7
+            &&  fabs(electron->scEta) < 2.5
+            &&  particleSelector->PassElectronMVA(electron, cuts->hzzMVAID)     // Needs to be updated to V2
+            &&  fabs(electron->d0) < 0.5
+            &&  fabs(electron->dz) < 1
+            &&  fabs(electron->sip3d) < 4.0
+            &&  GetElectronIsolation(electron, rho)/electron->calibPt < 0.35)   // Not sure if this needs to be included after update?
         return kTRUE;
     else
         return kFALSE;
-
 }

@@ -24,8 +24,6 @@
 #include "BLT/BLTAnalysis/interface/TriggerSelector.hh"
 #include "BLT/BLTAnalysis/interface/ParticleSelector.hh"
 #include "BLT/BLTAnalysis/interface/WeightUtils.h"
-#include "BLT/BLTAnalysis/interface/ElectronCorrector.h"
-
 #include "BLT/BLTAnalysis/interface/RoccoR.h"
 
 // BaconAna class definitions (might need to add more)
