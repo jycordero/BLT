@@ -1,1 +1,1 @@
-root://cmseos.fnal.gov//store/user/jbueghly/2017_mc/DYJetsToLL_M-50_amcatnlo/Output_0.root
+root://cmseos.fnal.gov//store/user/jrainbol/Bacon/Fall17_DYJetsToLL_M-50_amcatnlo/Fall17_DYJetsToLL_M-50_amcatnlo_bacon_0.root

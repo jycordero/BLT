@@ -42,7 +42,7 @@ WeightUtils::WeightUtils(string dataPeriod, string selection, bool isRealData)
     //////////////////
 
 
-    fileName = cmssw_base + "/src/BLT/BLTAnalysis/data/pileup/pileup_sf_2017_full.root";
+    fileName = cmssw_base + "/src/BLT/BLTAnalysis/data/pileup/pileup_2017_69200_100bins.root";
     TFile* puFile = new TFile(fileName.c_str(), "OPEN");
     _puReweight = (TGraph*)puFile->Get("pileup_sf");
 
@@ -220,7 +220,9 @@ float WeightUtils::GetPUWeight(float nPU)
 
 //--- DOUBLE MUON ---//
 
-EfficiencyContainer WeightUtils::GetDoubleMuonTriggerEff(string triggerName, int leg, TLorentzVector &muon) const
+// FIXME
+// Everything about this is fake
+EfficiencyContainer WeightUtils::GetDoubleMuonTriggerEff(TLorentzVector &muon, int leg) const
 {
     float effData = 1, errData = 0, effMC = 1, errMC = 0;
 
@@ -230,29 +232,26 @@ EfficiencyContainer WeightUtils::GetDoubleMuonTriggerEff(string triggerName, int
         return effCont;
     }
 
-    if (triggerName == "HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_v*")
+    float binningEta[] = {0., 0.9, 1.2, 2.1, 2.4};
+    int etaBin = 0;
+    for (int i = 0; i < 4; i++)
     {
-        float binningEta[] = {0., 0.9, 1.2, 2.1, 2.4};
-        int etaBin = 0;
-        for (int i = 0; i < 4; i++)
+        if (fabs(muon.Eta()) > binningEta[i] && fabs(muon.Eta()) <= binningEta[i+1])
         {
-            if (fabs(muon.Eta()) > binningEta[i] && fabs(muon.Eta()) <= binningEta[i+1])
-            {
-                etaBin = i;
-                break;
-            }
+            etaBin = i;
+            break;
         }
+    }
 
-        if (leg == 1)
-        {
-            effData = _eff_doubleMu_leg1_DATA[etaBin]->Eval(muon.Pt());
-            effMC   = _eff_doubleMu_leg1_MC[etaBin]->Eval(muon.Pt());
-        }
-        else if (leg == 2)
-        {
-            effData = _eff_doubleMu_leg2_DATA[etaBin]->Eval(muon.Pt());
-            effMC   = _eff_doubleMu_leg2_MC[etaBin]->Eval(muon.Pt());
-        }
+    if (leg == 1)
+    {
+        effData = _eff_doubleMu_leg1_DATA[etaBin]->Eval(muon.Pt());
+        effMC   = _eff_doubleMu_leg1_MC[etaBin]->Eval(muon.Pt());
+    }
+    else if (leg == 2)
+    {
+        effData = _eff_doubleMu_leg2_DATA[etaBin]->Eval(muon.Pt());
+        effMC   = _eff_doubleMu_leg2_MC[etaBin]->Eval(muon.Pt());
     }
 
     EfficiencyContainer effCont(effData, effMC, errData, errMC);
@@ -262,7 +261,9 @@ EfficiencyContainer WeightUtils::GetDoubleMuonTriggerEff(string triggerName, int
 
 //--- DOUBLE ELECTRON ---//
 
-EfficiencyContainer WeightUtils::GetDoubleElectronTriggerEff(string triggerName, int leg, const baconhep::TElectron* electron) const
+// FIXME
+// Everything about this is fake
+EfficiencyContainer WeightUtils::GetDoubleElectronTriggerEff(const baconhep::TElectron* electron, int leg) const
 {
     float effData = 1, errData = 0, effMC = 1, errMC = 0;
 
@@ -272,18 +273,15 @@ EfficiencyContainer WeightUtils::GetDoubleElectronTriggerEff(string triggerName,
         return effCont;
     }
 
-    if (triggerName == "HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_v*")
+    if (leg == 1)
     {
-        if (leg == 1)
-        {
-            effData = _eff_doubleEle_leg1_DATA->GetBinContent(_eff_doubleEle_leg1_DATA->FindBin(electron->scEta, electron->pt));
-            effMC   = _eff_doubleEle_leg1_MC->GetBinContent(_eff_doubleEle_leg1_MC->FindBin(electron->scEta, electron->pt));
-        }
-        else if (leg == 2)
-        {
-            effData = _eff_doubleEle_leg2_DATA->GetBinContent(_eff_doubleEle_leg2_DATA->FindBin(electron->scEta, electron->pt));
-            effMC   = _eff_doubleEle_leg2_MC->GetBinContent(_eff_doubleEle_leg2_MC->FindBin(electron->scEta, electron->pt));
-        }
+        effData = _eff_doubleEle_leg1_DATA->GetBinContent(_eff_doubleEle_leg1_DATA->FindBin(electron->scEta, electron->pt));
+        effMC   = _eff_doubleEle_leg1_MC->GetBinContent(_eff_doubleEle_leg1_MC->FindBin(electron->scEta, electron->pt));
+    }
+    else if (leg == 2)
+    {
+        effData = _eff_doubleEle_leg2_DATA->GetBinContent(_eff_doubleEle_leg2_DATA->FindBin(electron->scEta, electron->pt));
+        effMC   = _eff_doubleEle_leg2_MC->GetBinContent(_eff_doubleEle_leg2_MC->FindBin(electron->scEta, electron->pt));
     }
 
     EfficiencyContainer effCont(effData, effMC, errData, errMC);
@@ -312,17 +310,18 @@ EfficiencyContainer WeightUtils::GetHZZMuonIDEff(TLorentzVector& muon) const
     }
 
     float maxPt = 200, maxEta = 2.4;
-    int bin;
     if (fabs(muon.Eta() < maxEta))
     {
+        int bin;
+
         if (muon.Pt() > maxPt)
             bin = _hzz_muIdSF->FindBin(muon.Eta(), 0.99 * maxPt);
         else
             bin = _hzz_muIdSF->FindBin(muon.Eta(), muon.Pt());
-    }
 
-    effData = _hzz_muIdSF->GetBinContent(bin);
-    errData = _hzz_muIdErr->GetBinContent(bin);
+        effData = _hzz_muIdSF->GetBinContent(bin);
+        errData = _hzz_muIdErr->GetBinContent(bin);
+    }
 
     EfficiencyContainer effCont(effData, effMC, errData, errMC);
     return effCont;
@@ -334,7 +333,7 @@ EfficiencyContainer WeightUtils::GetHZZMuonIDEff(TLorentzVector& muon) const
 
 // ID: https://twiki.cern.ch/twiki/bin/view/CMS/HiggsZZ4l2018#Electron_scale_factors
 // Reco: https://twiki.cern.ch/twiki/bin/view/CMS/Egamma2017DataRecommendations#Electron_Reconstruction_Scale_Fa
-EfficiencyContainer WeightUtils::GetHZZElectronRecoEff(const baconhep::TElectron* electron) const 
+EfficiencyContainer WeightUtils::GetHZZElectronIDRecoEff(const baconhep::TElectron* electron) const 
 {
     float effData = 1, errData = 0, effMC = 1, errMC = 0;
 

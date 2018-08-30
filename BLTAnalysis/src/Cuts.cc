@@ -5,6 +5,54 @@
 
 
 Cuts::Cuts() {
+
+
+
+    //--- ELECTRON MVA ---//
+
+    // Fall 17 V1
+    // https://rembserj.web.cern.ch/rembserj/notes/Electron_MVA_ID_2017_documentation/wp.json
+
+    // No iso
+    hzzNoIsoV1.cutName                 = "hzzNoIsoV1";
+    hzzNoIsoV1.bdt[0]                  = -0.13285867293779202;
+    hzzNoIsoV1.bdt[1]                  = -0.31765300958836074;
+    hzzNoIsoV1.bdt[2]                  = -0.0799205914718861;
+    hzzNoIsoV1.bdt[3]                  = -0.856871961305474;
+    hzzNoIsoV1.bdt[4]                  = -0.8107642141584835;
+    hzzNoIsoV1.bdt[5]                  = -0.7179265933023059;
+    hzzNoIsoV1.pt[0]                   = 5;
+    hzzNoIsoV1.pt[1]                   = 10;
+    hzzNoIsoV1.eta[0]                  = 0.8;
+    hzzNoIsoV1.eta[1]                  = 1.479;
+    hzzNoIsoV1.eta[2]                  = 2.5;
+
+    // Iso
+    hzzIsoV1.cutName                   = "hzzIsoV1";
+    hzzIsoV1.bdt[0]                    = -0.09564086146419018;
+    hzzIsoV1.bdt[1]                    = -0.28229916981926795;
+    hzzIsoV1.bdt[2]                    = -0.05466682296962322;
+    hzzIsoV1.bdt[3]                    = -0.833466688584422;
+    hzzIsoV1.bdt[4]                    = -0.7677000247570116;
+    hzzIsoV1.bdt[5]                    = -0.6917305995653829;
+    hzzIsoV1.pt[0]                     = 5;
+    hzzIsoV1.pt[1]                     = 10;
+    hzzIsoV1.eta[0]                    = 0.8;
+    hzzIsoV1.eta[1]                    = 1.479;
+    hzzIsoV1.eta[2]                    = 2.5;
+
+    // FIXME update to V2?
+    // https://twiki.cern.ch/twiki/bin/view/CMS/HiggsZZ4l2018#Electrons
+
+
+
+    /////////////////
+    //   WARNING   //
+    /////////////////
+
+    // Everything below this line is deprecated!!!
+
+
     leadJetPt   = 30;
     trailJetPt  = 30;
     leadMuPt    = 20;
@@ -53,31 +101,10 @@ Cuts::Cuts() {
 
 
 
-    //--- ELECTRON MVA ---//
-
-    //https://twiki.cern.ch/twiki/bin/view/CMS/HiggsZZ4l2018#Electrons
-    // FIXME? these are from jbueghly_2017
-
-    // V1 (no iso)
-    hzzMVAID.cutName                        = "hzzMVAID";
-    hzzMVAID.mvaVal[0]                      =  -0.211;
-    hzzMVAID.mvaVal[1]                      =  -0.396;
-    hzzMVAID.mvaVal[2]                      =  -0.215;
-    hzzMVAID.mvaVal[3]                      = -0.870;
-    hzzMVAID.mvaVal[4]                      = -0.838;
-    hzzMVAID.mvaVal[5]                      =  -0.763;
-    hzzMVAID.pt[0]                          =  5.0;
-    hzzMVAID.pt[1]                          =  10.0;
-    hzzMVAID.eta[0]                         =  0.8;
-    hzzMVAID.eta[1]                         =  1.479;
-    hzzMVAID.eta[2]                         =  2.5;
-
-
-
     //--- ELECTRON CUT-BASED ID ---//
 
     // https://twiki.cern.ch/twiki/bin/view/CMS/CutBasedElectronIdentificationRun2#Working_points_for_2016_data_for
-    // FIXME; these are 2016 values!!
+
 
     // Tight
     tightElID.cutName                    = "tightElID";

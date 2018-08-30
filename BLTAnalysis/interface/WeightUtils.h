@@ -59,16 +59,11 @@ class WeightUtils: public TObject {
         void    SetSelection(string);
 
         float               GetPUWeight(float);
-        EfficiencyContainer GetDoubleMuonTriggerEff(string, int, TLorentzVector&) const;
-        EfficiencyContainer GetDoubleElectronTriggerEff(string, int, const baconhep::TElectron*) const;
+        EfficiencyContainer GetDoubleMuonTriggerEff(TLorentzVector&, int) const;
+        EfficiencyContainer GetDoubleElectronTriggerEff(const baconhep::TElectron*, int) const;
         EfficiencyContainer GetTriggerEff(string, TLorentzVector&) const;
-        EfficiencyContainer GetMuonIDEff(TLorentzVector&) const; 
-        EfficiencyContainer GetLooseMuonIDEff(TLorentzVector&) const;
-        EfficiencyContainer GetMuonTightISOEff(TLorentzVector&) const; 
-        EfficiencyContainer GetMuonLooseISOEff(TLorentzVector&) const; 
         EfficiencyContainer GetHZZMuonIDEff(TLorentzVector&) const;
-        EfficiencyContainer GetElectronRecoEff(TLorentzVector&) const;
-        EfficiencyContainer GetHZZElectronRecoEff(const baconhep::TElectron*) const;
+        EfficiencyContainer GetHZZElectronIDRecoEff(const baconhep::TElectron*) const;
 
         ClassDef(WeightUtils, 0);
 
@@ -87,9 +82,11 @@ class WeightUtils: public TObject {
         TGraphAsymmErrors *_eff_doubleMu_leg2_DATA[4], *_eff_doubleMu_leg2_MC[4];
         TH2F *_hzz_muIdSF, *_hzz_muIdErr;
 
-        // Electron RECO/ID scale factors (what about ISO?)
+        // Electron triggers, ID, iso
+        TH2F *_eff_doubleEle_leg1_DATA, *_eff_doubleEle_leg1_MC;
+        TH2F *_eff_doubleEle_leg2_DATA, *_eff_doubleEle_leg2_MC;
         TH2F *_eleSF_RECO, *_eleSF_RECO_lowEt;
-        TH2F *_hzz_eleIdSF, *_hzz_eleIdSF;
+        TH2F *_hzz_eleIdSF, *_hzz_eleIdSF_gap;
 };
 
 #endif

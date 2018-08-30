@@ -104,14 +104,11 @@ public:
     } catPhMVAID;
 
     struct elMVACuts {
-        float mvaVal[6];
+        float bdt[6];
         float pt[2];
         float eta[3];
-        int missHits[6];
-        float sip[6];
-        int conversionVeto[6];
         std::string cutName;
-    } hzgMVAID, hzzMVAID, hwwMVAID;
+    } hzzNoIsoV1, hzzIsoV1;
 
     struct vbfJetIDCuts {
         float betaStarC[2];
