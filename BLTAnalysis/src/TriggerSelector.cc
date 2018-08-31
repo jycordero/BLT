@@ -7,7 +7,7 @@
 TriggerSelector::TriggerSelector() {
     std::string cmssw_base = getenv("CMSSW_BASE");
     std::string trigfilename = cmssw_base + "/src/";
-    trigfilename += "BaconAna/DataFormats/data/HLTFile_50ns";
+    trigfilename += "BaconAna/DataFormats/data/HLTFile_25ns";
     _ttrigger.reset(new baconhep::TTrigger(trigfilename));
 }
 

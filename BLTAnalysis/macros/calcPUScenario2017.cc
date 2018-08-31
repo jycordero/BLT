@@ -169,6 +169,7 @@ void calcPUScenario2017()
     normHist->SetName(sfGraphName);
     normHist->SetTitle(sfGraphName);
     TGraph *normGraph = new TGraph(normHist);
+    normGraph->SetName(sfGraphName);
 
 
 
