@@ -1,31 +1,29 @@
 #include "TFile.h"
 #include "TString.h"
 #include "TH1.h"
+#include "TGraph.h"
 
 using namespace std;
 
-void makePUScenarioHist()
+void calcPUScenario2017()
 {
-    // For 2017 only!!!
-
     // PU Scenario from
     //      https://github.com/cms-sw/cmssw/blob/CMSSW_9_4_X/SimGeneral/MixingModule/python/mix_2017_25ns_WinterMC_PUScenarioV1_PoissonOOTPU_cfi.py#L13
     // as recommended by
     //      https://twiki.cern.ch/twiki/bin/view/CMS/HiggsZZ4l2018#Pileup_Reweighting
 
 
+    
+    // Here we go, yo
 
-    // Outfile options
-
-    Int_t maxPileupBin = 100, numPileupBins = 100;      // Binning from HZZ twiki
-    TString outPath = "../data/pileup/";
-    TString histName = "RunIIFall17", outName = "histProbFunction.root";
-
+    TString path = "../data/pileup/";
+    TString outFileName = "pileup_2017_69200_100bins.root";
+    TString dataFileName = "DataPileupHistogram2017_69200_100bins.root", dataHistName = "pileup";
+    TString mcHistName = "RunIIFall17", sfGraphName = "pileup_sf";
 
 
-    // (yo yo yo, what's the...)
-    //
-    // Scenario (copied from file)
+
+    // So what's the what's the what's the scenario?
 
     const Int_t NTIMES = 99;
 
@@ -144,12 +142,54 @@ void makePUScenarioHist()
 
 
 
-    // Make, fill, write histogram
+    // Yes yes y'all
 
-    TH1D *hist = new TH1D(histName, histName, numPileupBins, 0, maxPileupBin);
-    hist->FillN(NTIMES, x, w);
+    Int_t maxPileupBin = 100, numPileupBins = 100;      // Binning from HZZ twiki
+    TH1D *mcHist = new TH1D(mcHistName, mcHistName, numPileupBins, 0, maxPileupBin);
+    mcHist->FillN(NTIMES, x, w);
 
-    TFile *outFile = new TFile(outPath + outName, "RECREATE");
-    hist->Write();
+
+
+    // Wow how now, wow how now brown cow?
+
+    TH1 *dataHist;
+
+    TFile *dataFile = new TFile(path + dataFileName);
+    dataFile->GetObject(dataHistName, dataHist);
+    dataHist->SetDirectory(0);
+    dataFile->Close();
+
+
+
+    // Yo Mr. Busta Rhymes, tell him what I did
+
+    TH1D *normHist = new TH1D(*mcHist);
+    normHist->Divide(dataHist, mcHist, 1./dataHist->Integral(), 1./mcHist->Integral());
+    normHist->Sumw2(kFALSE);
+    normHist->SetName(sfGraphName);
+    normHist->SetTitle(sfGraphName);
+    TGraph *normGraph = new TGraph(normHist);
+
+
+
+    // RAARR RAARR (like a dungeon dragon)
+
+    normHist->Draw("*H");
+    cout << "Mean SF: " << normGraph->GetMean(2) << endl;
+
+
+
+    // Bust it out before the Busta bust another rhyme
+
+    TFile *outFile = new TFile(path + outFileName, "RECREATE");
+    normGraph->Write();
+    dataHist->Write();
+    mcHist->Write();
     outFile->Close();
+
+
+
+    // Observe the vibe and check out the scenario!!
+
+    cout << "Wrote output to " << path + outFileName << endl;
 }
