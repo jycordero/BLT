@@ -1,9 +1,12 @@
 #include "TFile.h"
 #include "TString.h"
 #include "TH1.h"
-#include "TGraph.h"
+
+
 
 using namespace std;
+
+
 
 void calcPUScenario2017()
 {
@@ -19,7 +22,7 @@ void calcPUScenario2017()
     TString path = "../data/pileup/";
     TString outFileName = "pileup_2017_69200_100bins.root";
     TString dataFileName = "DataPileupHistogram2017_69200_100bins.root", dataHistName = "pileup";
-    TString mcHistName = "RunIIFall17", sfGraphName = "pileup_sf";
+    TString mcHistName = "RunIIFall17", sfHistName = "pileup_sf";
 
 
 
@@ -146,6 +149,7 @@ void calcPUScenario2017()
 
     Int_t maxPileupBin = 100, numPileupBins = 100;      // Binning from HZZ twiki
     TH1D *mcHist = new TH1D(mcHistName, mcHistName, numPileupBins, 0, maxPileupBin);
+    mcHist->Sumw2(kFALSE);
     mcHist->FillN(NTIMES, x, w);
 
 
@@ -163,34 +167,34 @@ void calcPUScenario2017()
 
     // Yo Mr. Busta Rhymes, tell him what I did
 
-    TH1D *normHist = new TH1D(*mcHist);
-    normHist->Divide(dataHist, mcHist, 1./dataHist->Integral(), 1./mcHist->Integral());
-    normHist->Sumw2(kFALSE);
-    normHist->SetName(sfGraphName);
-    normHist->SetTitle(sfGraphName);
-    TGraph *normGraph = new TGraph(normHist);
-    normGraph->SetName(sfGraphName);
+    TH1D *sfHist = new TH1D(*mcHist);
+    sfHist->Divide(dataHist, mcHist, 1./dataHist->Integral(), 1./mcHist->Integral());
+    sfHist->Sumw2(kFALSE);
+    sfHist->SetName(sfHistName);
+    sfHist->SetTitle(sfHistName);
 
 
 
     // RAARR RAARR (like a dungeon dragon)
 
-    normHist->Draw("*H");
-    cout << "Mean SF: " << normGraph->GetMean(2) << endl;
+    sfHist->Draw("*H");
+    cout << "Mean SF: " << sfHist->GetMean(2) << endl;
+//  for (int i = 0; i <= numPileupBins+1; i++)
+//      cout << sfHist->GetBinContent(i) << endl;
 
 
 
     // Bust it out before the Busta bust another rhyme
 
-    TFile *outFile = new TFile(path + outFileName, "RECREATE");
-    normGraph->Write();
-    dataHist->Write();
-    mcHist->Write();
-    outFile->Close();
+//  TFile *outFile = new TFile(path + outFileName, "RECREATE");
+//  sfHist->Write();
+//  dataHist->Write();
+//  mcHist->Write();
+//  outFile->Close();
 
 
 
-    // Observe the vibe and check out the scenario!!
+//  // Observe the vibe and check out the scenario!!
 
-    cout << "Wrote output to " << path + outFileName << endl;
+//  cout << "Wrote output to " << path + outFileName << endl;
 }

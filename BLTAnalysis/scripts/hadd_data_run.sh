@@ -10,11 +10,11 @@ dataTag=$4
 srcDir=$5
 
 # Don't try to do anything if the wrong version of ROOT is loaded
-myROOTSYS="/cvmfs/sft.cern.ch/lcg/releases/ROOT/6.10.02-19565/x86_64-slc6-gcc62-opt"
-if [ "$ROOTSYS" != "$myROOTSYS" ]
-then
-    echo "ROOT 6.10 not loaded"
-else
+#myROOTSYS="/cvmfs/sft.cern.ch/lcg/releases/ROOT/6.10.02-19565/x86_64-slc6-gcc62-opt"
+#if [ "$ROOTSYS" != "$myROOTSYS" ]
+#then
+#    echo "ROOT 6.10 not loaded"
+#else
 
     srcName=${srcPref}_${dataName}${dataTag}
     targName=${dataName}${dataTag}
@@ -71,4 +71,4 @@ else
 
         startIndex=$((startIndex + nHadd))
     done
-fi
+#fi

@@ -42,8 +42,10 @@ WeightUtils::WeightUtils(string dataPeriod, string selection, bool isRealData)
     //////////////////
 
 
-    fileName = cmssw_base + "/src/BLT/BLTAnalysis/data/pileup/pileup_2017_69200_100bins.root";
+//  fileName = cmssw_base + "/src/BLT/BLTAnalysis/data/pileup/pileup_2017_69200_100bins.root";
+    fileName = cmssw_base + "/src/BLT/BLTAnalysis/data/pileup/pileup_sf_2017_full.root";
     TFile* puFile = new TFile(fileName.c_str(), "OPEN");
+//  _puReweight = (TH1*)puFile->Get("pileup_sf");
     _puReweight = (TGraph*)puFile->Get("pileup_sf");
 
 
@@ -205,7 +207,11 @@ float WeightUtils::GetPUWeight(float nPU)
     if (_isRealData)
         return weight;
 
-    weight = _puReweight->Eval(nPU);
+//  weight = _puReweight->GetBinContent(_puReweight->FindBin(nPU));
+    weight = _puReweight->Eval(nPU); 
+    
+    if (weight < 0)
+        weight = 0;
 
     return weight;
 }

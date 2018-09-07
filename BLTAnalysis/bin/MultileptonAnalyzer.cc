@@ -52,14 +52,19 @@ void MultileptonAnalyzer::Begin(TTree *tree)
     // https://indico.cern.ch/event/682891/contributions/2810364/attachments/1570825/2477991/20171206_CMSWeek_MuonHLTReport_KPLee_v3_1.pdf
     muonTriggerNames.push_back("HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8_v*");
     electronTriggerNames.push_back("HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_v*");
-//  electronTriggerNames.push_back("HLT_Ele17_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v*");
 
 
     // Weight utility class
     weights.reset(new WeightUtils(params->period, params->selection, false)); // Lumi mask
     // Set up object to handle good run-lumi filtering if necessary
     lumiMask = RunLumiRangeMap();
-    string jsonFileName = cmssw_base + "/src/BLT/BLTAnalysis/data/Cert_294927-306462_13TeV_EOY2017ReReco_Collisions17_JSON.txt";
+    string jsonFileName = cmssw_base + "/src/BLT/BLTAnalysis/data/";
+    size_t isDoubleMuon = params->datasetgroup.find("muon_2017");
+    if (isDoubleMuon != string::npos)   // Remove period 2017B from muon data
+        jsonFileName += "DoubleMuon_299368-306462_JSON.txt";
+    else
+        jsonFileName += "Cert_294927-306462_13TeV_EOY2017ReReco_Collisions17_JSON.txt";
+    cout << jsonFileName << endl;
     lumiMask.AddJSONFile(jsonFileName);
 
     // muon momentum corrections
@@ -120,6 +125,7 @@ void MultileptonAnalyzer::Begin(TTree *tree)
     outTree->Branch("muonFiredLeg1", &muonFiredLeg1);
     outTree->Branch("muonFiredLeg2", &muonFiredLeg2);
 
+    outTree->Branch("muonIsGhost", &muonIsGhost);
     outTree->Branch("muonIsLoose", &muonIsLoose);
     outTree->Branch("muonIsHZZ", &muonIsHZZ);
 
@@ -152,6 +158,7 @@ void MultileptonAnalyzer::Begin(TTree *tree)
     outTree->Branch("electronFiredLeg1", &electronFiredLeg1);
     outTree->Branch("electronFiredLeg2", &electronFiredLeg2);
 
+    outTree->Branch("electronIsGhost", &electronIsGhost);
     outTree->Branch("electronPassIsoMVA", &electronPassIsoMVA);
     outTree->Branch("electronPassNoIsoMVA", &electronPassNoIsoMVA);
     outTree->Branch("electronIsHZZ", &electronIsHZZ);
@@ -212,7 +219,8 @@ Bool_t MultileptonAnalyzer::Process(Long64_t entry)
     nGenMuons = 0;                      nGenElectrons = 0;                  nGenLeptons = 0; 
 
     muonsP4ptr.Delete();                muonsQ.clear();                     muonFiredLeg1.clear();              muonFiredLeg2.clear();
-    muonIsLoose.clear();                muonIsHZZ.clear();                  muonEnergySF.clear();               muonHZZIDSF.clear();
+    muonIsGhost.clear();                muonIsLoose.clear();                muonIsHZZ.clear();
+    muonEnergySF.clear();               muonHZZIDSF.clear();
     muonTrigEffLeg1Data.clear();        muonTrigEffLeg1MC.clear();          muonTrigEffLeg2Data.clear();        muonTrigEffLeg2MC.clear(); 
     muonCombIso.clear();                muonsTrkIso.clear();                muonD0.clear();                     muonDz.clear();                     
     muonSIP3d.clear();                  muonPtErr.clear();                  muonBestTrackType.clear();          muonMuNChi2.clear();
@@ -220,7 +228,7 @@ Bool_t MultileptonAnalyzer::Process(Long64_t entry)
     muonIsGlobal.clear();               muonIsTracker.clear();
                                                                                                         
     electronsP4ptr.Delete();            electronsQ.clear();                 electronFiredLeg1.clear();          electronFiredLeg2.clear();
-    electronPassIsoMVA.clear();         electronPassNoIsoMVA.clear();       electronIsHZZ.clear();
+    electronIsGhost.clear();            electronPassIsoMVA.clear();         electronPassNoIsoMVA.clear();       electronIsHZZ.clear();
     electronEnergySF.clear();           electronHZZIDSF.clear();
     electronTrigEffLeg1Data.clear();    electronTrigEffLeg1MC.clear();      electronTrigEffLeg2Data.clear();    electronTrigEffLeg2MC.clear();
     electronCombIso.clear();            electronsTrkIso.clear();            electronD0.clear();                 electronDz.clear();
@@ -280,13 +288,6 @@ Bool_t MultileptonAnalyzer::Process(Long64_t entry)
 
     if (!isData)
     {
-        // Set data period for 2016 MC scale factors
-        if (rng->Rndm() < 0.468)
-            weights->SetDataPeriod("2016BtoF");    
-        else
-            weights->SetDataPeriod("2016GH");
-
-
         // Save gen weight for amc@nlo Drell-Yan sample
         genWeight = fGenEvtInfo->weight > 0 ? 1 : -1; 
         if (genWeight < 0)
@@ -372,7 +373,7 @@ Bool_t MultileptonAnalyzer::Process(Long64_t entry)
 
         // Pileup reweighting
         nPU = fInfo->nPUmean;
-        PUWeight = weights->GetPUWeight(fInfo->nPUmean);
+        PUWeight = weights->GetPUWeight(nPU);
     }
 
 
@@ -481,16 +482,21 @@ Bool_t MultileptonAnalyzer::Process(Long64_t entry)
         muonP4.SetPtEtaPhiM(muon->pt, muon->eta, muon->phi, MUON_MASS);
 
 
-        // Remove muons with very small deltaR
-        float minDeltaR = 1e6;
-        for (unsigned j = 0; j < nMuons; j++)
+        // Ghost cleaning (not really kosher...)
+        float minDeltaR = 0.05;
+        bool isGhost = kFALSE;
+        for (unsigned j = 0; j < i; j++)
         {
             TLorentzVector tmpMuonP4;
-            tmpMuonP4.SetPtEtaPhiM(muons[j]->pt, muons[j]->eta, muons[j]->phi, 0.1051);
+            tmpMuonP4.SetPtEtaPhiM(muons[j]->pt, muons[j]->eta, muons[j]->phi, MUON_MASS);
             float dr = muonP4.DeltaR(tmpMuonP4);
             if (dr < minDeltaR)
-                minDeltaR = dr;
+            {
+                isGhost = kTRUE;
+                break;
+            }
         }
+        muonIsGhost.push_back(isGhost);
 
 
         // Remove muon track pt from muon track isolation variable
@@ -550,6 +556,24 @@ Bool_t MultileptonAnalyzer::Process(Long64_t entry)
         electronEnergySF.push_back(GetElectronPtSF(electron));
         electronP4.SetPtEtaPhiM(electron->pt, electron->eta, electron->phi, ELE_MASS);
         electronP4 *= electronEnergySF.back();
+
+
+        // Ghost cleaning (not really kosher...)
+        float minDeltaR = 0.05;
+        bool isGhost = kFALSE;
+        for (unsigned j = 0; j < nMuons; j++)
+        {
+            TLorentzVector tmpMuonP4;
+            tmpMuonP4.SetPtEtaPhiM(muons[j]->pt, muons[j]->eta, muons[j]->phi, MUON_MASS);
+            float dr = electronP4.DeltaR(tmpMuonP4);
+            if (dr < minDeltaR && muonIsHZZ[j])
+            {
+                isGhost = kTRUE;
+                break;
+            }
+        }
+        electronIsGhost.push_back(isGhost);
+
 
         // Check electron ID
         if (particleSelector->PassElectronMVA(electron, cuts->hzzIsoV1))
@@ -871,7 +895,6 @@ float MultileptonAnalyzer::MetKluge(float met)
 
 
 
-// FIXME DeltaBeta correction?
 // https://twiki.cern.ch/twiki/bin/view/CMS/HiggsZZ4l2018#Muons
 float MultileptonAnalyzer::GetMuonIsolation(const baconhep::TMuon* mu)
 {

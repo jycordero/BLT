@@ -108,7 +108,7 @@ public:
     std::vector<Short_t>    muonsQ;
     std::vector<Bool_t>     muonFiredLeg1, muonFiredLeg2;
 
-    std::vector<Bool_t>     muonIsLoose, muonIsHZZ; 
+    std::vector<Bool_t>     muonIsGhost, muonIsLoose, muonIsHZZ; 
     std::vector<Float_t>    muonEnergySF, muonHZZIDSF;
     std::vector<Float_t>    muonTrigEffLeg1Data, muonTrigEffLeg1MC, muonTrigEffLeg2Data, muonTrigEffLeg2MC;
 
@@ -123,7 +123,7 @@ public:
     std::vector<Short_t>    electronsQ;
     std::vector<Bool_t>     electronFiredLeg1, electronFiredLeg2;
 
-    std::vector<Bool_t>     electronPassIsoMVA, electronPassNoIsoMVA, electronIsHZZ;
+    std::vector<Bool_t>     electronIsGhost, electronPassIsoMVA, electronPassNoIsoMVA, electronIsHZZ;
     std::vector<Float_t>    electronEnergySF, electronHZZIDSF;
     std::vector<Float_t>    electronTrigEffLeg1Data, electronTrigEffLeg1MC, electronTrigEffLeg2Data, electronTrigEffLeg2MC;
 

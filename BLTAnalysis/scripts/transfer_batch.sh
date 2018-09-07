@@ -9,7 +9,8 @@ batchPath="../test/batch/"
 eosPath="/store/user/jrainbol/Trees/${year}/"
 
  # DATA
-    dataName=("muon")
+#   dataName=("muon", "eg")
+    dataName=("electron")
     dataTag=("B" "C" "D" "E" "F")
     nTarget=(1 4 2 4 5)
 
@@ -17,12 +18,12 @@ eosPath="/store/user/jrainbol/Trees/${year}/"
     do
         suffix=${name}_${year}
 
-#       for ((i=0; i<${#dataTag[@]}; i+=1))
-#       do
-#           ./hadd_data_run.sh ${nTarget[i]} ${srcPref} ${suffix} ${dataTag[i]} ${batchPath}${batchDir}
-#           echo ""
-#           echo ""
-#       done
+        for ((i=0; i<${#dataTag[@]}; i+=1))
+        do
+            ./hadd_data_run.sh ${nTarget[i]} ${srcPref} ${suffix} ${dataTag[i]} ${batchPath}${batchDir}
+            echo ""
+            echo ""
+        done
 
         ./move_data.sh ${suffix} ${suffix} 0 ${eosPath}${suffix}
     done

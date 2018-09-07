@@ -6,14 +6,12 @@ import sys
 ''' Specify parameters '''
 cfg        = bm.JobConfig
 selection  = 'emu'
-period     = '2016'
+period     = '2017'
 executable = 'execBatch.sh'
 location   = 'lpc'
 
-#data_samples = ['double_mu', 'double_eg']
-data_samples = ['double_mu']
-#mc_samples   = ['zjets', 'ttbar', 'diboson', 'higgs']
-mc_samples   = ['zjets']
+data_samples = ['double_mu', 'double_eg']
+mc_samples   = ['zjets', 'ttbar', 'diboson', 'higgs']
 
 
 
@@ -56,31 +54,31 @@ data_dict['double_mu'] = \
 
 data_dict['double_eg'] = \
 [
-#   cfg(data_name = 'eg_2017B_v1',
-#       path     = '{0}/DoubleEG_Run2017B-31Mar2018-v1'.format(path),
-#       nJobs    = 51,
-#       suffix   = 'eg_2017B'
-#       ),
-#   cfg(data_name = 'eg_2017C_v1',
-#       path     = '{0}/DoubleEG_Run2017C-31Mar2018-v1'.format(path),
-#       nJobs    = 51,
-#       suffix   = 'eg_2017C'
-#       ),
-#   cfg(data_name = 'eg_2017D_v1',
-#       path     = '{0}/DoubleEG_Run2017D-31Mar2018-v1'.format(path),
-#       nJobs    = 51,
-#       suffix   = 'eg_2017D'
-#       ),
-#   cfg(data_name = 'eg_2017E_v1',
-#       path     = '{0}/DoubleEG_Run2017E-31Mar2018-v1'.format(path),
-#       nJobs    = 51,
-#       suffix   = 'eg_2017E'
-#       ),
-#   cfg(data_name = 'eg_2017F_v1',
-#       path     = '{0}/DoubleEG_Run2017F-31Mar2018-v1'.format(path),
-#       nJobs    = 51,
-#       suffix   = 'eg_2017F'
-#       ),
+    cfg(data_name = 'eg_2017B_v1',
+        path     = '{0}/DoubleEG_Run2017B-31Mar2018-v1'.format(path),
+        nJobs    = 51,
+        suffix   = 'electron_2017B'
+        ),
+    cfg(data_name = 'eg_2017C_v1',
+        path     = '{0}/DoubleEG_Run2017C-31Mar2018-v1'.format(path),
+        nJobs    = 51,
+        suffix   = 'electron_2017C'
+        ),
+    cfg(data_name = 'eg_2017D_v1',
+        path     = '{0}/DoubleEG_Run2017D-31Mar2018-v1'.format(path),
+        nJobs    = 51,
+        suffix   = 'electron_2017D'
+        ),
+    cfg(data_name = 'eg_2017E_v1',
+        path     = '{0}/DoubleEG_Run2017E-31Mar2018-v1'.format(path),
+        nJobs    = 51,
+        suffix   = 'electron_2017E'
+        ),
+    cfg(data_name = 'eg_2017F_v1',
+        path     = '{0}/DoubleEG_Run2017F-31Mar2018-v1'.format(path),
+        nJobs    = 51,
+        suffix   = 'electron_2017F'
+        ),
 ]
 
 
@@ -99,11 +97,11 @@ mc_dict['zjets'] = \
 
 mc_dict['ttbar'] = \
 [
-#   cfg(data_name = 'TTJets',
-#       path     = '{0}/Fall17_TTJets_amcatnlo'.format(path),
-#       nJobs    = 50,
-#       suffix   = 'ttbar'
-#       ),
+    cfg(data_name = 'TTJets',
+        path     = '{0}/Fall17_TTJets_amcatnlo'.format(path),
+        nJobs    = 50,
+        suffix   = 'ttbar'
+        ),
 ]
 
 mc_dict['diboson'] = \
