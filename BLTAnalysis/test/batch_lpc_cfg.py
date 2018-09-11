@@ -54,27 +54,27 @@ data_dict['double_mu'] = \
 
 data_dict['double_eg'] = \
 [
-    cfg(data_name = 'eg_2017B_v1',
+    cfg(data_name = 'electron_2017B_v1',
         path     = '{0}/DoubleEG_Run2017B-31Mar2018-v1'.format(path),
         nJobs    = 51,
         suffix   = 'electron_2017B'
         ),
-    cfg(data_name = 'eg_2017C_v1',
+    cfg(data_name = 'electron_2017C_v1',
         path     = '{0}/DoubleEG_Run2017C-31Mar2018-v1'.format(path),
         nJobs    = 51,
         suffix   = 'electron_2017C'
         ),
-    cfg(data_name = 'eg_2017D_v1',
+    cfg(data_name = 'electron_2017D_v1',
         path     = '{0}/DoubleEG_Run2017D-31Mar2018-v1'.format(path),
         nJobs    = 51,
         suffix   = 'electron_2017D'
         ),
-    cfg(data_name = 'eg_2017E_v1',
+    cfg(data_name = 'electron_2017E_v1',
         path     = '{0}/DoubleEG_Run2017E-31Mar2018-v1'.format(path),
         nJobs    = 51,
         suffix   = 'electron_2017E'
         ),
-    cfg(data_name = 'eg_2017F_v1',
+    cfg(data_name = 'electron_2017F_v1',
         path     = '{0}/DoubleEG_Run2017F-31Mar2018-v1'.format(path),
         nJobs    = 51,
         suffix   = 'electron_2017F'
@@ -132,7 +132,7 @@ mc_dict['diboson'] = \
         suffix   = 'zz_2l2q'
         ),
     cfg(data_name = 'ZZTo4L',
-        path     = '{0}/ZZTo4L_powheg'.format(path),
+        path     = '{0}/Fall17_ZZTo4L_powheg'.format(path),
         nJobs    = 20,
         suffix   = 'zz_4l'
         ),

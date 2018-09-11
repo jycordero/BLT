@@ -185,6 +185,7 @@ void MultileptonAnalyzer::Begin(TTree *tree)
     outTree->Branch("electronDPhiIn", &electronDPhiIn);
     outTree->Branch("electronNMissHits", &electronNMissHits);
     outTree->Branch("electronIsConv", &electronIsConv);
+    outTree->Branch("electronIsGap", &electronIsGap);
 
 
     // Gen particles
@@ -234,7 +235,7 @@ Bool_t MultileptonAnalyzer::Process(Long64_t entry)
     electronCombIso.clear();            electronsTrkIso.clear();            electronD0.clear();                 electronDz.clear();
     electronIsoMVA.clear();             electronNoIsoMVA.clear();           electronSIP3d.clear();              electronEnergyInv.clear();
     electronHOverE.clear();             electronDEtaIn.clear();             electronDPhiIn.clear();             electronScEta.clear();
-    electronSieie.clear();              electronNMissHits.clear();          electronIsConv.clear();
+    electronSieie.clear();              electronNMissHits.clear();          electronIsConv.clear();             electronIsGap.clear();
 
     genMuonsP4ptr.Delete();             genMuonsQ.clear();                  genMuonStatus.clear();
     genElectronsP4ptr.Delete();         genElectronsQ.clear();              genElectronStatus.clear();
@@ -554,11 +555,10 @@ Bool_t MultileptonAnalyzer::Process(Long64_t entry)
 
         // Apply electron energy correction
         electronEnergySF.push_back(GetElectronPtSF(electron));
-        electronP4.SetPtEtaPhiM(electron->pt, electron->eta, electron->phi, ELE_MASS);
         electronP4 *= electronEnergySF.back();
 
 
-        // Ghost cleaning (not really kosher...)
+        // Cross cleaning
         float minDeltaR = 0.05;
         bool isGhost = kFALSE;
         for (unsigned j = 0; j < nMuons; j++)
@@ -772,6 +772,7 @@ Bool_t MultileptonAnalyzer::Process(Long64_t entry)
             electronDPhiIn.push_back(electron->dPhiIn);
             electronNMissHits.push_back(electron->nMissingHits);
             electronIsConv.push_back(electron->isConv);
+            electronIsGap.push_back(electron->fiducialBits & kIsGap);
         }
 
 
@@ -982,7 +983,9 @@ float MultileptonAnalyzer::GetElectronIsolation(const baconhep::TElectron* el, f
 // https://twiki.cern.ch/twiki/bin/viewauth/CMS/EgammaMiniAODV2#Energy_Scale_and_Smearing
 float MultileptonAnalyzer::GetElectronPtSF(baconhep::TElectron* electron)
 {
-    return electron->calibPt / electron->pt;
+    TLorentzVector electronP4;
+    electronP4.SetPtEtaPhiM(electron->pt, electron->eta, electron->phi, ELE_MASS);
+    return electron->calibE / electronP4.E();
 }
 
 

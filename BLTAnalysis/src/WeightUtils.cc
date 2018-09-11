@@ -356,7 +356,7 @@ EfficiencyContainer WeightUtils::GetHZZElectronIDRecoEff(const baconhep::TElectr
     int bin;
     if (fabs(electron->scEta) < maxEta)
     {   
-        if (kFALSE) // (electron->isGap)
+        if (electron->fiducialBits & kIsGap)
         {
             if (electron->calibPt > maxPt)
                 bin = _hzz_eleIdSF_gap->FindBin(electron->scEta, 0.99 * maxPt);

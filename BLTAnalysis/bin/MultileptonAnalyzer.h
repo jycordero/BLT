@@ -82,6 +82,9 @@ public:
     std::string                         muonTrigger = "HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8_v*";
     std::string                         electronTrigger = "HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_v*";
 
+    // Histograms
+    TH1D *hAcceptedEvents;
+
 
 
     //--- BRANCHES ---//
@@ -131,7 +134,7 @@ public:
     std::vector<Float_t>    electronCombIso, electronsTrkIso, electronD0, electronDz, electronSIP3d, electronScEta;
     std::vector<Float_t>    electronSieie, electronEnergyInv, electronHOverE, electronDEtaIn, electronDPhiIn;
     std::vector<UShort_t>   electronNMissHits;
-    std::vector<Bool_t>     electronIsConv;
+    std::vector<Bool_t>     electronIsConv, electronIsGap;
 
 
     // Gen particles
