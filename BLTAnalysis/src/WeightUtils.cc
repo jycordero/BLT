@@ -380,6 +380,8 @@ EfficiencyContainer WeightUtils::GetHZZElectronIDRecoEff(const baconhep::TElectr
 
 
     // Reco
+    // https://twiki.cern.ch/twiki/bin/view/CMS/HiggsZZ4l2018#Electron_scale_factors
+    // https://twiki.cern.ch/twiki/bin/view/CMS/Egamma2017DataRecommendations#Electron_Reconstruction_Scale_Fa
     float threshPt = 20, minPt = 10;
     float sfReco = 1, errReco = 0;
     if (fabs(electron->scEta) < maxEta)

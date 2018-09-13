@@ -748,7 +748,7 @@ Bool_t MultileptonAnalyzer::Process(Long64_t entry)
             electronTrigEffLeg1Data.push_back(trigEff.first);
             electronTrigEffLeg1MC.push_back(trigEff.second);
 
-            effCont = weights->GetDoubleElectronTriggerEff(electron, 1);
+            effCont = weights->GetDoubleElectronTriggerEff(electron, 2);
             trigEff = effCont.GetEff();
             if (!firedLeg2)
             {
@@ -997,12 +997,12 @@ float MultileptonAnalyzer::GetElectronPtSF(baconhep::TElectron* electron)
 bool MultileptonAnalyzer::PassElectronHZZTightID(const baconhep::TElectron* electron, float rho)
 {
     if (    electron->calibPt > 7
-            &&  fabs(electron->scEta) < 2.5
-//          &&  (particleSelector->PassElectronMVA(electron, cuts->hzzIsoV1) || particleSelector->PassElectronMVA(electron, cuts->hzzMVANoIsoV1))   // Needs to be checked separately!!
-            &&  fabs(electron->d0) < 0.5
-            &&  fabs(electron->dz) < 1
-            &&  fabs(electron->sip3d) < 4.0
-            &&  GetElectronIsolation(electron, rho)/electron->calibPt < 0.35)   // Not sure if this needs to be included for iso MVA?
+        &&  fabs(electron->scEta) < 2.5
+//      &&  (particleSelector->PassElectronMVA(electron, cuts->hzzIsoV1) || particleSelector->PassElectronMVA(electron, cuts->hzzMVANoIsoV1))   // Needs to be checked separately!!
+        &&  fabs(electron->d0) < 0.5
+        &&  fabs(electron->dz) < 1
+        &&  fabs(electron->sip3d) < 4.0
+        &&  GetElectronIsolation(electron, rho)/electron->calibPt < 0.35)   // Not sure if this needs to be included for iso MVA?
         return kTRUE;
     else
         return kFALSE;

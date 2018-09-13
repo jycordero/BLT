@@ -79,8 +79,6 @@ public:
     std::unique_ptr<WeightUtils>        weights;
 
     std::vector<string>                 muonTriggerNames, electronTriggerNames;
-    std::string                         muonTrigger = "HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8_v*";
-    std::string                         electronTrigger = "HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_v*";
 
     // Histograms
     TH1D *hAcceptedEvents;
