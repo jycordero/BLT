@@ -127,6 +127,7 @@ bool ParticleSelector::PassElectronID(const baconhep::TElectron* el, const Cuts:
 bool ParticleSelector::PassElectronMVA(const baconhep::TElectron* el, const Cuts::elMVACuts& cutLevel) const
 {
     bool elPass = false;
+    float bdtVal = -1;
 
     if (cutLevel.cutName == "hzzMVA")
         bdtVal = el->mvaHZZ;
@@ -135,17 +136,17 @@ bool ParticleSelector::PassElectronMVA(const baconhep::TElectron* el, const Cuts
     {
         if (fabs(el->scEta) < cutLevel.eta[0])
         {
-            if (el->mvaHZZ > cutLevel.bdt[0])
+            if (bdtVal > cutLevel.bdt[0])
                 elPass = true;
         }
         else if (fabs(el->scEta) < cutLevel.eta[1])
         {
-            if (el->mvaHZZ > cutLevel.bdt[1])  
+            if (bdtVal > cutLevel.bdt[1])  
                 elPass = true;
         }
         else if (fabs(el->scEta) < cutLevel.eta[2])
         {
-            if (el->mvaHZZ > cutLevel.bdt[2])  
+            if (bdtVal > cutLevel.bdt[2])  
                 elPass = true;
         }
     }
@@ -153,17 +154,17 @@ bool ParticleSelector::PassElectronMVA(const baconhep::TElectron* el, const Cuts
     {
         if (fabs(el->scEta) < cutLevel.eta[0])
         {
-            if (el->mvaHZZ > cutLevel.bdt[3])
+            if (bdtVal > cutLevel.bdt[3])
                 elPass = true;
         }
         else if (fabs(el->scEta) < cutLevel.eta[1])
         {
-            if (el->mvaHZZ > cutLevel.bdt[4])  
+            if (bdtVal > cutLevel.bdt[4])  
                 elPass = true;
         }
         else if (fabs(el->scEta) < cutLevel.eta[2])
         {
-            if (el->mvaHZZ > cutLevel.bdt[5])
+            if (bdtVal > cutLevel.bdt[5])
                 elPass = true;
         }
     }

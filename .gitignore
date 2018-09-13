@@ -13,14 +13,12 @@ __init__.py
 # Stuff
 *~
 *.log
-*.pdf
-*.gz
-*.tar
-*.tgz
 
 # Remove crap in test dir
 BLTAnalysis/test/batch
+BLTAnalysis/test/ValidationTrees
 
-# Fix buildfile and data subdir
-BLTAnalysis/Buildfile.xml
+# Fix data subdir
 !BLTAnalysis/data/**
+
+

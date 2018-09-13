@@ -54,7 +54,7 @@ Cuts::Cuts() {
 
 
 
-    //--- ELECTRON ID ---//i
+    //--- ELECTRON ID ---//
     // https://twiki.cern.ch/twiki/bin/view/CMS/CutBasedElectronIdentificationRun2#Working_points_for_2016_data_for
 
     // Tight

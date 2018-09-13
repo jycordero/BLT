@@ -80,6 +80,9 @@ public:
 
     std::vector<string>                 muonTriggerNames, electronTriggerNames;
 
+    // Histograms
+    TH1D *hAcceptedEvents;
+
 
 
     //--- BRANCHES ---//
@@ -106,7 +109,7 @@ public:
     std::vector<Short_t>    muonsQ;
     std::vector<Bool_t>     muonFiredLeg1, muonFiredLeg2;
 
-    std::vector<Bool_t>     muonIsLoose, muonIsHZZ; 
+    std::vector<Bool_t>     muonIsGhost, muonIsLoose, muonIsHZZ; 
     std::vector<Float_t>    muonEnergySF, muonHZZIDSF;
     std::vector<Float_t>    muonTrigEffLeg1Data, muonTrigEffLeg1MC, muonTrigEffLeg2Data, muonTrigEffLeg2MC;
 
@@ -121,7 +124,7 @@ public:
     std::vector<Short_t>    electronsQ;
     std::vector<Bool_t>     electronFiredLeg1, electronFiredLeg2;
 
-    std::vector<Bool_t>     electronPassMVA, electronIsHZZ;
+    std::vector<Bool_t>     electronIsGhost, electronPassMVA, electronIsHZZ;
     std::vector<Float_t>    electronEnergySF, electronHZZIDSF;
     std::vector<Float_t>    electronTrigEffLeg1Data, electronTrigEffLeg1MC, electronTrigEffLeg2Data, electronTrigEffLeg2MC;
 
@@ -129,7 +132,7 @@ public:
     std::vector<Float_t>    electronCombIso, electronsTrkIso, electronD0, electronDz, electronSIP3d, electronScEta;
     std::vector<Float_t>    electronSieie, electronEnergyInv, electronHOverE, electronDEtaIn, electronDPhiIn;
     std::vector<UShort_t>   electronNMissHits;
-    std::vector<Bool_t>     electronIsConv;
+    std::vector<Bool_t>     electronIsConv, electronIsGap;
 
 
     // Gen particles
@@ -150,7 +153,7 @@ public:
     bool PassMuonHZZTightID(const baconhep::TMuon*, const TLorentzVector&);
 
     float GetElectronIsolation(const baconhep::TElectron*, float);
-    float GetElectronPtSF(baconhep::TElectron*, EnergyScaleCorrection*, TRandom3*, int);
+    float GetElectronPtSF(baconhep::TElectron*);
     bool PassElectronHZZTightID(const baconhep::TElectron*, float);
 
     //ClassDef(MultileptonAnalyzer,0);
