@@ -69,10 +69,6 @@ public:
     RoccoR *muonCorr;
     TRandom3 *rng;
 
-    // electron scale and smear corrector (trash)
-    // (from topic_wbranch)
-    EnergyScaleCorrection *electronScaler;
-
     // Params and cuts
     std::unique_ptr<Parameters>         params;
     std::unique_ptr<Cuts>               cuts;
@@ -125,12 +121,13 @@ public:
     std::vector<Short_t>    electronsQ;
     std::vector<Bool_t>     electronFiredLeg1, electronFiredLeg2;
 
-    std::vector<Bool_t>     electronIsMVA, electronIsHZZ;
+    std::vector<Bool_t>     electronPassMVA, electronIsHZZ;
     std::vector<Float_t>    electronEnergySF, electronHZZIDSF;
     std::vector<Float_t>    electronTrigEffLeg1Data, electronTrigEffLeg1MC, electronTrigEffLeg2Data, electronTrigEffLeg2MC;
 
+    std::vector<Float_T>    electronMVA;
     std::vector<Float_t>    electronCombIso, electronsTrkIso, electronD0, electronDz, electronSIP3d, electronScEta;
-    std::vector<Float_t>    electronMVA, electronSieie, electronEnergyInv, electronHOverE, electronDEtaIn, electronDPhiIn;
+    std::vector<Float_t>    electronSieie, electronEnergyInv, electronHOverE, electronDEtaIn, electronDPhiIn;
     std::vector<UShort_t>   electronNMissHits;
     std::vector<Bool_t>     electronIsConv;
 
@@ -150,13 +147,11 @@ public:
 
     float GetMuonIsolation(const baconhep::TMuon*);
     float GetRochesterCorrection(const baconhep::TMuon*, RoccoR*, TRandom3*, bool);
-    bool PassMuonTightID(const baconhep::TMuon*);
-    bool PassMuonHZZTightID(const baconhep::TMuon*);
+    bool PassMuonHZZTightID(const baconhep::TMuon*, const TLorentzVector&);
 
     float GetElectronIsolation(const baconhep::TElectron*, float);
     float GetElectronPtSF(baconhep::TElectron*, EnergyScaleCorrection*, TRandom3*, int);
-    bool PassElectronGoodID(const baconhep::TElectron*, std::unique_ptr<ParticleSelector>&, std::unique_ptr<Cuts>&);
-    bool PassElectronHZZTightID(const baconhep::TElectron*, std::unique_ptr<ParticleSelector>&, std::unique_ptr<Cuts>&, float);
+    bool PassElectronHZZTightID(const baconhep::TElectron*, float);
 
     //ClassDef(MultileptonAnalyzer,0);
 };

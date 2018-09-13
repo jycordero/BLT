@@ -47,11 +47,12 @@ void MultileptonAnalyzer::Begin(TTree *tree)
     const std::string cmssw_base = getenv("CMSSW_BASE");
     std::string trigfilename = cmssw_base + "/src/BaconAna/DataFormats/data/HLTFile_25ns";
     trigger.reset(new baconhep::TTrigger(trigfilename));
+
+    // https://twiki.cern.ch/twiki/bin/view/CMS/HiggsZZ4l2017#Trigger_requirements
+    // https://twiki.cern.ch/twiki/bin/view/CMS/MuonHLT2016#Recommended_trigger_paths_for_20
     muonTriggerNames.push_back("HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_v*");
-    muonTriggerNames.push_back("HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v*");
     muonTriggerNames.push_back("HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_v*");
-    muonTriggerNames.push_back("HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v*");
-    electronTriggerNames.push_back("HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v*");
+//  muonTriggerNames.push_back("HLT_TkMu17_TrkIsoVVL_TkMu8_TrkIsoVVL_v*");
     electronTriggerNames.push_back("HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_v*");
 
     // Weight utility class
@@ -150,7 +151,7 @@ void MultileptonAnalyzer::Begin(TTree *tree)
     outTree->Branch("electronFiredLeg1", &electronFiredLeg1);
     outTree->Branch("electronFiredLeg2", &electronFiredLeg2);
 
-    outTree->Branch("electronIsMVA", &electronIsMVA);
+    outTree->Branch("electronPassMVA", &electronPassMVA);
     outTree->Branch("electronIsHZZ", &electronIsHZZ);
 
     outTree->Branch("electronEnergySF", &electronEnergySF);
@@ -160,9 +161,9 @@ void MultileptonAnalyzer::Begin(TTree *tree)
     outTree->Branch("electronTrigEffLeg2Data", &electronTrigEffLeg2Data);
     outTree->Branch("electronTrigEffLeg2MC", &electronTrigEffLeg2MC);
 
+    outTree->Branch("electronMVA", &electronMVA);
     outTree->Branch("electronCombIso", &electronCombIso);
     outTree->Branch("electronTrkIso", &electronsTrkIso);
-    outTree->Branch("electronMVA", &electronMVA);
     outTree->Branch("electronD0", &electronD0);
     outTree->Branch("electronDz", &electronDz);
     outTree->Branch("electronSIP3d", &electronSIP3d);
@@ -216,7 +217,7 @@ Bool_t MultileptonAnalyzer::Process(Long64_t entry)
     muonIsGlobal.clear();               muonIsTracker.clear();
                                                                                                         
     electronsP4ptr.Delete();            electronsQ.clear();                 electronFiredLeg1.clear();          electronFiredLeg2.clear();
-    electronIsMVA.clear();              electronIsHZZ.clear();              electronEnergySF.clear();           electronHZZIDSF.clear();
+    electronPassMVA.clear();            electronIsHZZ.clear();              electronEnergySF.clear();           electronHZZIDSF.clear();
     electronTrigEffLeg1Data.clear();    electronTrigEffLeg1MC.clear();      electronTrigEffLeg2Data.clear();    electronTrigEffLeg2MC.clear();
     electronCombIso.clear();            electronsTrkIso.clear();            electronD0.clear();                 electronDz.clear();
     electronSIP3d.clear();              electronMVA.clear();                electronEnergyInv.clear();          electronHOverE.clear();
@@ -275,14 +276,7 @@ Bool_t MultileptonAnalyzer::Process(Long64_t entry)
 
     if (!isData)
     {
-        // Set data period for 2016 MC scale factors
-        if (rng->Rndm() < 0.468)
-            weights->SetDataPeriod("2016BtoF");    
-        else
-            weights->SetDataPeriod("2016GH");
-
-
-        // Save gen weight for amc@nlo Drell-Yan sample
+        // Save gen weight for amc@nlo samples
         genWeight = fGenEvtInfo->weight > 0 ? 1 : -1; 
         if (genWeight < 0)
             hTotalEvents->Fill(10);
@@ -367,7 +361,7 @@ Bool_t MultileptonAnalyzer::Process(Long64_t entry)
 
         // Pileup reweighting
         nPU = fInfo->nPUmean;
-        PUWeight = weights->GetPUWeight(fInfo->nPUmean);
+        PUWeight = weights->GetPUWeight(nPU);
     }
 
 
@@ -628,7 +622,7 @@ Bool_t MultileptonAnalyzer::Process(Long64_t entry)
             muonFiredLeg1.push_back(firedLeg1);
             muonFiredLeg2.push_back(firedLeg2);
 
-            effCont = weights->GetDoubleMuonTriggerEff("HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_v*", 1, muonP4);
+            effCont = weights->GetDoubleMuonTriggerEff(muonP4, 1);
             trigEff = effCont.GetEff();
             if (!firedLeg1)
             {
@@ -638,7 +632,7 @@ Bool_t MultileptonAnalyzer::Process(Long64_t entry)
             muonTrigEffLeg1Data.push_back(trigEff.first);
             muonTrigEffLeg1MC.push_back(trigEff.second);
 
-            effCont = weights->GetDoubleMuonTriggerEff("HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_v*", 2, muonP4);
+            effCont = weights->GetDoubleMuonTriggerEff(muonP4, 2);
             trigEff = effCont.GetEff();
             if (!firedLeg2)
             {
@@ -703,7 +697,7 @@ Bool_t MultileptonAnalyzer::Process(Long64_t entry)
             electronFiredLeg1.push_back(firedLeg1);
             electronFiredLeg2.push_back(firedLeg2);
 
-            effCont = weights->GetDoubleElectronTriggerEff("HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_v*", 1, electron);
+            effCont = weights->GetDoubleElectronTriggerEff(electron, 1);
             trigEff = effCont.GetEff();
             if (!firedLeg1)
             {
@@ -713,7 +707,7 @@ Bool_t MultileptonAnalyzer::Process(Long64_t entry)
             electronTrigEffLeg1Data.push_back(trigEff.first);
             electronTrigEffLeg1MC.push_back(trigEff.second);
 
-            effCont = weights->GetDoubleElectronTriggerEff("HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_v*", 2, electron);
+            effCont = weights->GetDoubleElectronTriggerEff(electron, 2);
             trigEff = effCont.GetEff();
             if (!firedLeg2)
             {
@@ -876,7 +870,7 @@ float MultileptonAnalyzer::GetMuonIsolation(const baconhep::TMuon* mu)
 // double mcSF = rc.kSmearMC(Q, pt, eta, phi, nl, u, s=0, m=0); //MC scale and extra smearing when matched gen muon is not available
 float MultileptonAnalyzer::GetRochesterCorrection(const baconhep::TMuon* muon, RoccoR* muonCorr, TRandom3* rng, bool isData)
 {
-    // Recommended for 2017; analysis of 2016 data didn't use Rochester corrections
+    // As recommended for 2017; analysis of 2016 data didn't use Rochester corrections
     // https://twiki.cern.ch/twiki/bin/view/CMS/HiggsZZ4l2018#Muon_scale_and_resolution_correc
     if (muon->pt < 200 && muon->btt == 1 && muon->nTkLayers > 5)
     {
@@ -892,10 +886,9 @@ float MultileptonAnalyzer::GetRochesterCorrection(const baconhep::TMuon* muon, R
 
 
 // https://twiki.cern.ch/twiki/bin/view/CMS/HiggsZZ4l2017#Muons
-bool MultileptonAnalyzer::PassMuonHZZTightID(const baconhep::TMuon* muon)
-{   
-    TLorentzVector muonP4;
-    muonP4.SetPtEtaPhiM(muon->pt, muon->eta, muon->phi, MUON_MASS);
+bool MultileptonAnalyzer::PassMuonHZZTightID(const baconhep::TMuon* muon, const TLorentzVector &muonP4)
+{
+    // muonP4 should include Rochester correction! 
 
     if (    muonP4.Pt() > 5
             &&  fabs(muonP4.Eta()) < 2.4 
@@ -953,11 +946,11 @@ float MultileptonAnalyzer::GetElectronPtSF(baconhep::TElectron* electron)
 
 
 // https://twiki.cern.ch/twiki/bin/view/CMS/HiggsZZ4l2017#Electrons
-bool MultileptonAnalyzer::PassElectronHZZTightID(const baconhep::TElectron* electron, std::unique_ptr<ParticleSelector>& particleSelector, std::unique_ptr<Cuts>& cuts, float rho)
+bool MultileptonAnalyzer::PassElectronHZZTightID(const baconhep::TElectron* electron, float rho)
 {
     if (    electron->calibPt > 7
         &&  fabs(electron->scEta) < 2.5
-        &&  particleSelector->PassElectronMVA(electron, cuts->hzzMVAID)
+//      &&  particleSelector->PassElectronMVA(electron, cuts->hzzMVAID)     // Check separately!
         &&  fabs(electron->d0) < 0.5
         &&  fabs(electron->dz) < 1
         &&  fabs(electron->sip3d) < 4.0

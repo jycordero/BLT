@@ -59,8 +59,8 @@ class WeightUtils: public TObject {
         void    SetSelection(string);
 
         float               GetPUWeight(float);
-        EfficiencyContainer GetDoubleMuonTriggerEff(string, int, TLorentzVector&) const;
-        EfficiencyContainer GetDoubleElectronTriggerEff(string, int, const baconhep::TElectron*) const;
+        EfficiencyContainer GetDoubleMuonTriggerEff(TLorentzVector&, int) const;
+        EfficiencyContainer GetDoubleElectronTriggerEff(const baconhep::TElectron*, int) const;
         EfficiencyContainer GetTriggerEff(string, TLorentzVector&) const;
 //      EfficiencyContainer GetMuonIDEff(TLorentzVector&) const; 
 //      EfficiencyContainer GetLooseMuonIDEff(TLorentzVector&) const;
@@ -99,7 +99,7 @@ class WeightUtils: public TObject {
 
         // Electron RECO/ID scale factors (what about ISO?)
         TGraphErrors *_eleSF_ID[5];
-        TH2F *_eleSF_RECO, *_hzz_eleIdSF;
+        TH2F *_eleSF_RECO, *_hzz_eleIdSF, *_hzz_eleIdSF_gap;
 
         // Electron trigger efficiencies (the bins for 2.1 < |eta| < 2.4 are copies of the 1.6 to 2.1 bins
         float _elePtBins[8] = {30, 32, 35, 40, 50, 60, 120, 9999};

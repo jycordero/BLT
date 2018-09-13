@@ -130,18 +130,19 @@ Cuts::Cuts() {
 
 
     // HZZ electron MVA
-    hzzMVAID.cutName                        = "hzzMVAID";
-    hzzMVAID.mvaVal[0]                      =  -0.211;
-    hzzMVAID.mvaVal[1]                      =  -0.396;
-    hzzMVAID.mvaVal[2]                      =  -0.215;
-    hzzMVAID.mvaVal[3]                      = -0.870;
-    hzzMVAID.mvaVal[4]                      = -0.838;
-    hzzMVAID.mvaVal[5]                      =  -0.763;
-    hzzMVAID.pt[0]                          =  5.0;
-    hzzMVAID.pt[1]                          =  10.0;
-    hzzMVAID.eta[0]                         =  0.8;
-    hzzMVAID.eta[1]                         =  1.479;
-    hzzMVAID.eta[2]                         =  2.5;
+    // https://twiki.cern.ch/twiki/bin/view/CMS/HiggsZZ4l2017#Electrons
+    hzzMVA.cutName                        = "hzzMVA";
+    hzzMVA.bdt[0]                         = -0.211;
+    hzzMVA.bdt[1]                         = -0.396;
+    hzzMVA.bdt[2]                         = -0.215;
+    hzzMVA.bdt[3]                         = -0.870;
+    hzzMVA.bdt[4]                         = -0.838;
+    hzzMVA.bdt[5]                         = -0.763;
+    hzzMVA.pt[0]                          = 5;
+    hzzMVA.pt[1]                          = 10;
+    hzzMVA.eta[0]                         = 0.8;
+    hzzMVA.eta[1]                         = 1.479;
+    hzzMVA.eta[2]                         = 2.5;
 
 
 
