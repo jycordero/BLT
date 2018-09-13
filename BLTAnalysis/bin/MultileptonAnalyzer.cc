@@ -58,6 +58,7 @@ void MultileptonAnalyzer::Begin(TTree *tree)
     weights.reset(new WeightUtils(params->period, params->selection, false)); // Lumi mask
     // Set up object to handle good run-lumi filtering if necessary
     lumiMask = RunLumiRangeMap();
+//  string jsonFileName = cmssw_base + "/src/BLT/BLTAnalysis/data/Cert_294927-306462_13TeV_EOY2017ReReco_Collisions17_JSON.txt";
     string jsonFileName = cmssw_base + "/src/BLT/BLTAnalysis/data/";
     size_t isDoubleMuon = params->datasetgroup.find("muon_2017");
     if (isDoubleMuon != string::npos)   // Remove period 2017B from muon data
@@ -287,6 +288,7 @@ Bool_t MultileptonAnalyzer::Process(Long64_t entry)
     lumiSection = fInfo->lumiSec;
     nPV         = fPVArr->GetEntries();
 
+
     if (!isData)
     {
         // Save gen weight for amc@nlo Drell-Yan sample
@@ -445,7 +447,7 @@ Bool_t MultileptonAnalyzer::Process(Long64_t entry)
     //--- MUONS ---//
 
     vector<TMuon*> muons;
-    for (int i=0; i < fMuonArr->GetEntries(); i++)
+    for (int i = 0; i < fMuonArr->GetEntries(); i++)
     {
         TMuon* muon = (TMuon*) fMuonArr->At(i);
         assert(muon);
@@ -563,10 +565,12 @@ Bool_t MultileptonAnalyzer::Process(Long64_t entry)
         bool isGhost = kFALSE;
         for (unsigned j = 0; j < nMuons; j++)
         {
+            TMuon* tmpMuon = muons[j];
             TLorentzVector tmpMuonP4;
-            tmpMuonP4.SetPtEtaPhiM(muons[j]->pt, muons[j]->eta, muons[j]->phi, MUON_MASS);
+            copy_p4(tmpMuon, MUON_MASS, tmpMuonP4);
+
             float dr = electronP4.DeltaR(tmpMuonP4);
-            if (dr < minDeltaR && muonIsHZZ[j])
+            if (dr < minDeltaR && PassMuonHZZTightID(tmpMuon, tmpMuonP4))
             {
                 isGhost = kTRUE;
                 break;
@@ -709,7 +713,6 @@ Bool_t MultileptonAnalyzer::Process(Long64_t entry)
             copy_p4(electrons[i], ELE_MASS, electronP4);
 
             electronsQ.push_back(electron->q);
-
 
             // Boolean ID
             electronPassIsoMVA.push_back(particleSelector->PassElectronMVA(electron, cuts->hzzIsoV1));
