@@ -23,7 +23,29 @@
 #include "TGraphAsymmErrors.h"
 #include "TLorentzVector.h"
 
+// BaconAna class definitions
+#include "BaconAna/DataFormats/interface/TElectron.hh"
+#include "BaconAna/DataFormats/interface/TMuon.hh"
+
 using namespace std;
+
+
+class EfficiencyContainer: public TObject{
+    public:
+        EfficiencyContainer();
+        EfficiencyContainer(float, float, float, float);
+        virtual ~EfficiencyContainer() {};
+        void SetData(float, float, float, float);
+        pair<double, double> GetEff() {return make_pair(_dataEff, _mcEff);};
+        pair<double, double> GetErr() {return make_pair(_dataErr, _mcErr);};
+        float GetSF() {return (_dataEff/_mcEff);};
+        float GetVar() {return pow(_dataEff/_mcEff, 2)*(pow(_dataErr/_dataEff, 2) + pow(_mcErr/_mcEff, 2));};
+
+    private:
+        float _dataEff, _mcEff;
+        float _dataErr, _mcErr;
+};
+
 
 class WeightUtils: public TObject {
     public:
@@ -36,30 +58,34 @@ class WeightUtils: public TObject {
         void    SetDataPeriod(string);
         void    SetSelection(string);
 
-        float   GetPUWeight(float);
-        pair<float, float>   GetTriggerEffWeight(string, TLorentzVector&) const;
-        float   GetMuonRecoEff(TLorentzVector&) const; 
-        //float   GetElectronRecoEff(TLorentzVector&) const;
-        //float   GetMuonTriggerEff(string, vector<TLorentzVector>&) const;
-        //float   GetEleTriggerEff(string, vector<TLorentzVector>&) const;
+        float               GetPUWeight(float);
+        EfficiencyContainer GetSingleMuonTriggerEff(TLorentzVector&) const;
+        EfficiencyContainer GetSingleElectronTriggerEff(TLorentzVector&) const;
+        EfficiencyContainer GetDoubleMuonTriggerEff(TLorentzVector&, int) const;
+        EfficiencyContainer GetDoubleElectronTriggerEff(const baconhep::TElectron*, int) const;
+        EfficiencyContainer GetTriggerEff(string, TLorentzVector&) const;
+        EfficiencyContainer GetHZZMuonIDEff(TLorentzVector&) const;
+        EfficiencyContainer GetHZZElectronIDRecoEff(const baconhep::TElectron*) const;
 
         ClassDef(WeightUtils, 0);
 
     private:
-        //input parameters
+        // Input parameters
         string _dataPeriod;
         string _sampleName;
         string _selection;
         bool   _isRealData;
 
-        TH1D*  puReweight;
+        // Pileup
+        TH1D *_puReweight;
+
+        // Triggers
         TGraphErrors *_sf_IsoMu24_Eta2p1_data[3], *_sf_IsoMu24_Eta2p1_mc[3];
 
-        TGraphErrors *_muSF2012_ID[4]; 
-        //TGraph *_muSF2012_ID_err[4], *_muSF2012_ISO_err[4];
 
-        //TH2D    *h2_MuTriggerSFs[2]; // Good for Mu17_Mu8 or Mu17_TkMu8
-        //TH2D    *h2_EleMVASF;
+        // Lepton ID
+        TH2D *_hzz_muIdSF;
+        TH2F *_hzz_eleIdSF;
 };
 
 #endif

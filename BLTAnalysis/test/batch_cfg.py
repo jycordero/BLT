@@ -5,7 +5,7 @@ import sys
 cfg        = bm.JobConfig
 path       = '/tthome/share/bacon/production/04'
 executable = 'execBatch.sh'
-selection  = 'emu'
+selection  = 'ee'
 period     = '2012'
 
 dataList = []
@@ -60,11 +60,11 @@ mcList.extend([
         nJobs    = 50,
         suffix   = 'zjets_m-50'
        ),
-    cfg(data_name = 'DYJetsToLL_M-10to50',
-        path     = '{0}/Summer12_DYJetsToLL_M-10To50_TuneZ2Star'.format(path),
-        nJobs    = 10,
-        suffix   = 'zjets_m-10to50'
-       ),
+#   cfg(data_name = 'DYJetsToLL_M-10to50',
+#       path     = '{0}/Summer12_DYJetsToLL_M-10To50_TuneZ2Star'.format(path),
+#       nJobs    = 10,
+#       suffix   = 'zjets_m-10to50'
+#      ),
    #cfg(data_name = 'DYJetsToLL_M-10to50filter',
    #    path     = '{0}/Summer12_DYJetsToLL_M-10to50filter'.format(path),
    #    nJobs    = 10,
@@ -112,16 +112,16 @@ mcList.extend([
    #   ),
 
     # top #
-    cfg(data_name = 'ttbar_leptonic',
-        path     = '{0}/Summer12_TTJets_FullLeptMGDecays'.format(path),
-        nJobs    = 50,
-        suffix   = 'ttbar_lep'
-       ),
-    cfg(data_name = 'ttbar_semileptonic',
-        path     = '{0}/Summer12_TTJets_SemiLeptMGDecays'.format(path),
-        nJobs    = 50,
-        suffix   = 'ttbar_semilep'
-       ),
+#   cfg(data_name = 'ttbar_leptonic',
+#       path     = '{0}/Summer12_TTJets_FullLeptMGDecays'.format(path),
+#       nJobs    = 50,
+#       suffix   = 'ttbar_lep'
+#      ),
+#   cfg(data_name = 'ttbar_semileptonic',
+#       path     = '{0}/Summer12_TTJets_SemiLeptMGDecays'.format(path),
+#       nJobs    = 50,
+#       suffix   = 'ttbar_semilep'
+#      ),
 #   cfg(data_name = 'T_s-channel',
 #       path     = '{0}/Summer12_T_s-channel_TuneZ2star'.format(path),
 #       nJobs    = 10,
@@ -152,27 +152,27 @@ mcList.extend([
 #       nJobs    = 10,
 #       suffix   = 'tbar_tw'
 #      ),
-    cfg(data_name = 'TTZJets',
-        path     = '{0}/Summer12_TTZJets'.format(path),
-        nJobs    = 10,
-        suffix   = 'ttz'
-       ),
-    # diboson #
-    cfg(data_name = 'WW',
-        path     = '{0}/Summer12_WW_TuneZ2star'.format(path),
-        nJobs    = 10,
-        suffix   = 'ww'
-       ),
+#   cfg(data_name = 'TTZJets',
+#       path     = '{0}/Summer12_TTZJets'.format(path),
+#       nJobs    = 10,
+#       suffix   = 'ttz'
+#      ),
+#   # diboson #
+#   cfg(data_name = 'WW',
+#       path     = '{0}/Summer12_WW_TuneZ2star'.format(path),
+#       nJobs    = 10,
+#       suffix   = 'ww'
+#      ),
 #   cfg(data_name = 'WZJetsTo2L2Q',
 #       path     = '{0}/Summer12_WZJetsTo2L2Q_TuneZ2star'.format(path),
 #       nJobs    = 10,
 #       suffix   = 'wz_2l2q'
 #      ),
-    cfg(data_name = 'WZJetsTo3LNu',
-        path     = '{0}/Summer12_WZJetsTo3LNu_TuneZ2'.format(path),
-        nJobs    = 10,
-        suffix   = 'wz_3lnu'
-       ),
+#   cfg(data_name = 'WZJetsTo3LNu',
+#       path     = '{0}/Summer12_WZJetsTo3LNu_TuneZ2'.format(path),
+#       nJobs    = 10,
+#       suffix   = 'wz_3lnu'
+#      ),
 #   cfg(data_name = 'ZZJetsTo2L2Nu',
 #       path     = '{0}/Summer12_ZZJetsTo2L2Nu_TuneZ2star'.format(path),
 #       nJobs    = 10,
@@ -183,16 +183,16 @@ mcList.extend([
 #       nJobs    = 10,
 #       suffix   = 'zz_2l2q'
 #      ),
-    cfg(data_name = 'ZZ',
-        path     = '{0}/Summer12_ZZ_TuneZ2star'.format(path),
-        nJobs    = 10,
-        suffix   = 'zz'
-       ),
+#   cfg(data_name = 'ZZ',
+#       path     = '{0}/Summer12_ZZ_TuneZ2star'.format(path),
+#       nJobs    = 10,
+#       suffix   = 'zz'
+#      ),
     ])
 
 batchList = []
-batchList += dataList
-#batchList += mcList 
+#batchList += dataList
+batchList += mcList 
 batch = bm.BatchMaster(config_list = batchList, 
                        stage_dir   = 'batch',
                        selection   = selection,

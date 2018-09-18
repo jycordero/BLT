@@ -146,14 +146,14 @@ void BLTSelector::Init(TTree *tree)
     fChain->SetBranchAddress("LHEWeight", &fLHEWeightArr, &b_LHEWeightArr);
     fChain->SetBranchAddress("Electron", &fElectronArr, &b_ElectronArr);
     fChain->SetBranchAddress("Muon", &fMuonArr, &b_MuonArr);
-    fChain->SetBranchAddress("Tau", &fTauArr, &b_TauArr);
-    fChain->SetBranchAddress("Photon", &fPhotonArr, &b_PhotonArr);
+//  fChain->SetBranchAddress("Tau", &fTauArr, &b_TauArr);
+//  fChain->SetBranchAddress("Photon", &fPhotonArr, &b_PhotonArr);
     fChain->SetBranchAddress("PV", &fPVArr, &b_PVArr);
-    fChain->SetBranchAddress("AK5", &fAK5Arr, &b_AK5Arr);
-    fChain->SetBranchAddress("CA8CHS", &fCA15CHSArr, &b_CA15CHSArr);
-    fChain->SetBranchAddress("AddCA8CHS", &fAddCA15CHSArr, &b_AddCA15CHSArr);
-    fChain->SetBranchAddress("CA15CHS", &fCA15CHSArr, &b_CA15CHSArr);
-    fChain->SetBranchAddress("AddCA15CHS", &fAddCA15CHSArr, &b_AddCA15CHSArr);
+//  fChain->SetBranchAddress("AK5", &fAK5Arr, &b_AK5Arr);
+//  fChain->SetBranchAddress("CA8CHS", &fCA15CHSArr, &b_CA15CHSArr);
+//  fChain->SetBranchAddress("AddCA8CHS", &fAddCA15CHSArr, &b_AddCA15CHSArr);
+//  fChain->SetBranchAddress("CA15CHS", &fCA15CHSArr, &b_CA15CHSArr);
+//  fChain->SetBranchAddress("AddCA15CHS", &fAddCA15CHSArr, &b_AddCA15CHSArr);
 }
 
 #endif  // BLTSELECTOR_HH

@@ -36,7 +36,7 @@ cd BLT/BLTAnalysis/test
 cp $TOPDIR/input_${DATANAME}_${COUNT}.txt input.txt
 
 ### Run the analyzer
-#DimuonAnalyzer input.txt -1 $DATANAME $SUFFIX $SELECTION $PERIOD $COUNT
+#AcceptanceAnalyzer input.txt -1 $DATANAME $SUFFIX $SELECTION $PERIOD $COUNT
 MultileptonAnalyzer input.txt -1 $DATANAME $SUFFIX $SELECTION $PERIOD $COUNT
 
 ### Copy output and cleanup ###

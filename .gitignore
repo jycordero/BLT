@@ -13,6 +13,16 @@ __init__.py
 # Stuff
 *~
 *.log
+*.pdf
+*.gz
+*.tar
+*.tgz
 
-# Batch crap
-BLTAnalysis/test/batch/**
+# Crap in test dir
+BLTAnalysis/test/batch
+
+# Buildfile
+BLTAnalysis/Buildfile.xml
+
+# Include everything (e.g. ROOT files) in data subdir
+!BLTAnalysis/data/**
