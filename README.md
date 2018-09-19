@@ -17,7 +17,7 @@ PATH=$PATH:$HOME/bin
 
 export PATH
 export OSG_APP=/software/tier3/osg
-export SCRAM_ARCH=slc6_amd64_gcc481
+export SCRAM_ARCH=slc6_amd64_gcc491
 source /software/tier3/osg/cmsset_default.sh
 cmsrel CMSSW_7_4_12
 cd CMSSW_7_4_12/src
