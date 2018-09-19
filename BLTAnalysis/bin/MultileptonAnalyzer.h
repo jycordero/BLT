@@ -113,10 +113,10 @@ public:
     std::vector<Float_t>    muonEnergySF, muonHZZIDSF;
     std::vector<Float_t>    muonTrigEffLeg1Data, muonTrigEffLeg1MC, muonTrigEffLeg2Data, muonTrigEffLeg2MC;
 
-    std::vector<Float_t>    muonCombIso, muonsTrkIso, muonD0, muonDz, muonSIP3d, muonMuNChi2, muonPtErr;
+    std::vector<Float_t>    muonCombIso, muonsTrkIso, muonD0, muonDz, muonSIP3d, muonPtErr;
     std::vector<UShort_t>   muonNMatchStn, muonNPixHits, muonNTkLayers;
-    std::vector<Bool_t>     muonIsGlobal, muonIsTracker;
-    std::vector<Short_t>    muonBestTrackType, muonNValidHits;
+    std::vector<Bool_t>     muonIsPF, muonIsGlobal, muonIsTracker;
+    std::vector<Short_t>    muonBestTrackType;
 
 
     // Electrons
@@ -130,9 +130,8 @@ public:
 
     std::vector<Float_t>    electronMVA;
     std::vector<Float_t>    electronCombIso, electronsTrkIso, electronD0, electronDz, electronSIP3d, electronScEta;
-    std::vector<Float_t>    electronSieie, electronEnergyInv, electronHOverE, electronDEtaIn, electronDPhiIn;
     std::vector<UShort_t>   electronNMissHits;
-    std::vector<Bool_t>     electronIsConv, electronIsGap;
+    std::vector<Bool_t>     electronIsGap;
 
 
     // Gen particles

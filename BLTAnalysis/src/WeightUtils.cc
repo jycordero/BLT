@@ -206,11 +206,11 @@ EfficiencyContainer WeightUtils::GetHZZMuonIDEff(TLorentzVector& muon) const
         int bin;
 
         if (muon.Pt() > maxPt)
-            bin = _hzz_muIdSF->FindBin(muon.Eta(), 0.99 * maxPt);
+            bin = _hzz_muIdSF->FindBin(0.99 * maxPt, muon.Eta());
         else if (muon.Pt() < minPt)
-            bin = _hzz_muIdSF->FindBin(muon.Eta(), 1.01 * minPt);
+            bin = _hzz_muIdSF->FindBin(1.01 * minPt, muon.Eta());
         else
-            bin = _hzz_muIdSF->FindBin(muon.Eta(), muon.Pt());
+            bin = _hzz_muIdSF->FindBin(muon.Pt(), muon.Eta());
 
         effData = _hzz_muIdSF->GetBinContent(bin);
         errData = _hzz_muIdSF->GetBinError(bin);
@@ -235,18 +235,16 @@ EfficiencyContainer WeightUtils::GetHZZElectronIDRecoEff(const baconhep::TElectr
         return effCont;
     }
 
-
-    // ID
     float minPt = 7, maxPt = 200, maxEta = 2.5;
     int bin;
     if (fabs(electron->scEta) < maxEta)     // I am actually not sure if this is really supposed to be scEta :')
     {   
         if (electron->ptHZZ4l > maxPt)
-            bin = _hzz_eleIdSF->FindBin(electron->scEta, 0.99 * maxPt);
+            bin = _hzz_eleIdSF->FindBin(0.99 * maxPt, electron->scEta);
         else if (electron->ptHZZ4l < minPt)
-            bin = _hzz_eleIdSF->FindBin(electron->scEta, 1.01 * minPt);
+            bin = _hzz_eleIdSF->FindBin(1.01 * minPt, electron->scEta);
         else
-            bin = _hzz_eleIdSF->FindBin(electron->scEta, electron->ptHZZ4l);
+            bin = _hzz_eleIdSF->FindBin(electron->ptHZZ4l, electron->scEta);
 
         effData = _hzz_eleIdSF->GetBinContent(bin);
         errData = _hzz_eleIdSF->GetBinError(bin);

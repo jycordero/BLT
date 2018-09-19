@@ -2,197 +2,201 @@
 import BLT.BLTAnalysis.BatchMaster as bm
 import sys
 
+
+''' Specify parameters '''
 cfg        = bm.JobConfig
-path       = '/tthome/share/bacon/production/04'
 executable = 'execBatch.sh'
-selection  = 'ee'
+selection  = 'double'
 period     = '2012'
 
-dataList = []
-dataList.extend([
+#data_samples = ['single_mu', 'single_el']
+data_samples = ['double_mu', 'double_el']
+mc_samples   = ['zjets', 'ttbar', 'diboson']
+
+
+
+''' 
+Set job configurations.  
+'''
+
+# DATA #
+data_dict = {}
+
+path       = '/tthome/share/bacon/production/04'
+data_dict['single_mu'] = \
+[
     cfg(data_name = 'muon_2012A',
         path     = '{0}/SingleMu_2012A-22Jan2013'.format(path),
-        nJobs    = 20,
+        nJobs    = 1,
         suffix   = 'muon_2012A'
         ),
     cfg(data_name = 'muon_2012B',
         path     = '{0}/SingleMu_2012B-22Jan2013'.format(path),
-        nJobs    = 20,
+        nJobs    = 7,
         suffix   = 'muon_2012B'
         ),
     cfg(data_name = 'muon_2012C',
         path     = '{0}/SingleMu_2012C-22Jan2013'.format(path),
-        nJobs    = 20,
+        nJobs    = 11,
         suffix   = 'muon_2012C'
         ),
     cfg(data_name = 'muon_2012D',
         path     = '{0}/SingleMu_2012D-22Jan2013'.format(path),
-        nJobs    = 20,
+        nJobs    = 13,
         suffix   = 'muon_2012D'
         ),
+]
+
+data_dict['single_el'] = \
+[
     cfg(data_name = 'electron_2012A',
         path     = '{0}/SingleElectron_2012A-22Jan2013'.format(path),
-        nJobs    = 1,
+        nJobs    = 3,
         suffix   = 'electron_2012A'
         ),
     cfg(data_name = 'electron_2012B',
         path     = '{0}/SingleElectron_2012B-22Jan2013'.format(path),
-        nJobs    = 15,
+        nJobs    = 14,
         suffix   = 'electron_2012B'
         ),
     cfg(data_name = 'electron_2012C',
         path     = '{0}/SingleElectron_2012C-22Jan2013'.format(path),
-        nJobs    = 15,
+        nJobs    = 20,
         suffix   = 'electron_2012C'
         ),
     cfg(data_name = 'electron_2012D',
         path     = '{0}/SingleElectron_2012D-22Jan2013'.format(path),
-        nJobs    = 15,
+        nJobs    = 20,
         suffix   = 'electron_2012D'
-        )
-    ])
+        ),
+]
 
-mcList = []
-mcList.extend([
-    # Drell-Yan #
+data_dict['double_mu'] = \
+[
+    cfg(data_name = 'muon_2012A',
+        path     = '{0}/DoubleMuParked_2012A-22Jan2013'.format(path),
+        nJobs    = 1,
+        suffix   = 'muon_2012A'
+        ),
+    cfg(data_name = 'muon_2012B',
+        path     = '{0}/DoubleMuParked_2012B-22Jan2013'.format(path),
+        nJobs    = 7,
+        suffix   = 'muon_2012B'
+        ),
+    cfg(data_name = 'muon_2012C',
+        path     = '{0}/DoubleMuParked_2012C-22Jan2013'.format(path),
+        nJobs    = 11,
+        suffix   = 'muon_2012C'
+        ),
+    cfg(data_name = 'muon_2012D',
+        path     = '{0}/DoubleMuParked_2012D-22Jan2013'.format(path),
+        nJobs    = 13,
+        suffix   = 'muon_2012D'
+        ),
+]
+
+data_dict['double_el'] = \
+[
+    cfg(data_name = 'electron_2012A',
+        path     = '{0}/2012_Data_Multicrab_DoubleElectron_Run2012A-22Jan2013-v1/161006_183851/0000'.format(path),
+        nJobs    = 3,
+        suffix   = 'electron_2012A'
+        ),
+    cfg(data_name = 'electron_2012B',
+        path     = '{0}/2012_Data_Multicrab_DoubleElectron_Run2012B-22Jan2013-v1/161006_184140/0000'.format(path),
+        nJobs    = 14,
+        suffix   = 'electron_2012B'
+        ),
+    cfg(data_name = 'electron_2012C',
+        path     = '{0}/2012_Data_Multicrab_DoubleElectron_Run2012C-22Jan2013-v1/161006_184501/0000'.format(path),
+        nJobs    = 20,
+        suffix   = 'electron_2012C'
+        ),
+    cfg(data_name = 'electron_2012D',
+        path     = '{0}/2012_Data_Multicrab_DoubleElectron_Run2012D-22Jan2013-v1/161006_184923/0000'.format(path),
+        nJobs    = 20,
+        suffix   = 'electron_2012D'
+        ),
+]
+
+
+
+# MONTE CARLO #
+mc_dict = {}
+
+mc_dict['zjets'] = \
+[
     cfg(data_name = 'DYJetsToLL_M-50',
         path     = '{0}/Summer12_DYJetsToLL_M-50_TuneZ2Star'.format(path),
         nJobs    = 50,
         suffix   = 'zjets_m-50'
        ),
-#   cfg(data_name = 'DYJetsToLL_M-10to50',
-#       path     = '{0}/Summer12_DYJetsToLL_M-10To50_TuneZ2Star'.format(path),
-#       nJobs    = 10,
-#       suffix   = 'zjets_m-10to50'
-#      ),
-   #cfg(data_name = 'DYJetsToLL_M-10to50filter',
-   #    path     = '{0}/Summer12_DYJetsToLL_M-10to50filter'.format(path),
-   #    nJobs    = 10,
-   #    suffix   = 'zjets_m-10to50filter'
-   #   ),
-   #cfg(data_name = 'DY1JetsToLL_M-50',
-   #    path     = '{0}/Summer12_DY1JetsToLL_M-50'.format(path),
-   #    nJobs    = 10,
-   #    suffix   = 'z1jets_m-50'
-   #   ),
-   #cfg(data_name = 'DY1JetsToLL_M-10to50',
-   #    path     = '{0}/Summer12_DY1JetsToLL_MLL-10To50_TuneZ2Star'.format(path),
-   #    nJobs    = 10,
-   #    suffix   = 'z1jets_m-10to50'
-   #   ),
-   #cfg(data_name = 'DY2JetsToLL_M-50',
-   #    path     = '{0}/Summer12_DY2JetsToLL_M-50'.format(path),
-   #    nJobs    = 10,
-   #    suffix   = 'z2jets_m-50'
-   #   ),
-   #cfg(data_name = 'DY2JetsToLL_M-10to50',
-   #    path     = '{0}/Summer12_DY2JetsToLL_MLL-10To50_TuneZ2Star'.format(path),
-   #    nJobs    = 10,
-   #    suffix   = 'z2jets_m-10to50'
-   #   ),
-   #cfg(data_name = 'DY3JetsToLL_M-50',
-   #    path     = '{0}/Summer12_DY3JetsToLL_M-50'.format(path),
-   #    nJobs    = 10,
-   #    suffix   = 'z3jets_m-50'
-   #   ),
-   #cfg(data_name = 'DY3JetsToLL_M-10to50',
-   #    path     = '{0}/Summer12_DY3JetsToLL_MLL-10To50_TuneZ2Star'.format(path),
-   #    nJobs    = 10,
-   #    suffix   = 'z3jets_m-10to50'
-   #   ),
-   #cfg(data_name = 'DY4JetsToLL_M-50',
-   #    path     = '{0}/Summer12_DY4JetsToLL_M-50'.format(path),
-   #    nJobs    = 10,
-   #    suffix   = 'z4jets_m-50'
-   #   ),
-   #cfg(data_name = 'DY4JetsToLL_M-10to50',
-   #    path     = '{0}/Summer12_DY4JetsToLL_MLL-10To50_TuneZ2Star'.format(path),
-   #    nJobs    = 10,
-   #    suffix   = 'z4jets_m-10to50'
-   #   ),
+    cfg(data_name = 'DYJetsToLL_M-10to50',
+        path     = '{0}/Summer12_DYJetsToLL_M-10To50_TuneZ2Star'.format(path),
+        nJobs    = 10,
+        suffix   = 'zjets_m-10to50'
+       ),
+]
 
-    # top #
-#   cfg(data_name = 'ttbar_leptonic',
-#       path     = '{0}/Summer12_TTJets_FullLeptMGDecays'.format(path),
-#       nJobs    = 50,
-#       suffix   = 'ttbar_lep'
-#      ),
-#   cfg(data_name = 'ttbar_semileptonic',
-#       path     = '{0}/Summer12_TTJets_SemiLeptMGDecays'.format(path),
-#       nJobs    = 50,
-#       suffix   = 'ttbar_semilep'
-#      ),
-#   cfg(data_name = 'T_s-channel',
-#       path     = '{0}/Summer12_T_s-channel_TuneZ2star'.format(path),
-#       nJobs    = 10,
-#       suffix   = 't_s'
-#      ),
-#   cfg(data_name = 'Tbar_s-channel',
-#       path     = '{0}/Summer12_Tbar_s-channel_TuneZ2star'.format(path),
-#       nJobs    = 10,
-#       suffix   = 'tbar_s'
-#      ),
-#   cfg(data_name = 'T_t-channel',
-#       path     = '{0}/Summer12_T_t-channel_TuneZ2star'.format(path),
-#       nJobs    = 10,
-#       suffix   = 't_t'
-#      ),
-#   cfg(data_name = 'Tbar_t-channel',
-#       path     = '{0}/Summer12_Tbar_t-channel_TuneZ2star'.format(path),
-#       nJobs    = 10,
-#       suffix   = 'tbar_t'
-#      ),
-#   cfg(data_name = 'T_tW-channel',
-#       path     = '{0}/Summer12_T_tW-channel-DR_TuneZ2star'.format(path),
-#       nJobs    = 10,
-#       suffix   = 't_tw'
-#      ),
-#   cfg(data_name = 'Tbar_tW-channel',
-#       path     = '{0}/Summer12_Tbar_tW-channel-DR_TuneZ2star'.format(path),
-#       nJobs    = 10,
-#       suffix   = 'tbar_tw'
-#      ),
-#   cfg(data_name = 'TTZJets',
-#       path     = '{0}/Summer12_TTZJets'.format(path),
-#       nJobs    = 10,
-#       suffix   = 'ttz'
-#      ),
-#   # diboson #
-#   cfg(data_name = 'WW',
-#       path     = '{0}/Summer12_WW_TuneZ2star'.format(path),
-#       nJobs    = 10,
-#       suffix   = 'ww'
-#      ),
-#   cfg(data_name = 'WZJetsTo2L2Q',
-#       path     = '{0}/Summer12_WZJetsTo2L2Q_TuneZ2star'.format(path),
-#       nJobs    = 10,
-#       suffix   = 'wz_2l2q'
-#      ),
-#   cfg(data_name = 'WZJetsTo3LNu',
-#       path     = '{0}/Summer12_WZJetsTo3LNu_TuneZ2'.format(path),
-#       nJobs    = 10,
-#       suffix   = 'wz_3lnu'
-#      ),
-#   cfg(data_name = 'ZZJetsTo2L2Nu',
-#       path     = '{0}/Summer12_ZZJetsTo2L2Nu_TuneZ2star'.format(path),
-#       nJobs    = 10,
-#       suffix   = 'zz_2l2nu'
-#      ),
-#   cfg(data_name = 'ZZJetsTo2L2Q',
-#       path     = '{0}/Summer12_ZZJetsTo2L2Q_TuneZ2star'.format(path),
-#       nJobs    = 10,
-#       suffix   = 'zz_2l2q'
-#      ),
-#   cfg(data_name = 'ZZ',
-#       path     = '{0}/Summer12_ZZ_TuneZ2star'.format(path),
-#       nJobs    = 10,
-#       suffix   = 'zz'
-#      ),
-    ])
+mc_dict['ttbar'] = \
+[
+    cfg(data_name = 'TTJets_FullLept',
+        path     = '{0}/Summer12_TTJets_FullLeptMGDecays'.format(path),
+        nJobs    = 6,
+        suffix   = 'ttbar_full'
+       ),
+    cfg(data_name = 'TTJets_SemiLept',
+        path     = '{0}/Summer12_TTJets_SemiLeptMGDecays'.format(path),
+        nJobs    = 13,
+        suffix   = 'ttbar_semi'
+       ),
+    cfg(data_name = 'TTZJets',
+        path     = '{0}/Summer12_TTZJets'.format(path),
+        nJobs    = 10,
+        suffix   = 'ttz'
+       ),
+]
+
+mc_dict['diboson'] = \
+[
+    cfg(data_name = 'WW',
+        path     = '{0}/Summer12_WW_TuneZ2star'.format(path),
+        nJobs    = 10,
+        suffix   = 'ww'
+       ),
+    cfg(data_name = 'WZJetsTo2L2Q',
+        path     = '{0}/Summer12_WZJetsTo2L2Q_TuneZ2star'.format(path),
+        nJobs    = 10,
+        suffix   = 'wz_2l2q'
+       ),
+    cfg(data_name = 'WZJetsTo3LNu',
+        path     = '{0}/Summer12_WZJetsTo3LNu_TuneZ2'.format(path),
+        nJobs    = 10,
+        suffix   = 'wz_3lnu'
+       ),
+    cfg(data_name = 'ZZJetsTo2L2Nu',
+        path     = '{0}/Summer12_ZZJetsTo2L2Nu_TuneZ2star'.format(path),
+        nJobs    = 10,
+        suffix   = 'zz_2l2nu'
+       ),
+    cfg(data_name = 'ZZJetsTo2L2Q',
+        path     = '{0}/Summer12_ZZJetsTo2L2Q_TuneZ2star'.format(path),
+        nJobs    = 10,
+        suffix   = 'zz_2l2q'
+       ),
+    cfg(data_name = 'ZZ',
+        path     = '{0}/Summer12_ZZ_TuneZ2star'.format(path),
+        nJobs    = 10,
+        suffix   = 'zz'
+       ),
+]
+
+
 
 batchList = []
-#batchList += dataList
-batchList += mcList 
+batch_list += sum([data_dict[n] for n in data_samples], []) 
+batch_list += sum([mc_dict[n] for n in mc_samples], []) 
+
 batch = bm.BatchMaster(config_list = batchList, 
                        stage_dir   = 'batch',
                        selection   = selection,
@@ -201,4 +205,3 @@ batch = bm.BatchMaster(config_list = batchList,
                        location    = 'nut3'
                      )
 batch.submit_to_batch()
-
