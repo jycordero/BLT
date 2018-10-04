@@ -59,10 +59,10 @@ class WeightUtils: public TObject {
         void    SetSelection(string);
 
         float               GetPUWeight(float);
-        EfficiencyContainer GetDoubleMuonTriggerEff(TLorentzVector&, int) const;
+        EfficiencyContainer GetDoubleMuonTriggerEff(const baconhep::TMuon*, int) const;
         EfficiencyContainer GetDoubleElectronTriggerEff(const baconhep::TElectron*, int) const;
         EfficiencyContainer GetTriggerEff(string, TLorentzVector&) const;
-        EfficiencyContainer GetHZZMuonIDEff(TLorentzVector&) const;
+        EfficiencyContainer GetHZZMuonIDEff(const baconhep::TMuon*) const;
         EfficiencyContainer GetHZZElectronIDRecoEff(const baconhep::TElectron*) const;
 
         ClassDef(WeightUtils, 0);

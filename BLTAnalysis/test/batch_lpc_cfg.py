@@ -5,7 +5,7 @@ import sys
 
 ''' Specify parameters '''
 cfg        = bm.JobConfig
-selection  = 'emu'
+selection  = 'double'
 period     = '2017'
 executable = 'execBatch.sh'
 location   = 'lpc'
@@ -155,7 +155,7 @@ mc_dict['higgs'] = \
 
 
 batch_list = []
-#batch_list += sum([data_dict[n] for n in data_samples], []) 
+batch_list += sum([data_dict[n] for n in data_samples], []) 
 batch_list += sum([mc_dict[n] for n in mc_samples], []) 
 
 batch = bm.BatchMaster(config_list = batch_list, 

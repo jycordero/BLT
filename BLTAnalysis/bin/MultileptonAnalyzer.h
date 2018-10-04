@@ -81,7 +81,18 @@ public:
     std::vector<string>                 muonTriggerNames, electronTriggerNames;
 
     // Histograms
-    TH1D *hAcceptedEvents;
+    TH1D *hPhaseSpaceEvents, *hFiducialEvents;
+
+
+
+    //--- GEN SELECTION ---//
+
+    // Phase space requirements
+    Float_t M_MIN = 80,     M_MAX = 100,    MLL_MIN = 4;
+
+    // Fiducial requirements
+    // Same for both flavors...maybe not the "best" choice, but certainly the easiest!
+    Float_t PT1_MIN = 20,   PT2_MIN = 10,   PT_MIN = 5,     ETA_MAX = 2.5;
 
 
 
@@ -113,10 +124,10 @@ public:
     std::vector<Float_t>    muonEnergySF, muonHZZIDSF;
     std::vector<Float_t>    muonTrigEffLeg1Data, muonTrigEffLeg1MC, muonTrigEffLeg2Data, muonTrigEffLeg2MC;
 
-    std::vector<Float_t>    muonCombIso, muonsTrkIso, muonD0, muonDz, muonSIP3d, muonMuNChi2, muonPtErr;
+    std::vector<Float_t>    muonCombIso, muonsTrkIso, muonD0, muonDz, muonSIP3d,  muonPtErr;
     std::vector<UShort_t>   muonNMatchStn, muonNPixHits, muonNTkLayers;
-    std::vector<Bool_t>     muonIsGlobal, muonIsTracker;
-    std::vector<Short_t>    muonBestTrackType, muonNValidHits;
+    std::vector<Bool_t>     muonIsPF, muonIsGlobal, muonIsTracker;
+    std::vector<Short_t>    muonBestTrackType;
 
 
     // Electrons
@@ -130,9 +141,8 @@ public:
 
     std::vector<Float_t>    electronIsoMVA, electronNoIsoMVA;
     std::vector<Float_t>    electronCombIso, electronsTrkIso, electronD0, electronDz, electronSIP3d, electronScEta;
-    std::vector<Float_t>    electronSieie, electronEnergyInv, electronHOverE, electronDEtaIn, electronDPhiIn;
     std::vector<UShort_t>   electronNMissHits;
-    std::vector<Bool_t>     electronIsConv, electronIsGap;
+    std::vector<Bool_t>     electronIsGap;
 
 
     // Gen particles
@@ -150,7 +160,7 @@ public:
 
     float GetMuonIsolation(const baconhep::TMuon*);
     float GetRochesterCorrection(const baconhep::TMuon*, RoccoR*, TRandom3*, bool);
-    bool PassMuonHZZTightID(const baconhep::TMuon*, const TLorentzVector&);
+    bool PassMuonHZZTightID(const baconhep::TMuon*);
 
     float GetElectronIsolation(const baconhep::TElectron*, float);
     float GetElectronPtSF(baconhep::TElectron*);

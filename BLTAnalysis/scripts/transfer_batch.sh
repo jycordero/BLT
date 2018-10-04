@@ -3,7 +3,7 @@
 set -e
 
 batchDir=$1
-year="2017"
+year="2017_test"
 srcPref="output"
 batchPath="../test/batch/"
 eosPath="/store/user/jrainbol/Trees/${year}/"

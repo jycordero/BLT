@@ -228,7 +228,7 @@ float WeightUtils::GetPUWeight(float nPU)
 
 // FIXME
 // Everything about this is fake
-EfficiencyContainer WeightUtils::GetDoubleMuonTriggerEff(TLorentzVector &muon, int leg) const
+EfficiencyContainer WeightUtils::GetDoubleMuonTriggerEff(const baconhep::TMuon* muon, int leg) const
 {
     float effData = 1, errData = 0, effMC = 1, errMC = 0;
 
@@ -242,7 +242,7 @@ EfficiencyContainer WeightUtils::GetDoubleMuonTriggerEff(TLorentzVector &muon, i
     int etaBin = 0;
     for (int i = 0; i < 4; i++)
     {
-        if (fabs(muon.Eta()) > binningEta[i] && fabs(muon.Eta()) <= binningEta[i+1])
+        if (fabs(muon->eta) > binningEta[i] && fabs(muon->eta) <= binningEta[i+1])
         {
             etaBin = i;
             break;
@@ -251,13 +251,13 @@ EfficiencyContainer WeightUtils::GetDoubleMuonTriggerEff(TLorentzVector &muon, i
 
     if (leg == 1)
     {
-        effData = _eff_doubleMu_leg1_DATA[etaBin]->Eval(muon.Pt());
-        effMC   = _eff_doubleMu_leg1_MC[etaBin]->Eval(muon.Pt());
+        effData = _eff_doubleMu_leg1_DATA[etaBin]->Eval(muon->pt);
+        effMC   = _eff_doubleMu_leg1_MC[etaBin]->Eval(muon->pt);
     }
     else if (leg == 2)
     {
-        effData = _eff_doubleMu_leg2_DATA[etaBin]->Eval(muon.Pt());
-        effMC   = _eff_doubleMu_leg2_MC[etaBin]->Eval(muon.Pt());
+        effData = _eff_doubleMu_leg2_DATA[etaBin]->Eval(muon->pt);
+        effMC   = _eff_doubleMu_leg2_MC[etaBin]->Eval(muon->pt);
     }
 
     EfficiencyContainer effCont(effData, effMC, errData, errMC);
@@ -305,7 +305,7 @@ EfficiencyContainer WeightUtils::GetDoubleElectronTriggerEff(const baconhep::TEl
 //--- HZZ MUON ---//
 
 // https://twiki.cern.ch/twiki/bin/view/CMS/HiggsZZ4l2018#Muon_scale_factors
-EfficiencyContainer WeightUtils::GetHZZMuonIDEff(TLorentzVector& muon) const
+EfficiencyContainer WeightUtils::GetHZZMuonIDEff(const baconhep::TMuon* muon) const
 {
     float effData = 1, errData = 0, effMC = 1, errMC = 0;
 
@@ -316,14 +316,14 @@ EfficiencyContainer WeightUtils::GetHZZMuonIDEff(TLorentzVector& muon) const
     }
 
     float maxPt = 200, maxEta = 2.4;
-    if (fabs(muon.Eta() < maxEta))
+    if (fabs(muon->eta < maxEta))
     {
         int bin;
 
-        if (muon.Pt() > maxPt)
-            bin = _hzz_muIdSF->FindBin(muon.Eta(), 0.99 * maxPt);
+        if (muon->pt > maxPt)
+            bin = _hzz_muIdSF->FindBin(muon->eta, 0.99 * maxPt);
         else
-            bin = _hzz_muIdSF->FindBin(muon.Eta(), muon.Pt());
+            bin = _hzz_muIdSF->FindBin(muon->eta, muon->pt);
 
         effData = _hzz_muIdSF->GetBinContent(bin);
         errData = _hzz_muIdErr->GetBinContent(bin);
