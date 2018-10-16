@@ -21,6 +21,9 @@
 #include "BLT/BLTAnalysis/interface/BLTHelper.hh"
 #include "BLT/BLTAnalysis/interface/Parameters.hh"
 
+// BaconAna class definitions (might need to add more)
+#include "BaconAna/Utils/interface/TTrigger.hh"
+
 // ROOT headers
 #include <TLorentzVector.h>
 #include <TVector3.h>
@@ -53,9 +56,13 @@ public:
     void    ReportPostTerminate();
 
     TFile *outFile;
+    TTree *outTree;
 
     // Params and cuts
     std::unique_ptr<Parameters>         params;
+
+    // Histograms
+    TH1D *hPhaseSpaceEvents, *hFiducialEvents;
 
 
 
@@ -70,11 +77,31 @@ public:
 
 
 
+    //--- BRANCHES ---//
+    
+    // Event
+    Int_t       runNumber,  lumiSection;
+    Long64_t    evtNumber;
+    Float_t     genWeight;
+    Bool_t      isFiducial;
+
+    // Counters
+    UShort_t    nGenMuons,  nGenElectrons,  nGenLeptons;
+
+    // Gen particles
+    TClonesArray *genMuonsP4 = new TClonesArray("TLorentzVector"), &genMuonsP4ptr = *genMuonsP4;
+    std::vector<Short_t>    genMuonsQ,      genMuonStatus;
+
+    TClonesArray *genElectronsP4 = new TClonesArray("TLorentzVector"), &genElectronsP4ptr = *genElectronsP4;
+    std::vector<Short_t>    genElectronsQ,  genElectronStatus;
+
+
+
     //--- HELPER FUNCTIONS ---//
 
-    TLorentzVector GetP4Sum(vector<TLorentzVector);
+//  TLorentzVector GetP4Sum(const std::vector<TLorentzVector>&);
 
-    bool SortDecPt(const pair<TLorentzVector, Int_t> &i_, const pair<TLorentzVector, Int_t> &j_);
+//  bool SortDecPt(const std::pair<TLorentzVector, Int_t>&, const std::pair<TLorentzVector, Int_t>&);
 
 
 

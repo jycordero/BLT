@@ -7,9 +7,9 @@
 using namespace baconhep;
 using namespace std;
 
-bool sync_print = false;
 
 bool P4SortCondition(TLorentzVector p1, TLorentzVector p2) {return (p1.Pt() > p2.Pt());} 
+TLorentzVector GetP4Sum(const vector<TLorentzVector> &p4);
 
 
 AcceptanceAnalyzer::AcceptanceAnalyzer() : BLTSelector()
@@ -24,8 +24,6 @@ AcceptanceAnalyzer::~AcceptanceAnalyzer()
 
 void AcceptanceAnalyzer::Begin(TTree *tree)
 {
-    rng = new TRandom3();
-
     // Parse command line option
     std::string tmp_option = GetOption();
     std::vector<std::string> options;
@@ -45,22 +43,48 @@ void AcceptanceAnalyzer::Begin(TTree *tree)
 
     outFile = new TFile(outFileName.c_str(),"RECREATE");
     outFile->cd();
+    outTree = new TTree(outTreeName.c_str(), "bltTree");
+
+
+
+    //--- BRANCHES ---//
+
+    // Event
+    outTree->Branch(    "runNumber",            &runNumber);
+    outTree->Branch(    "evtNumber",            &evtNumber,             "eventNumber/l");
+    outTree->Branch(    "lumiSection",          &lumiSection);
+    outTree->Branch(    "genWeight",            &genWeight);
+    outTree->Branch(    "isFiducial",           &isFiducial);
+
+    // Counters
+    outTree->Branch(    "nGenMuons",            &nGenMuons);
+    outTree->Branch(    "nGenElectrons",        &nGenElectrons);
+    outTree->Branch(    "nGenLeptons",          &nGenLeptons);
+
+    // Gen muons
+    outTree->Branch(    "genMuonP4",            &genMuonsP4,            32000,  1);
+    outTree->Branch(    "genMuonQ",             &genMuonsQ);
+    outTree->Branch(    "genMuonStatus",        &genMuonStatus);
+
+    // Gen electrons
+    outTree->Branch(    "genElectronP4",        &genElectronsP4,        32000,  1);
+    outTree->Branch(    "genElectronQ",         &genElectronsQ);
+    outTree->Branch(    "genElectronStatus",    &genElectronStatus);
+
 
 
     //--- HISTOGRAMS ---//
 
-    // Event counter
+    // Total event counter
     string outHistName = params->get_output_treename("TotalEvents");
     hTotalEvents = new TH1D(outHistName.c_str(), "TotalEvents", 10, 0.5, 10.5);
 
     // Acceptance counters
-    outHistName = params->get_output_treename("GenEvents");
-    hGenEvents = new TH1D(outHistName.c_str(), "GenEvents", 10, 0.5, 10.5);
-    hGenEvents->Sumw2();
+    outHistName = params->get_output_treename("PhaseSpaceEvents");
+    hPhaseSpaceEvents = new TH1D(outHistName.c_str(), "PhaseSpaceEvents", 10, 0.5, 10.5);
 
-    outHistName = params->get_output_treename("AccEvents");
-    hAccEvents = new TH1D(outHistName.c_str(), "AccEvents", 10, 0.5, 10.5);
-    hAccEvents->Sumw2();
+    outHistName = params->get_output_treename("FiducialEvents");
+    hFiducialEvents = new TH1D(outHistName.c_str(), "FiducialEvents", 10, 0.5, 10.5);
 
 
     ReportPostBegin();
@@ -88,6 +112,23 @@ void AcceptanceAnalyzer::Init(TTree *tree)
 
 Bool_t AcceptanceAnalyzer::Process(Long64_t entry)
 {
+
+
+    //--- CLEAR CONTAINERS ---//
+    
+    isFiducial = kTRUE;     // innocent until proven guilty...
+
+    nGenMuons = 0;                      nGenElectrons = 0;                  nGenLeptons = 0; 
+    genMuonsP4ptr.Delete();             genMuonsQ.clear();                  genMuonStatus.clear();
+    genElectronsP4ptr.Delete();         genElectronsQ.clear();              genElectronStatus.clear();
+
+
+
+    /////////////////
+    //    START    //
+    /////////////////
+
+
     GetEntry(entry, 1);  // load all branches included above
     this->totalEvents++;
     hTotalEvents->Fill(1);
@@ -98,43 +139,53 @@ Bool_t AcceptanceAnalyzer::Process(Long64_t entry)
                   << std::endl;
 
     const bool isData = (fInfo->runNum != 1);
-   
+    if (isData)
+        return kTRUE;
 
 
 
-    /////////////////////
-    //  GEN PARTICLES  //
-    /////////////////////
+    //--- PARTICLE LOOP ---//
 
+    genWeight   = 1;
+    runNumber   = fInfo->runNum;
+    evtNumber   = fInfo->evtNum;
+    lumiSection = fInfo->lumiSec;
 
-    genWeight = 1;
 
     if (!isData)
     {
-        // Save gen weight for amc@nlo Drell-Yan sample
+        // Save gen weight for amc@nlo samples
         genWeight = fGenEvtInfo->weight > 0 ? 1 : -1; 
         if (genWeight < 0)
             hTotalEvents->Fill(10);
-        hAcceptedEvents->Fill(1, genWeight);
 
 
 
-        //--- PARTICLE LOOP ---//
 
-        vector<TLorentzVector> leptons, elecs, muons;   // Momenta
-        vector<int> leptons_q, elecs_q, muons_q;        // Charges
+        /////////////////////
+        //  GEN PARTICLES  //
+        /////////////////////
 
-        for (int i = 0; i < fGenParticleArr->GetEntries(); ++i)
+
+        hPhaseSpaceEvents->Fill(1, genWeight);
+
+        vector<TLorentzVector> genLeps, genMuons, genElecs;     // Momenta
+        vector<int> genLepsQ;                                   // Charges
+        int elecTotalQ = 0, muonTotalQ = 0;
+
+
+  
+        //--- HARD PROCESS ---//
+
+        for (int i = 0; i < fGenParticleArr->GetEntries(); i++)
         {
             TGenParticle* particle = (TGenParticle*) fGenParticleArr->At(i);
 
 
             // Find leptons from hard-scattering process
-            if (
-                    (abs(particle->pdgId) == 11 || abs(particle->pdgId) == 13)
-                    &&  (particle->status == 23 || particle->status == 1 || particle->status == 2)
-                    &&  particle->parent != -2
-                )
+            if ((abs(particle->pdgId) == 11 || abs(particle->pdgId) == 13)
+                &&  (particle->status == 23 || particle->status == 1 || particle->status == 2)
+                &&  particle->parent != -2)
             {
                 // Determine if lepton comes from a Z
                 TGenParticle* mother = (TGenParticle*) fGenParticleArr->At(particle->parent);
@@ -144,42 +195,45 @@ Bool_t AcceptanceAnalyzer::Process(Long64_t entry)
                 //  and tends to be missing mother info)
                 if (origin == 23 || particle->status == 23)
                 {
-                    int q = copysign(particle->pdgId);
+                    int q = copysign(1, particle->pdgId);
                     TLorentzVector lep;
 
-                    if (abs(particle->pdgId) == 11)
+                    if      (abs(particle->pdgId) == 13)
                     {
-                        eCount++;
-                        lep.SetPtEtaPhiM(particle->pt, particle->eta, particle->phi, ELE_MASS);
-                        elecs.push_back(lep);       elecs_q.push_back(q);
-                        leptons.push_back(lep);     leptons_q.push_back(q);
-
-                    }
-                    else if (abs(particle->pdgId) == 13)
-                    {
-                        muCount++;
                         lep.SetPtEtaPhiM(particle->pt, particle->eta, particle->phi, MUON_MASS);
-                        muons.push_back(lep);       muons_q.push_back(q);
-                        leptons.push_back(lep);     leptons_q.push_back(q);
+                        new(genMuonsP4ptr[nGenMuons]) TLorentzVector(lep);
+
+                        nGenMuons++;
+                        genMuons.push_back(lep);
+                        muonTotalQ += q;
+                        genMuonsQ.push_back(q);
+                        genMuonStatus.push_back(particle->status);
                     }
+                    else if (abs(particle->pdgId) == 11)
+                    {
+                        lep.SetPtEtaPhiM(particle->pt, particle->eta, particle->phi, ELE_MASS);
+                        new(genElectronsP4ptr[nGenElectrons]) TLorentzVector(lep);
+
+                        nGenElectrons++;
+                        genElecs.push_back(lep);
+                        elecTotalQ += q;
+                        genElectronsQ.push_back(q);
+                        genElectronStatus.push_back(particle->status);
+                    }
+
+                    nGenLeptons++;
+                    genLeps.push_back(lep);
+                    genLepsQ.push_back(q);
                 }
             }
         }
 
 
 
-        //--- SELECTION ---//
-
-        unsigned muCount = muons.size(), eCount = elecs.size(), lepCount = leptons.size();
-        TLorentzVector muSum = GetP4Sum(muons), eSum = GetP4Sum(elecs), lepSum = GetP4Sum(leptons);
-
-        // Total charge for each lepton type
-        int eCharge = accumulate(elec_q.begin(), elec_q.end(), 0);
-        int muCharge = accumulate(muon_q.begin(), muon_q.end(), 0);
-
-
-
         //--- PHASE SPACE ---//
+
+        TLorentzVector muonSum = GetP4Sum(genMuons), elecSum = GetP4Sum(genElecs), lepSum = GetP4Sum(genLeps);
+
 
         // Mass window
         if (lepSum.M() < M_MIN || lepSum.M() > M_MAX)
@@ -187,55 +241,55 @@ Bool_t AcceptanceAnalyzer::Process(Long64_t entry)
 
 
         // Charge requirement
-        if (eCharge != 0 || muCharge != 0)
+        if (elecTotalQ != 0 || muonTotalQ != 0)
             return kTRUE;
 
 
         // Sort events by decay channel
-        unsigned idx = 0;
+        unsigned idx = 0;                                   // Index
 
-        if (muCount == 2 && eCount == 0)            // mumu = 3
+        if      (nGenMuons == 2 && nGenElectrons == 0)      // mumu = 3
             idx = 3;
 
-        else if (muCount == 0 && eCount == 2)       // ee   = 4
+        else if (nGenMuons == 0 && nGenElectrons == 2)      // ee   = 4
             idx = 4;
 
-        else if (muCount == 4 && eCount == 0)       // 4m   = 6
+        else if (nGenMuons == 4 && nGenElectrons == 0)      // 4m   = 6
             idx = 6;
 
-        else if (muCount == 2 && eCount == 2        // 2m2e = 7
-                && muSum.M() > eSum.M())
+        else if (nGenMuons == 2 && nGenElectrons == 2       // 2m2e = 7
+                && muonSum.M() > elecSum.M())
             idx = 7;
 
-        else if (muCount == 2 && eCount == 2        // 2e2m = 8
-                && muSum.M() < eSum.M())
+        else if (nGenMuons == 2 && nGenElectrons == 2       // 2e2m = 8
+                && muonSum.M() < elecSum.M())
             idx = 8;
 
-        else if (muCount == 0 && eCount == 4)       // 4e   = 9
+        else if (nGenMuons == 0 && nGenElectrons == 4)      // 4e   = 9
             idx = 9;
 
         else
             return kTRUE;
 
 
-        // Dilepton mass requirement
-        if (muCount == 2 && eCount == 2)        // Mixed flavor
+        // Dilepton mass requirement for 4l events
+        if (nGenMuons == 2 && nGenElectrons == 2)           // Mixed flavor
         {
-            if (eSum.M() < MLL_MIN)
+            if (elecSum.M() < MLL_MIN)
                 return kTRUE;
 
-            if (muSum.M() < MLL_MIN)
+            if (muonSum.M() < MLL_MIN)
                 return kTRUE;
         }
-        else if (muCount == 4 || eCount == 4)   // Single flavor
+        else if (nGenMuons == 4 || nGenElectrons == 4)      // Single flavor
         {
             for (unsigned j = 1; j < 4; j++)
             {
                 for (unsigned i = 0; i < j; i++)
                 {
-                    if (lep_q[i] != lep_q[j])
+                    if (genLepsQ[i] != genLepsQ[j])
                     {
-                        TLorentzVector dilep = leptons[i] + leptons[j];
+                        TLorentzVector dilep = genLeps[i] + genLeps[j];
                         if (dilep.M() < MLL_MIN)
                             return kTRUE;
                     }
@@ -245,56 +299,53 @@ Bool_t AcceptanceAnalyzer::Process(Long64_t entry)
 
 
         // Remaining events must be in phase space region
-        hGenEvents->Fill(idx, genWeight);
+        hPhaseSpaceEvents->Fill(idx, genWeight);
+        hFiducialEvents->Fill(1, genWeight);
 
 
 
         //--- FIDUCIAL REGION ---//
 
 
-        sort(leptons.begin(), leptons.end(), P4SortCondition); 
+        sort(genLeps.begin(), genLeps.end(), P4SortCondition); 
+
 
         // Eta
- 
-        for (unsigned i = 0; i < lepCount; i++)
+        for (unsigned i = 0; i < nGenLeptons; i++)
         {
-            if (fabs(leptons[i].Eta()) > ETA_MAX)
-                return kTRUE;
+            if (fabs(genLeps[i].Eta()) > ETA_MAX)
+                isFiducial = kFALSE;
         }
 
 
         // Lepton Pt
+        if (genLeps[0].Pt() < PT1_MIN)
+            isFiducial = kFALSE;
 
-        if (leptons[0].Pt() < PT1_MIN)
-            return kTRUE;
-
-        if (leptons[1].Pt() < PT2_MIN)
-            return kTRUE;
+        if (genLeps[1].Pt() < PT2_MIN)
+            isFiducial = kFALSE;
         
-        if (lepCount == 4)
+        if (nGenLeptons == 4)
         {
-            if (leptons[3].Pt() < PT_MIN || leptons[2].Pt() < PT_MIN)
-                return kTRUE;
+            if (genLeps[3].Pt() < PT_MIN || genLeps[2].Pt() < PT_MIN)
+                isFiducial = kFALSE;
         }
 
 
         // Remaining events must be in fiducial region
-        hAccEvents->Fill(idx, genWeight);
-
-
-        if (kTRUE)
-        {
-            cout << "Index \tStatus\tID    \tParent" << endl;
-            for (int i = 0; i < fGenParticleArr->GetEntries(); ++i)
-            {
-                TGenParticle* particle = (TGenParticle*) fGenParticleArr->At(i);
-                cout << i << "\t" << particle->status << "\t" << particle->pdgId << "\t" << particle->parent << endl;
-            }           
-            cout << endl << endl;
-        }
+        if (isFiducial)
+            hFiducialEvents->Fill(idx, genWeight);
     }
 
 
+
+
+    /////////////////////
+    //    FILL TREE    //
+    /////////////////////
+
+
+    outTree->Fill();
     this->passedEvents++;
     return kTRUE;
 }
@@ -344,10 +395,20 @@ int main(int argc, char **argv)
     return EXIT_SUCCESS;
 }
 
-TLorentzVector GetP4Sum(vector<TLorentzVector> p4)
+
+
+
+///////////////////
+//    HELPERS    //
+///////////////////
+
+
+TLorentzVector GetP4Sum(const vector<TLorentzVector> &p4)
 {
-    TLorentzVector sum(0, 0, 0, 0);
-    for (auto p4_ = p4.begin(); p4_ != p4.end(); ++p4_)
-        sum += *p4_;
-    return sum;
+    TLorentzVector p4sum;
+
+    for (unsigned i = 0; i < p4.size(); i++)
+        p4sum += p4[i];
+
+    return p4sum;
 }
