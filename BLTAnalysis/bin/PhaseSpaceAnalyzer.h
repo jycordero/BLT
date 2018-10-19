@@ -84,7 +84,7 @@ public:
     Long64_t    evtNumber;
     Float_t     genWeight;
 
-    UInt_t      decayChannel;
+    UShort_t    decayChannel;
     Bool_t      foundTauDecay;  // traced a tau to a Z
 
 

@@ -4,14 +4,15 @@ import sys
 
 
 ''' Specify parameters '''
-cfg        = bm.JobConfig
-selection  = 'double'
-period     = '2017'
-executable = 'execBatch.sh'
-location   = 'lpc'
+cfg         = bm.JobConfig
+selection   = 'double'
+period      = '2017'
+executable  = 'execBatch.sh'
+location    = 'lpc'
 
-data_samples = ['double_mu', 'double_eg']
-mc_samples   = ['zjets', 'ttbar', 'diboson', 'higgs']
+# data_samples  = ['double_mu', 'double_eg']
+# mc_samples    = ['zjets', 'ttbar', 'diboson', 'higgs']
+mc_samples      = ['signal']
 
 
 
@@ -86,13 +87,22 @@ data_dict['double_eg'] = \
 mc_dict = {}
 
 path = '/eos/uscms/store/user/jrainbol/Bacon/'
+mc_dict['signal'] = \
+[
+    cfg(data_name = 'ZZTo4L',
+        path     = '{0}/Fall17_ZZTo4L_powheg'.format(path),
+        nJobs    = 20,
+        suffix   = 'zz_4l'
+        ),
+]
+
 mc_dict['zjets'] = \
 [
     cfg(data_name = 'DYJetsToLL_M-50',
         path     = '{0}/Fall17_DYJetsToLL_M-50_amcatnlo'.format(path),
         nJobs    = 50,
         suffix   = 'zjets_m-50'
-       ),
+        ),
 ]
 
 mc_dict['ttbar'] = \
@@ -110,7 +120,7 @@ mc_dict['diboson'] = \
         path     = '{0}/Fall17_WWTo2L2Nu_powheg'.format(path),
         nJobs    = 5,
         suffix   = 'ww_2l2nu'
-       ),
+        ),
     cfg(data_name = 'WZTo2L2Q',
         path     = '{0}/Fall17_WZTo2L2Q_amcatnlo'.format(path),
         nJobs    = 50,
@@ -125,7 +135,7 @@ mc_dict['diboson'] = \
 #       path     = '{0}/Fall17_ZZTo2L2Nu_powheg'.format(path),
 #       nJobs    = 10,
 #       suffix   = 'zz_2l2nu'
-#      ),
+#       ),
     cfg(data_name = 'ZZTo2L2Q',
         path     = '{0}/Fall17_ZZTo2L2Q_amcatnlo'.format(path),
         nJobs    = 50,
@@ -140,7 +150,7 @@ mc_dict['diboson'] = \
 
 mc_dict['higgs'] = \
 [
-    cfg(data_name = 'GluGluHToZZTo4L',
+    cfg (data_name = 'GluGluHToZZTo4L',
         path     = '{0}/Fall17_GluGluHToZZTo4L_powheg'.format(path),
         nJobs    = 3,
         suffix   = 'ggH_zz_4l'
@@ -155,15 +165,15 @@ mc_dict['higgs'] = \
 
 
 batch_list = []
-batch_list += sum([data_dict[n] for n in data_samples], []) 
+# batch_list += sum([data_dict[n] for n in data_samples], []) 
 batch_list += sum([mc_dict[n] for n in mc_samples], []) 
 
-batch = bm.BatchMaster(config_list = batch_list, 
-                      stage_dir   = 'batch',
-                      selection  = selection,
-                      period     = period,
-                      executable = executable,
-                      location   = 'lpc'
+batch = bm.BatchMaster(config_list  = batch_list, 
+                      stage_dir     = 'batch',
+                      selection     = selection,
+                      period        = period,
+                      executable    = executable,
+                      location      = 'lpc'
                      )
 batch.submit_to_batch()
 

@@ -1,1 +1,0 @@
-root://cmseos.fnal.gov//store/user/jrainbol/Bacon//Fall17_TTJets_amcatnlo/Fall17_TTJets_amcatnlo_bacon_240.root

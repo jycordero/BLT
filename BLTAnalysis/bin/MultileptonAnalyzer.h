@@ -30,6 +30,7 @@
 #include "BaconAna/Utils/interface/TTrigger.hh"
 
 // ROOT headers
+#include <TString.h>
 #include <TLorentzVector.h>
 #include <TVector3.h>
 #include <TRandom3.h>
@@ -81,22 +82,23 @@ public:
     std::vector<string>                 muonTriggerNames, electronTriggerNames;
 
     // Histograms
-    TH1D *hPhaseSpaceEvents, *hFiducialEvents;
+//  TH1D *hPhaseSpaceEvents, *hFiducialEvents;
 
 
 
-    //--- GEN SELECTION ---//
-
+    ////  GEN SELECTION
+/*
     // Phase space requirements
-    Float_t M_MIN = 80,     M_MAX = 100,    MLL_MIN = 4;
+    const   Float_t     M_MIN = 80,     M_MAX = 100,    MLL_MIN = 4;
 
     // Fiducial requirements
     // Same for both flavors...maybe not the "best" choice, but certainly the easiest!
-    Float_t PT1_MIN = 20,   PT2_MIN = 10,   PT_MIN = 5,     ETA_MAX = 2.5;
+    const   Float_t     PT1_MIN = 20,   PT2_MIN = 10,   PT_MIN = 5;
+    const   Float_t     ETA_MAX = 2.5;
+*/
 
 
-
-    //--- BRANCHES ---//
+    ////  BRANCHES
 
     // Event
     Int_t runNumber, lumiSection;
@@ -146,15 +148,37 @@ public:
 
 
     // Gen particles
-    TClonesArray *genMuonsP4 = new TClonesArray("TLorentzVector"), &genMuonsP4ptr = *genMuonsP4;
-    std::vector<Short_t> genMuonsQ, genMuonStatus;
 
-    TClonesArray *genElectronsP4 = new TClonesArray("TLorentzVector"), &genElectronsP4ptr = *genElectronsP4;
-    std::vector<Short_t> genElectronsQ, genElectronStatus;
-
+    // Counters
+    UShort_t    nFinalStateMuons,   nFinalStateElectrons,   nFinalStateLeptons;     // Status 1 & traceable to a Z
+    UShort_t    nHardProcMuons,     nHardProcElectrons,     nHardProcLeptons;       // Mother is a Z
 
 
-    //--- HELPER FUNCTIONS ---//
+    // Final state leptons
+    TClonesArray    *finalStateMuonP4           = new TClonesArray("TLorentzVector");
+    TClonesArray    &finalStateMuonP4ptr        = *finalStateMuonP4;
+
+    TClonesArray    *finalStateElectronP4       = new TClonesArray("TLorentzVector");
+    TClonesArray    &finalStateElectronP4ptr    = *finalStateElectronP4;
+
+    std::vector<Short_t>    finalStateMuonQ,        finalStateElectronQ;
+    std::vector<UShort_t>   finalStateMuonZIndex,   finalStateElectronZIndex;
+
+
+    // Hard process leptons
+    TClonesArray    *hardProcMuonP4             = new TClonesArray("TLorentzVector");
+    TClonesArray    &hardProcMuonP4ptr          = *hardProcMuonP4;
+
+    TClonesArray    *hardProcElectronP4         = new TClonesArray("TLorentzVector");
+    TClonesArray    &hardProcElectronP4ptr      = *hardProcElectronP4;
+
+    std::vector<Short_t>    hardProcMuonQ,          hardProcElectronQ;
+    std::vector<UShort_t>   hardProcMuonZIndex,     hardProcElectronZIndex;
+
+
+
+
+    ////  HELPER FUNCTIONS
 
     float MetKluge(float);
 
