@@ -164,6 +164,8 @@ public:
     std::vector<Short_t>    finalStateMuonQ,        finalStateElectronQ;
     std::vector<UShort_t>   finalStateMuonZIndex,   finalStateElectronZIndex;
 
+    TLorentzVector  finalStateLeptonsP4;
+
 
     // Hard process leptons
     TClonesArray    *hardProcMuonP4             = new TClonesArray("TLorentzVector");
@@ -174,6 +176,8 @@ public:
 
     std::vector<Short_t>    hardProcMuonQ,          hardProcElectronQ;
     std::vector<UShort_t>   hardProcMuonZIndex,     hardProcElectronZIndex;
+
+    TLorentzVector  hardProcLeptonsP4;
 
 
 

@@ -6,7 +6,7 @@ batchDir=$1
 year="2017"
 srcPref="output"
 batchPath="../test/batch/"
-eosPath="/store/user/jrainbol/Trees/${year}/"
+eosPath="/store/user/jrainbol/BLT/${year}/"
 
  # DATA
 #   dataTag=("B" "C" "D" "E" "F")
@@ -32,9 +32,9 @@ eosPath="/store/user/jrainbol/Trees/${year}/"
 #   mcName=("DYJetsToLL_M-50" "TTJets" "WWTo2L2Nu" "WZTo2L2Q" "WZTo3LNu" "ZZTo2L2Q" "ZZTo4L" "GluGluHToZZTo4L" "VBF_HToZZTo4L")
 #   nTarget=(5 3 1 4 2 4 2 1 1)
 #   suffix=("zjets_m-50" "ttbar" "ww_2l2nu" "wz_2l2q" "wz_3lnu" "zz_2l2q" "zz_4l" "ggH_zz_4l" "vbfH_zz_4l")
-    mcName=("TTJets")
-    nTarget=(3)
-    suffix=("ttbar")
+    mcName=("ZZTo4L")
+    nTarget=(2)
+    suffix=("zz_4l")
 
     for ((i=0; i<${#mcName[@]}; i+=1))
     do

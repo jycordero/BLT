@@ -215,6 +215,8 @@ void MultileptonAnalyzer::Begin(TTree *tree)
         outTree->Branch(    "finalStateElectronQ",      &finalStateElectronQ);
         outTree->Branch(    "finalStateElectronZIndex", &finalStateElectronZIndex);
 
+        outTree->Branch(    "finalStateLeptonsP4",      &finalStateLeptonsP4);
+
 
         // Hard process leptons
         outTree->Branch(    "hardProcMuonP4",           &hardProcMuonP4,            32000,      1);
@@ -224,6 +226,8 @@ void MultileptonAnalyzer::Begin(TTree *tree)
         outTree->Branch(    "hardProcElectronP4",       &hardProcElectronP4,        32000,      1);
         outTree->Branch(    "hardProcElectronQ",        &hardProcElectronQ);
         outTree->Branch(    "hardProcElectronZIndex",   &hardProcElectronZIndex);
+
+        outTree->Branch(    "hardProcLeptonsP4",        &hardProcLeptonsP4);
     }
 
 
@@ -275,9 +279,11 @@ Bool_t MultileptonAnalyzer::Process(Long64_t entry)
 
     finalStateMuonP4ptr.Delete();       finalStateMuonQ.clear();            finalStateMuonZIndex.clear();
     finalStateElectronP4ptr.Delete();   finalStateElectronQ.clear();        finalStateElectronZIndex.clear();
+    finalStateLeptonsP4.Clear();
 
     hardProcMuonP4ptr.Delete();         hardProcMuonQ.clear();              hardProcMuonZIndex.clear();
     hardProcElectronP4ptr.Delete();     hardProcElectronQ.clear();          hardProcElectronZIndex.clear();
+    hardProcLeptonsP4.Clear();
 
 
 
@@ -424,6 +430,33 @@ Bool_t MultileptonAnalyzer::Process(Long64_t entry)
 
         nFinalStateLeptons  = nFinalStateMuons  + nFinalStateElectrons;
         nHardProcLeptons    = nHardProcMuons    + nHardProcElectrons;
+
+
+
+        //
+        //  TOTAL MOMENTA
+        //
+
+        // Hard process
+        TLorentzVector hpMuonsP4, hpElecsP4;
+
+        for (unsigned i = 0; i < nHardProcMuons; i++)
+            hpMuonsP4 += hpMuonP4[i];
+        for (unsigned i = 0; i < nHardProcElectrons; i++)
+            hpElecsP4 += hpElecP4[i];
+
+        hardProcLeptonsP4 = hpMuonsP4 + hpElecsP4;
+
+
+        // Final state
+        TLorentzVector fsMuonsP4, fsElecsP4;
+
+        for (unsigned i = 0; i < nFinalStateMuons; i++)
+            fsMuonsP4 += fsMuonP4[i];
+        for (unsigned i = 0; i < nFinalStateElectrons; i++)
+            fsElecsP4 += fsElecP4[i];
+
+        finalStateLeptonsP4 = fsMuonsP4 + fsElecsP4;
     }
 
 
