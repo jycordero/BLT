@@ -47,7 +47,9 @@ void PhaseSpaceAnalyzer::Begin(TTree *tree)
 
 
 
-    //--- BRANCHES ---//
+    //
+    //  BRANCHES
+    //
 
     // Event
     outTree->Branch(    "runNumber",                &runNumber);
@@ -72,7 +74,6 @@ void PhaseSpaceAnalyzer::Begin(TTree *tree)
     outTree->Branch(    "nHardProcElectrons",       &nHardProcElectrons);
     outTree->Branch(    "nHardProcLeptons",         &nHardProcLeptons);
 //  outTree->Branch(    "nHardProcZs",              &nHardProcZs);
-
 
 
     // Final state leptons
@@ -118,7 +119,9 @@ void PhaseSpaceAnalyzer::Begin(TTree *tree)
 
 
 
-    //--- HISTOGRAMS ---//
+    //
+    //  HISTOGRAMS
+    //
 
     // Total event counter
     string outHistName = params->get_output_treename("TotalEvents");
@@ -155,8 +158,9 @@ void PhaseSpaceAnalyzer::Init(TTree *tree)
 Bool_t PhaseSpaceAnalyzer::Process(Long64_t entry)
 {
 
-
-    //--- CLEAR CONTAINERS ---//
+    //
+    //  CLEAR CONTAINERS
+    //
     
     foundTauDecay = kFALSE;
     decayChannel = 0;
@@ -182,11 +186,9 @@ Bool_t PhaseSpaceAnalyzer::Process(Long64_t entry)
 
 
 
-
-    /////////////////
-    //    START    //
-    /////////////////
-
+    //
+    //  START
+    //
 
     GetEntry(entry, 1);  // load all branches included above
     this->totalEvents++;
@@ -199,13 +201,19 @@ Bool_t PhaseSpaceAnalyzer::Process(Long64_t entry)
 
     const bool isData = (fInfo->runNum != 1);
 
+    TString dataSetGroup = params->datasetgroup;
+    const bool isSignal = dataSetGroup.EqualTo("zz_4l") || dataSetGroup.EqualTo("ZZTo4L");
+    const bool isDrellYan = dataSetGroup.EqualTo("zjets_m-50") || dataSetGroup.EqualTo("DYJetsToLL");
+
     // Reject (accidental?) data events
     if (isData)
         return kTRUE;
 
 
 
-    //--- EVENT INFO ---//
+    //
+    //  EVENT INFO
+    //
 
     genWeight = fGenEvtInfo->weight > 0 ? 1 : -1; 
     if (genWeight < 0)
@@ -218,9 +226,13 @@ Bool_t PhaseSpaceAnalyzer::Process(Long64_t entry)
 
 
 
-    /////////////////////
-    //  PARTICLE LOOP  //
-    /////////////////////
+
+
+    ////
+    ////
+    ////    PARTICLE LOOP
+    ////
+    ////
 
 
     hPhaseSpaceEvents->Fill(1, genWeight);
@@ -242,20 +254,18 @@ Bool_t PhaseSpaceAnalyzer::Process(Long64_t entry)
 
 
 
+        //
+        //  LEPTONS
+        //
 
-        ///////////////////
-        //    LEPTONS    //
-        ///////////////////
 
-
-        if      (   (abs(particle->pdgId) == 13 || abs(particle->pdgId) == 11)
-                    &&  particle->parent >= 0)
+        if (((abs(particle->pdgId) == 13) || (abs(particle->pdgId) == 11)) && particle->parent >= 0)
         {
             TGenParticle* mother = (TGenParticle*) fGenParticleArr->At(particle->parent);
 
 
 
-            //--- HARD PROCESS ---//
+            // Hard process
 
             // ("immediate" mother is a Z)
 
@@ -286,7 +296,7 @@ Bool_t PhaseSpaceAnalyzer::Process(Long64_t entry)
 
 
 
-            //--- FINAL STATE ---//
+            // Final state
 
             // (have status 1 & can be traced to a Z)
 
@@ -332,13 +342,13 @@ Bool_t PhaseSpaceAnalyzer::Process(Long64_t entry)
         } // END lepton case
 
 
-        else if (abs(particle->pdgId) == 15 && particle->parent >= 0)
+        else if ((abs(particle->pdgId) == 15) && particle->parent >= 0)
         {
             TGenParticle* mother = (TGenParticle*) fGenParticleArr->At(particle->parent);
 
             // Trace the decay chain all the way back, allowing any lepton as an intermediate state
             // (maybe it could be done only allowing tau?)
-            while ((abs(mother->pdgId) == 15 || abs(mother->pdgId) == 13 || abs(mother->pdgId) == 11) && mother->parent >= 0)
+            while (((abs(mother->pdgId) == 15) || (abs(mother->pdgId) == 13) || (abs(mother->pdgId) == 11)) && mother->parent >= 0)
                 mother = (TGenParticle*) fGenParticleArr->At(mother->parent);
 
             // If the "ultimate mother" is a Z, we have a tau from a Z decay
@@ -348,11 +358,11 @@ Bool_t PhaseSpaceAnalyzer::Process(Long64_t entry)
 
 
 
-        ////////////////////
-        //    Z BOSONS    //
-        ////////////////////
+        //
+        //  Z BOSONS
+        //
 
-        else if (particle->pdgId == 23 && particle->status == 22)   // status 22 is apparently hard process
+        else if ((particle->pdgId == 23) && (particle->status == 22))   // status 22 is apparently hard process
         {
             TLorentzVector p4;
             p4.SetPtEtaPhiM(particle->pt, particle->eta, particle->phi, particle->mass);
@@ -372,13 +382,14 @@ Bool_t PhaseSpaceAnalyzer::Process(Long64_t entry)
 
 
 
-    //////////////////////
-    //    Z COUNTING    //
-    //////////////////////
 
 
-    //--- STATUS 22 ---//
+    //
+    //  Z COUNTING
+    //
 
+
+    // Status 22
     TLorentzVector s22ZsP4;
 
     for (unsigned i = 0; i < nStatus22Zs; i++)
@@ -386,8 +397,7 @@ Bool_t PhaseSpaceAnalyzer::Process(Long64_t entry)
 
 
 
-    //--- FINAL STATE ---//
-
+    // Final state
     vector<unsigned> fsZIndex;
 
     for (unsigned i = 0; i < nFinalStateMuons; i++)
@@ -432,12 +442,12 @@ Bool_t PhaseSpaceAnalyzer::Process(Long64_t entry)
 
 
 
-    ///////////////////////
-    //    LEPTON SUMS    //
-    ///////////////////////
+    //
+    //  LEPTON SUMS 
+    //
 
 
-    //--- FINAL STATE ---//
+    // Final state
 
     TLorentzVector fsMuonsP4, fsElecsP4;
 
@@ -450,7 +460,7 @@ Bool_t PhaseSpaceAnalyzer::Process(Long64_t entry)
 
 
 
-    //--- HARD PROCESS ---//
+    // Hard process
 
     TLorentzVector hpMuonsP4, hpElecsP4;
 
@@ -464,25 +474,33 @@ Bool_t PhaseSpaceAnalyzer::Process(Long64_t entry)
 
 
 
-    /////////////////////
-    //    SELECTION    //
-    /////////////////////
 
 
-    //--- FINAL STATE ---//
+    ////
+    ////
+    ////    SELECTION
+    ////
+    ////
+
+
+    //
+    //  FINAL STATE
+    //
 
     if      (params->selection == "final")
     {
         // Require four final-state leptons
         // (because they are what will be detected)
 
-        if (nFinalStateLeptons != 4)
+        if (isSignal && (nFinalStateLeptons != 4))
+            return kTRUE;
+        if (isDrellYan && (nFinalStateLeptons != 2))
             return kTRUE;
         hTotalEvents->Fill(2);
 
 
 
-        //--- 4-LEPTON MASS ---//
+        // 4-lepton mass
 
         if (fsLepsP4.M() < M_MIN || fsLepsP4.M() > M_MAX)
             return kTRUE;
@@ -490,7 +508,7 @@ Bool_t PhaseSpaceAnalyzer::Process(Long64_t entry)
 
 
 
-        //--- DILEPTON MASS ---//
+        // Dilepton mass
 
         for (unsigned j = 1; j < nFinalStateMuons; j++)
         {
@@ -522,12 +540,18 @@ Bool_t PhaseSpaceAnalyzer::Process(Long64_t entry)
 
 
 
-        //--- CATEGORIZE ---//
+        // Categorize
 
         hPhaseSpaceEvents->Fill(1, genWeight);
         unsigned C = 0;                                                 // Index
 
-        if      (nFinalStateMuons == 4 && nFinalStateElectrons == 0)    // 4m   = 6
+        if      (nFinalStateMuons == 2 && nFinalStateElectrons == 0)    // mumu = 3
+            C = 3;
+
+        else if (nFinalStateMuons == 0 && nFinalStateElectrons == 2)    // ee   = 4
+            C = 4;
+
+        else if (nFinalStateMuons == 4 && nFinalStateElectrons == 0)    // 4m   = 6
             C = 6;
 
         else if (nFinalStateMuons == 2 && nFinalStateElectrons == 2     // 2m2e = 7
@@ -541,7 +565,9 @@ Bool_t PhaseSpaceAnalyzer::Process(Long64_t entry)
         else if (nFinalStateMuons == 0 && nFinalStateElectrons == 4)    // 4e   = 9
             C = 9;
 
+        unsigned D = (C < 6) ? 2 : 5;
         hPhaseSpaceEvents->Fill(C, genWeight);
+        hPhaseSpaceEvents->Fill(D, genWeight);
         decayChannel = C;
 
 
@@ -549,20 +575,25 @@ Bool_t PhaseSpaceAnalyzer::Process(Long64_t entry)
 
 
 
-    //--- HARD PROCESS ---//
+    //
+    //  HARD PROCESS
+    //
 
     else if (params->selection == "hard")
     {
         // Require four hard-process leptons
         // (because they are what is "real")
 
-        if (nHardProcLeptons != 4)
+
+        if (isSignal && (nHardProcLeptons != 4))
+            return kTRUE;
+        if (isDrellYan && (nHardProcLeptons != 2))
             return kTRUE;
         hTotalEvents->Fill(2);
 
 
 
-        //--- 4-LEPTON MASS ---//
+        // 4-lepton mass
 
         if (hpLepsP4.M() < M_MIN || hpLepsP4.M() > M_MAX)
             return kTRUE;
@@ -570,7 +601,7 @@ Bool_t PhaseSpaceAnalyzer::Process(Long64_t entry)
 
 
 
-        //--- DILEPTON MASS ---//
+        // Dilepton mass
 
         for (unsigned j = 1; j < nHardProcMuons; j++)
         {
@@ -602,12 +633,18 @@ Bool_t PhaseSpaceAnalyzer::Process(Long64_t entry)
 
 
 
-        //--- CATEGORIZE ---//
+        // Categorize
 
         hPhaseSpaceEvents->Fill(1, genWeight);
         unsigned C = 0;                                             // Index
 
-        if      (nHardProcMuons == 4 && nHardProcElectrons == 0)    // 4m   = 6
+        if      (nHardProcMuons == 2 && nHardProcElectrons == 0)    // mumu = 3
+            C = 3;
+
+        else if (nHardProcMuons == 0 && nHardProcElectrons == 2)    // ee   = 4
+            C = 4;
+
+        else if (nHardProcMuons == 4 && nHardProcElectrons == 0)    // 4m   = 6
             C = 6;
 
         else if (nHardProcMuons == 2 && nHardProcElectrons == 2     // 2m2e = 7
@@ -621,7 +658,9 @@ Bool_t PhaseSpaceAnalyzer::Process(Long64_t entry)
         else if (nHardProcMuons == 0 && nHardProcElectrons == 4)    // 4e   = 9
             C = 9;
 
+        unsigned D = (C < 6) ? 2 : 5;
         hPhaseSpaceEvents->Fill(C, genWeight);
+        hPhaseSpaceEvents->Fill(D, genWeight);
         decayChannel = C;
 
 
@@ -635,13 +674,13 @@ Bool_t PhaseSpaceAnalyzer::Process(Long64_t entry)
 
 
 
-    /////////////////
-    //    DEBUG    //
-    /////////////////
+    //
+    //  DEBUG
+    //
 
 
-//  if (kFALSE)
     if (nHardProcLeptons != nFinalStateLeptons)
+//  if (kTRUE)
     {
         cout << nFinalStateMuons << " fs muons\t" << nFinalStateElectrons << " fs elecs" << endl;
         cout << nHardProcMuons << " hp muons\t" << nHardProcElectrons << " hp elecs" << endl;
@@ -668,13 +707,11 @@ Bool_t PhaseSpaceAnalyzer::Process(Long64_t entry)
 
 
 
+    //
+    //  FILL TREE
+    //
 
-    /////////////////////
-    //    FILL TREE    //
-    /////////////////////
-
-
-    //--- FINAL STATE ---//
+    // Final state
 
     // Muons
     for (unsigned i = 0; i < nFinalStateMuons; i++)
@@ -698,7 +735,7 @@ Bool_t PhaseSpaceAnalyzer::Process(Long64_t entry)
 
 
 
-    //--- HARD PROCESS ---//
+    // Hard process
 
     // Muons
     for (unsigned i = 0; i < nHardProcMuons; i++)
@@ -722,7 +759,7 @@ Bool_t PhaseSpaceAnalyzer::Process(Long64_t entry)
 
 
 
-    //--- Z BOSONS ---//
+    // Z bosons
 
     // Status 22
     for (unsigned i = 0; i < nStatus22Zs; i++)
@@ -748,116 +785,6 @@ Bool_t PhaseSpaceAnalyzer::Process(Long64_t entry)
     outTree->Fill();
     this->passedEvents++;
     return kTRUE;
-    /*
-    //--- PHASE SPACE ---//
-
-    TLorentzVector muonSum = GetP4Sum(genMuons), elecSum = GetP4Sum(genElecs), lepSum = GetP4Sum(genLeps);
-
-
-    // Mass window
-    if (lepSum.M() < M_MIN || lepSum.M() > M_MAX)
-    return kTRUE;
-
-
-    // Charge requirement
-    if (elecTotalQ != 0 || muonTotalQ != 0)
-    return kTRUE;
-
-
-    // Sort events by decay channel
-    unsigned idx = 0;                                   // Index
-
-    if      (nGenMuons == 2 && nGenElectrons == 0)      // mumu = 3
-    idx = 3;
-
-    else if (nGenMuons == 0 && nGenElectrons == 2)      // ee   = 4
-    idx = 4;
-
-    else if (nGenMuons == 4 && nGenElectrons == 0)      // 4m   = 6
-    idx = 6;
-
-    else if (nGenMuons == 2 && nGenElectrons == 2       // 2m2e = 7
-    && muonSum.M() > elecSum.M())
-    idx = 7;
-
-    else if (nGenMuons == 2 && nGenElectrons == 2       // 2e2m = 8
-    && muonSum.M() < elecSum.M())
-    idx = 8;
-
-    else if (nGenMuons == 0 && nGenElectrons == 4)      // 4e   = 9
-    idx = 9;
-
-    else
-    return kTRUE;
-
-
-    // Dilepton mass requirement for 4l events
-    if (nGenMuons == 2 && nGenElectrons == 2)           // Mixed flavor
-    {
-    if (elecSum.M() < MLL_MIN)
-    return kTRUE;
-
-    if (muonSum.M() < MLL_MIN)
-    return kTRUE;
-    }
-    else if (nGenMuons == 4 || nGenElectrons == 4)      // Single flavor
-    {
-    for (unsigned j = 1; j < 4; j++)
-    {
-    for (unsigned i = 0; i < j; i++)
-    {
-    if (genLepsQ[i] != genLepsQ[j])
-    {
-    TLorentzVector dilep = genLeps[i] + genLeps[j];
-    if (dilep.M() < MLL_MIN)
-    return kTRUE;
-    }
-    }
-    }
-    }
-
-
-    // Remaining events must be in phase space region
-    hPhaseSpaceEvents->Fill(idx, genWeight);
-    hFiducialEvents->Fill(1, genWeight);
-
-
-
-    //--- FIDUCIAL REGION ---//
-
-
-    sort(genLeps.begin(), genLeps.end(), P4SortCondition); 
-
-
-    // Eta
-    for (unsigned i = 0; i < nGenLeptons; i++)
-    {
-        if (fabs(genLeps[i].Eta()) > ETA_MAX)
-            isFiducial = kFALSE;
-    }
-
-
-    // Lepton Pt
-    if (genLeps[0].Pt() < PT1_MIN)
-        isFiducial = kFALSE;
-
-    if (genLeps[1].Pt() < PT2_MIN)
-        isFiducial = kFALSE;
-
-    if (nGenLeptons == 4)
-    {
-        if (genLeps[3].Pt() < PT_MIN || genLeps[2].Pt() < PT_MIN)
-            isFiducial = kFALSE;
-    }
-
-
-    // Remaining events must be in fiducial region
-    if (isFiducial)
-        hFiducialEvents->Fill(idx, genWeight);
-*/
-
-
-
 }
 
 void PhaseSpaceAnalyzer::Terminate()

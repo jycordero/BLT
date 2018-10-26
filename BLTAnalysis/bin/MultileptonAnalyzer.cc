@@ -45,8 +45,8 @@ void MultileptonAnalyzer::Begin(TTree *tree)
     params->setup(options);
 
     TString dataSetGroup    = params->datasetgroup;
-    const bool isSignal     = dataSetGroup.Contains("zz_4l") || dataSetGroup.Contains("ZZTo4L");
-    const bool isDoubleMuon = dataSetGroup.Contains("muon_2017") && (params->selection == "double");
+    const bool isSignal     = dataSetGroup.EqualTo("zz_4l") || dataSetGroup.EqualTo("ZZTo4L");
+    const bool isDoubleMuon = dataSetGroup.EqualTo("muon_2017") && (params->selection == "double");
 
 
     // Set the cuts
