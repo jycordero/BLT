@@ -24,14 +24,15 @@ source /cvmfs/cms.cern.ch/cmsset_default.sh
 #source /software/tier3/osg/cmsset_default.sh 
 
 # Setup CMSSW environment
-eval `scramv1 project CMSSW $CMSSW_VERSION`
-cd $CMSSW_VERSION
+#scram project CMSSW $CMSSW_VERSION
+#cd $CMSSW_VERSION/src
+#eval `scram runtime -sh`
 
-cp $TOPDIR/source.tar.gz .
+#cp $TOPDIR/source.tar.gz .
 tar -xzf source.tar.gz
-cd src
-eval `scramv1 runtime -sh`
-
+cd $CMSSW_VERSION/src/
+scramv1 b ProjectRename
+cmsenv
 cd BLT/BLTAnalysis/test
 cp $TOPDIR/input_${DATANAME}_${COUNT}.txt input.txt
 
@@ -40,12 +41,18 @@ echo $PATH
 pwd
 cat input.txt
 ### Run the analyzer
-#DimuonAnalyzer input.txt -1 $DATANAME $SUFFIX $SELECTION $PERIOD $COUNT
-#MultileptonAnalyzer input.txt -1 $DATANAME $SUFFIX $SELECTION $PERIOD $COUNT
-#zjpsiAnalyzerV2 input.txt -1 $DATANAME $SUFFIX $SELECTION $PERIOD $COUNT
+#if [[ $DATANAME == DoubleMuon* ]]; then
+#	echo $DATANAME ALL EVENTS 
+#	zgAnalyzer input.txt -1 $DATANAME $SUFFIX $SELECTION $PERIOD $COUNT
+#else 
+#	echo $DATANAME REDUCED EVENTS
+#	zgAnalyzer input.txt 300000 $DATANAME $SUFFIX $SELECTION $PERIOD $COUNT
+#fi
+
+
+#zgAnalyzer input.txt -1 $DATANAME $SUFFIX $SELECTION $PERIOD $COUNT
 hzgAnalyzer input.txt -1 $DATANAME $SUFFIX $SELECTION $PERIOD $COUNT
-#gbrTrainAnalyzer input.txt -1 $DATANAME $SUFFIX $SELECTION $PERIOD $COUNT
-#upsilonGammaAnalyzer input.txt -1 $DATANAME $SUFFIX $SELECTION $PERIOD $COUNT
 
 ### Copy output and cleanup ###
 cp output_${DATANAME}_${COUNT}.root ${_CONDOR_SCRATCH_DIR}
+

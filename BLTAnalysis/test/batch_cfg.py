@@ -1,54 +1,177 @@
-#! /usr/bin/env python
-import BLT.BLTAnalysis.BatchMaster as bm
+mport BLT.BLTAnalysis.BatchMaster as bm
 
 import sys
 
 ''' Specify parameters '''
 cfg        = bm.JobConfig
-path       = '/tthome/share/bacon/production/12a'
+#path       = '/eos/uscms/store/user/corderom/sync_mc'
+path       = 'root://cmseos.fnal.gov//store/user/corderom/sync_mc'
 executable = 'execBatch.sh'
-selection  = 'emu'
+#selection  = 'jetjetgmjetjet'
+#selection  = 'mumugm'
+
+selection  = 'mumug'
+#selection  = 'elelg'
+
 period     = '2016'
 
-data_samples = []
-mc_samples   = ['ttbar']
+#data_samples = ['single_mu']
+#data_samples = ['single_el']
+if selection == 'mumug':
+	data_samples = ['double_mu']
+elif selection == 'elelg':	
+	data_samples = ['double_el']
+
+#mc_samples   = ['TT']
+#mc_samples   = ['DYJets']
+#mc_samples   = ['W1Jets','W2Jets','W3Jets','W4Jets' ]
+#mc_samples   = ['ZH','WplusH','WminusH']#,'TT','W2Jets','W3Jets' ]
+#mc_samples   = ['ZZTo2L2Q','WZTo2L2Q','WZTo1L1Nu2Q']
+
+mc_samples = []
+mc_samples += ['Summer16_WW','Summer16_WZ']
+mc_samples += ['Summer16_ZZ']
+#mc_samples += ['TT']
+#mc_samples += ['DYJets']
+#mc_samples += ['ZG_ZToLL']
+
+#vbf_samples = ['VBFHToZG_ZToJJ']
+#vbf_samples = ['VBFHToZG_ZToJJ_ONE']
 
 ''' 
     Set job configurations.  The order of arguments is: (Dataset, path to data,
     number of jobs, arguments to pass to executable, output directory name)
 '''
+############## DATA ########################
+data_dict = {}
 
-data_list = {}
-data_list['single_mu'] = [
-        cfg(data_name = 'muon_2016B_v1',
-            path      = '{0}/SingleMuon_Run2016B-03Feb2017_ver1-v1'.format(path),
+##############  DOUBLE MUON DATA ########################
+path = '/eos/uscms/store/group/lpcbacon/12d'
+data_dict['double_mu'] = [
+         cfg(data_name = 'DoubleMuon_2016B_v2',
+             path      = '{0}/DoubleMuon_Run2016B-03Feb2017_ver2-v2'.format(path),
+             nJobs     = 30,
+             suffix    = 'DoubleMuon_2016B'
+            ),
+         cfg(data_name = 'DoubleMuon_2016C_v1',
+             path      = '{0}/DoubleMuon_Run2016C-03Feb2017-v1'.format(path),
+             nJobs     = 30,
+             suffix    = 'DoubleMuon_2016C'
+            ),
+         cfg(data_name = 'DoubleMuon_2016D_v1',
+             path      = '{0}/DoubleMuon_Run2016D-03Feb2017-v1'.format(path),
+             nJobs     = 30,
+             suffix    = 'DoubleMuon_2016D'
+            ),
+         cfg(data_name = 'DoubleMuon_2016E_v1',
+            path      = '{0}/DoubleMuon_Run2016E-03Feb2017-v1'.format(path),
             nJobs     = 30,
-            suffix    = 'muon_2016B'
+            suffix    = 'DoubleMuon_2016E'
            ),
-        cfg(data_name = 'muon_2016B_v2',
-            path      = '{0}/SingleMuon_Run2016B-03Feb2017_ver2-v2'.format(path),
+         cfg(data_name = 'DoubleMuon_2016F_v1',
+             path      = '{0}/DoubleMuon_Run2016F-03Feb2017-v1'.format(path),
+             nJobs     = 30,
+             suffix    = 'DoubleMuon_2016F'
+            ),
+         cfg(data_name = 'DoubleMuon_2016G_v1',
+             path      = '{0}/DoubleMuon_Run2016G-03Feb2017-v1'.format(path),
+             nJobs     = 30,
+             suffix    = 'DoubleMuon_2016G'
+            ),
+         cfg(data_name = 'DoubleMuon_2016H_v2',
+             path      = '{0}/DoubleMuon_Run2016H-03Feb2017_ver2-v1'.format(path),
+             nJobs     = 30,
+             suffix    = 'DoubleMuon_2016H'
+            ),
+         cfg(data_name = 'DoubleMuon_2016H_v3',
+             path      = '{0}/DoubleMuon_Run2016H-03Feb2017_ver3-v1'.format(path),
+             nJobs     = 30,
+             suffix    = 'DoubleMuon_2016H'
+            ),
+
+]
+
+##############  DOUBLE ELECTRON DATA ########################
+data_dict['double_el'] = [
+        cfg(data_name = 'DoubleEG_2016B_v2',
+            path      = '{0}/DoubleEG_Run2016B-03Feb2017_ver2-v2'.format(path),
             nJobs     = 30,
-            suffix    = 'muon_2016B'
+            suffix    = 'DoubleEG_2016B'
            ),
-        cfg(data_name = 'muon_2016C_v1',
-            path      = '{0}/SingleMuon_Run2016C-03Feb2017-v1'.format(path),
+        cfg(data_name = 'DoubleEG_2016C_v1',
+            path      = '{0}/DoubleEG_Run2016C-03Feb2017-v1'.format(path),
             nJobs     = 30,
-            suffix    = 'muon_2016C'
+            suffix    = 'DoubleEG_2016C'
            ),
-        cfg(data_name = 'muon_2016D_v1',
-            path      = '{0}/SingleMuon_Run2016D-03Feb2017-v1'.format(path),
+        cfg(data_name = 'DoubleEG_2016D_v2',
+            path      = '{0}/DoubleEG_Run2016D-03Feb2017-v1'.format(path),
             nJobs     = 30,
-            suffix    = 'muon_2016D'
+            suffix    = 'DoubleEG_2016D'
            ),
-        cfg(data_name = 'muon_2016E_v1',
-            path      = '{0}/SingleMuon_Run2016E-03Feb2017-v1'.format(path),
+        cfg(data_name = 'DoubleEG_2016E_v2',
+            path      = '{0}/DoubleEG_Run2016E-03Feb2017-v1'.format(path),
             nJobs     = 30,
-            suffix    = 'muon_2016E'
+            suffix    = 'DoubleEG_2016E'
            ),
-        cfg(data_name = 'muon_2016F_v1',
-            path      = '{0}/SingleMuon_Run2016F-03Feb2017-v1'.format(path),
+        cfg(data_name = 'DoubleEG_2016F_v2',
+            path      = '{0}/DoubleEG_Run2016F-03Feb2017-v1'.format(path),
             nJobs     = 30,
-            suffix    = 'muon_2016F'
+            suffix    = 'DoubleEG_2016F'
+           ),
+        cfg(data_name = 'DoubleEG_2016G_v2',
+            path      = '{0}/DoubleEG_Run2016G-03Feb2017-v1'.format(path),
+            nJobs     = 30,
+            suffix    = 'DoubleEG_2016G'
+           ),
+        cfg(data_name = 'DoubleEG_2016H_v2',
+            path      = '{0}/DoubleEG_Run2016H-03Feb2017_ver2-v1'.format(path),
+            nJobs     = 30,
+            suffix    = 'DoubleEG_2016H'
+           ),
+        cfg(data_name = 'DoubleEG_2016H_v3',
+            path      = '{0}/DoubleEG_Run2016H-03Feb2017_ver3-v1'.format(path),
+            nJobs     = 30,
+            suffix    = 'DoubleEG_2016H'
+           ),
+]
+##############  SINGLE MUON DATA ########################
+
+path = '/eos/uscms/store/group/lpcbacon/12a'
+data_dict['single_mu'] = [
+        #cfg(data_name = 'muon_2016B_v1',
+        #    path      = '{0}/SingleMuon_Run2016B-03Feb2017_ver1-v1'.format(path),
+        #    nJobs     = 30,
+        #    suffix    = 'muon_2016B'
+        #   ),
+        #cfg(data_name = 'muon_2016B_v2',
+        #    path      = '{0}/SingleMuon_Run2016B-03Feb2017_ver2-v2'.format(path),
+        #    nJobs     = 30,
+        #    suffix    = 'muon_2016B'
+        #   ),
+        #cfg(data_name = 'muon_2016C_v1',
+        #    path      = '{0}/SingleMuon_Run2016C-03Feb2017-v1'.format(path),
+        #    nJobs     = 30,
+        #    suffix    = 'muon_2016C'
+        #   ),
+        #cfg(data_name = 'muon_2016D_v1',
+        #    path      = '{0}/SingleMuon_Run2016D-03Feb2017-v1'.format(path),
+        #    nJobs     = 30,
+        #    suffix    = 'muon_2016D'
+        #   ),
+        #cfg(data_name = 'muon_2016E_v1',
+        #    path      = '{0}/SingleMuon_Run2016E-03Feb2017-v1'.format(path),
+        #    nJobs     = 30,
+        #    suffix    = 'muon_2016E'
+        #   ),
+        #cfg(data_name = 'muon_2016F_v1',
+        #    path      = '{0}/SingleMuon_Run2016F-03Feb2017-v1'.format(path),
+        #    nJobs     = 30,
+        #    suffix    = 'muon_2016F'
+        #   ),
+        cfg(data_name = 'muon_2016G',
+            path      = '{0}/SingleMuon_Run2016G-03Feb2017-v1'.format(path),
+            nJobs     = 30,
+            suffix    = 'muon_2016G'
            ),
         cfg(data_name = 'muon_2016G',
             path      = '{0}/SingleMuon_Run2016G-03Feb2017-v1'.format(path),
@@ -67,7 +190,8 @@ data_list['single_mu'] = [
            ),
         ]
 
-data_list['single_el'] = [
+##############  SINGLE MUON DATA ########################
+data_dict['single_el'] = [
         cfg(data_name = 'electron_2016B',
             nJobs    = 30,
             path     = '{0}/SingleElectron_Run2016B-03Feb2017_ver1-v1'.format(path),
@@ -115,278 +239,204 @@ data_list['single_el'] = [
            ),
         ]
 
-data_list['mueg'] = [
-        cfg(data_name = 'mueg_2016B',
-            path     = '{0}/MuonEG_Run2016B-03Feb2017_ver1-v1'.format(path),
-            nJobs    = 30,
-            suffix   = 'mueg_2016B'
-           ),
-        cfg(data_name = 'mueg_2016B',
-            path     = '{0}/MuonEG_Run2016B-03Feb2017_ver2-v2'.format(path),
-            nJobs    = 30,
-            suffix   = 'mueg_2016B'
-           ),
-        cfg(data_name = 'mueg_2016C',
-            path     = '{0}/MuonEG_Run2016C-03Feb2017-v1'.format(path),
-            nJobs    = 30,
-            suffix   = 'mueg_2016C'
-           ),
-        cfg(data_name = 'mueg_2016D',
-            path     = '{0}/MuonEG_Run2016D-03Feb2017-v1'.format(path),
-            nJobs    = 30,
-            suffix   = 'mueg_2016D'
-           ),
-        cfg(data_name = 'mueg_2016E',
-            path     = '{0}/MuonEG_Run2016E-03Feb2017-v1'.format(path),
-            nJobs    = 30,
-            suffix   = 'mueg_2016E'
-           ),
-        cfg(data_name = 'mueg_2016F',
-            path     = '{0}/MuonEG_Run2016F-03Feb2017-v1'.format(path),
-            nJobs    = 30,
-            suffix   = 'mueg_2016F'
-           ),
-        cfg(data_name = 'mueg_2016G',
-            path     = '{0}/MuonEG_Run2016G-03Feb2017-v1'.format(path),
-            nJobs    = 30,
-            suffix   = 'mueg_2016G'
-           ),
-        cfg(data_name = 'mueg_2016H',
-            path     = '{0}/MuonEG_Run2016H-03Feb2017_ver2-v1'.format(path),
-            nJobs    = 30,
-            suffix   = 'mueg_2016H'
-           ),
-        cfg(data_name = 'mueg_2016H',
-            path     = '{0}/MuonEG_Run2016H-03Feb2017_ver3-v1'.format(path),
-            nJobs    = 30,
-            suffix   = 'mueg_2016H'
-           ),
-        ]
-
-path = '/tthome/share/bacon/production/12'
+#----------------------------------------------------
+#---------------------------------------------------
+path = '/eos/uscms/store/user/corderom/sync_mc'
 mc_dict = {}
-mc_dict['zjets'] = [
-    # Drell-Yan
-    cfg(data_name = 'DYJetsToLL_M-50',
-        path     = '{0}/Summer16_DYJetsToLL_M-50_madgraph'.format(path),
+mc_dict['ZH'] = [
+    cfg(data_name = 'ZH_HToZG_ZToAll',
+        path     = '{0}/ZH_HToZG_ZToAll_M-125_13TeV_powheg_pythia8'.format(path),
         nJobs    = 50,
-        suffix   = 'zjets_m-50'
+        suffix   = 'ZH_HToZG_ZToAll'
        ),
-    cfg(data_name = 'DYJetsToLL_M-10to50',
-        path     = '{0}/Summer16_DYJetsToLL_M-10to50_madgraph'.format(path),
-        nJobs    = 10,
-        suffix   = 'zjets_m-10to50'
+    ]
+mc_dict['WplusH'] = [
+    cfg(data_name = 'WplusH_HToZG_WToAll',
+        path     = '{0}/WplusH_HToZG_WToAll_M125_13TeV_powheg_pythia8/sync_workarea_1_WplusH_HToZG_WToAll_M125_13TeV_powheg_pythia8/181116_184911/0000'.format(path),
+        nJobs    = 50,
+        #suffix   = 'WplusH_HToZG_WToAll'
+	suffix   = 'wplush' 
        ),
-    #cfg(data_name = 'DY1JetsToLL_M-50',
-    #    path     = '{0}/Summer16_DY1JetsToLL_M-50_madgraph'.format(path),
-    #    nJobs    = 10,
-    #    suffix   = 'z1jets_m-50'
-    #   ),
-    #cfg(data_name = 'DY1JetsToLL_M-10to50',
-    #    path     = '{0}/Summer16_DY1JetsToLL_M-10to50_madgraph_concat'.format(path),
-    #    nJobs    = 10,
-    #    suffix   = 'z1jets_m-10to50'
-    #   ),
-    #cfg(data_name = 'DY2JetsToLL_M-50',
-    #    path     = '{0}/Summer16_DY2JetsToLL_M-50_madgraph'.format(path),
-    #    nJobs    = 10,
-    #    suffix   = 'z2jets_m-50'
-    #   ),
-    #cfg(data_name = 'DY2JetsToLL_M-10to50',
-    #    path     = '{0}/Summer16_DY2JetsToLL_M-10to50_madgraph_concat'.format(path),
-    #    nJobs    = 10,
-    #    suffix   = 'z2jets_m-10to50'
-    #   ),
-    #cfg(data_name = 'DY3JetsToLL_M-50',
-    #    path     = '{0}/Summer16_DY3JetsToLL_M-50_madgraph'.format(path),
-    #    nJobs    = 10,
-    #    suffix   = 'z3jets_m-50'
-    #   ),
-    #cfg(data_name = 'DY3JetsToLL_M-10to50',
-    #    path     = '{0}/Summer16_DY3JetsToLL_M-10to50_madgraph_concat'.format(path),
-    #    nJobs    = 10,
-    #    suffix   = 'z3jets_m-10to50'
-    #   ),
-    #cfg(data_name = 'DY4JetsToLL_M-50',
-    #    path     = '{0}/Summer16_DY4JetsToLL_M-50_madgraph'.format(path),
-    #    nJobs    = 10,
-    #    suffix   = 'z4jets_m-50'
-    #   ),
-    #cfg(data_name = 'DY4JetsToLL_M-10to50',
-    #    path     = '{0}/Summer16_DY4JetsToLL_M-10to50_madgraph'.format(path),
-    #    nJobs    = 10,
-    #    suffix   = 'z4jets_m-10to50'
-    #   ),
     ]
 
-mc_dict['wjets'] = [
-    # W+jets
+mc_dict['WminusH'] = [
+    cfg(data_name = 'WminusH_HtoZG_WToAll',
+        path     = '{0}/WminusH_HToZG_WToAll_M125_13TeV_powheg_pythia8/sync_workarea_1_WminusH_HToZG_WToAll_M125_13TeV_powheg_pythia8/181116_185036/0000'.format(path),
+        nJobs    = 40,
+        #suffix   = 'WminusH_HtoZG_WToAll'
+	suffix   = 'wminush'
+       ),
+    ]
+
+mc_dict['TT'] = [
+    cfg(data_name = 'TT',
+        #path     = '{0}/TT_TuneCUETP8M2T4_13TeV-powheg-pythia8/'.format(path),
+        path     = '{0}/TT_TuneCUETP8M2T4_13TeV-powheg-pythia8/sync_workarea_TT_TuneCUETP8M2T4_13TeV-powheg-pythia8/190123_203318/0000/'.format(path),
+        nJobs    = 10,
+        suffix   = 'tt'
+       ),
+    ]
+
+mc_dict['DYJets'] = [
+    cfg(data_name = 'DYJets',
+	path     = '/eos/uscms/store/user/jbueghly/sync_mc/DYJetsToLL_M-50_amcatnlo_all_gen_tmp/',
+        #path     = '/eos/uscms/store/group/lpcbacon/12/Summer16_DYJetsToLL_M-50_amcatnlo/',
+        #path     = '/eos/uscms/store/group/lpcbacon/12d/DYJetsToLL_M-50_madgraph/',
+        nJobs    = 50,
+        suffix   = 'dyjets'
+	#suffic   = 'DYJets'
+       ),
+    ]
+
+mc_dict['W1Jets'] = [
     cfg(data_name = 'W1JetsToLNu',
-        path     = '{0}/Summer16_W1JetsToLNu'.format(path),
-        nJobs    = 40,
-        suffix   = 'w1jets'
+        #path     = '{0}/W1JetsToLNu_TuneCUETP8M1_13TeV-madgraphMLM-pythia8'.format(path),
+        path     = '{0}/W1JetsToLNu_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/sync_workarea_W1JetsToLNu_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/190123_200719/0000/'.format(path),
+        nJobs    = 50,
+        #suffix   = 'W1JetsToLNu'
+	suffix   = 'w1jetstolnu'
        ),
+    ]
+
+mc_dict['W2Jets'] = [
     cfg(data_name = 'W2JetsToLNu',
-        path     = '{0}/Summer16_W2JetsToLNu'.format(path),
-        nJobs    = 40,
-        suffix   = 'w2jets'
+        #path     = '{0}/W2JetsToLNu_TuneCUETP8M1_13TeV-madgraphMLM-pythia8'.format(path),
+        path     = '{0}/W2JetsToLNu_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/sync_workarea_W2JetsToLNu_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/190104_213056/0000/'.format(path),
+        nJobs    = 50,
+        #suffix   = 'W2JetsToLNu'
+	suffix = 'w2jetstolnu'
        ),
+    ]
+
+mc_dict['W3Jets'] = [
     cfg(data_name = 'W3JetsToLNu',
-        path     = '{0}/Summer16_W3JetsToLNu'.format(path),
-        nJobs    = 40,
-        suffix   = 'w3jets'
+        #path     = '{0}/W3JetsToLNu_TuneCUETP8M1_13TeV-madgraphMLM-pythia8'.format(path),
+        path     = '{0}/W3JetsToLNu_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/sync_workarea_W3JetsToLNu_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/190104_213255/0000/'.format(path),
+        nJobs    = 10,
+        #suffix   = 'W3JetsToLNu'
+	suffix   = 'w3jetstolnu'
        ),
+    ]
+
+mc_dict['W4Jets'] = [
     cfg(data_name = 'W4JetsToLNu',
-        path     = '{0}/Summer16_W4JetsToLNu'.format(path),
-        nJobs    = 40,
-        suffix   = 'w4jets'
+        #path     = '{0}/W4JetsToLNu_TuneCUETP8M1_13TeV-madgraphMLM-pythia8'.format(path),
+        path     = '{0}/W4JetsToLNu_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/sync_workarea_W4JetsToLNu_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/190104_214223/0000/'.format(path),
+        nJobs    = 10,
+        #suffix   = 'W4JetsToLNu'
+        suffix   = 'w4jetstolnu'
        ),
     ]
 
-mc_dict['qcd'] = [
-    # QCD
-    cfg(data_name = 'QCD_HT50to100',
-        path     = '{0}/Summer16_QCD_HT50to100'.format(path),
+mc_dict['WZTo2L2Q'] = [
+    cfg(data_name = 'WZTo2L2Q',
+        #path     = '{0}/W4JetsToLNu_TuneCUETP8M1_13TeV-madgraphMLM-pythia8'.format(path),
+        path     = '/eos/uscms/store/user/jbueghly/sync_mc/WZTo2L2Q_amcatnlo/',
         nJobs    = 10,
-        suffix   = 'qcd_ht50to100'
-       ),
-    cfg(data_name = 'QCD_HT100to200',
-        path     = '{0}/Summer16_QCD_HT100to200'.format(path),
-        nJobs    = 10,
-        suffix   = 'qcd_ht100to200'
-       ),
-    cfg(data_name = 'QCD_HT200to300',
-        path     = '{0}/Summer16_QCD_HT200to300'.format(path),
-        nJobs    = 10,
-        suffix   = 'qcd_ht200to300'
-       ),
-    cfg(data_name = 'QCD_HT300to500',
-        path     = '{0}/Summer16_QCD_HT300to500'.format(path),
-        nJobs    = 10,
-        suffix   = 'qcd_ht300to500'
-       ),
-    cfg(data_name = 'QCD_HT500to700',
-        path     = '{0}/Summer16_QCD_HT500to700'.format(path),
-        nJobs    = 10,
-        suffix   = 'qcd_ht500to700'
-       ),
-    cfg(data_name = 'QCD_HT700to1000',
-        path     = '{0}/Summer16_QCD_HT700to1000'.format(path),
-        nJobs    = 10,
-        suffix   = 'qcd_ht700to1000'
-       ),
-    cfg(data_name = 'QCD_HT1000to1500',
-        path     = '{0}/Summer16_QCD_HT1000to1500'.format(path),
-        nJobs    = 10,
-        suffix   = 'qcd_ht1000to1500'
-       ),
-    cfg(data_name = 'QCD_HT1500to2000',
-        path     = '{0}/Summer16_QCD_HT1500to2000'.format(path),
-        nJobs    = 10,
-        suffix   = 'qcd_ht1500to2000'
-       ),
-    cfg(data_name = 'QCD_HT2000toInf',
-        path     = '{0}/Summer16_QCD_HT2000toInf'.format(path),
-        nJobs    = 10,
-        suffix   = 'qcd_ht2000'
+        suffix   = 'wzto2l2q'
        ),
     ]
 
-mc_dict['ttbar'] = [
-    # top
-    cfg(data_name = 'ttbar_leptonic',
-        path     = '{0}/Summer16_TTTo2L2Nu_powheg'.format(path),
+
+mc_dict['WZTo1L1Nu2Q'] = [
+    cfg(data_name = 'WZTo1L1Nu2Q',
+        path     = '/eos/uscms/store/user/corderom/sync_mc/WZTo1L1Nu2Q_13TeV_amcatnloFXFX_madspin_pythia8/sync_workarea_WZTo1L1Nu2Q_13TeV_amcatnloFXFX_madspin_pythia8/190203_065615/0000/',
+        nJobs    = 10,
+        suffix   = 'wzto1l1nu2q'
+       ),
+    ]
+#############################################################
+path = '/eos/uscms/store/group/lpcbacon/12'
+
+######################### ZZ #######################
+mc_dict['WJets'] = [
+    cfg(data_name = 'WJets',
+	path     = '/eos/uscms/store/user/jbueghly/sync_mc/DYJetsToLL_M-50_amcatnlo_all_gen_tmp/',
         nJobs    = 50,
-        suffix   = 'ttbar_lep'
+        suffix   = 'wjets'
        ),
-    cfg(data_name = 'ttbar_semileptonic',
-        path     = '{0}/Summer16_TTToSemilepton_powheg'.format(path),
-        nJobs    = 50,
-        suffix   = 'ttbar_semilep'
-       ),
-    #cfg(data_name = 'ttbar_leptonic',
-    #    path     = '{0}/Summer16_TTJets_DiLept_madgraph'.format(path),
-    #    nJobs    = 50,
-    #    suffix   = 'ttbar_lep'
-    #   ),
     ]
+######################### ZZ #######################
+mc_dict['Summer16_ZZ'] = [
+		    cfg(data_name = 'ZZTo2L2Nu',
+			path     = '{0}/Summer16_ZZTo2L2Nu_powheg/'.format(path),
+			nJobs    = 10,
+			suffix   = 'zzto2l2nu'
+		       ),
+		    cfg(data_name = 'ZZTo2L2Q',
+			path     = '{0}/Summer16_ZZTo2L2Q_amcatnlo/'.format(path),
+			nJobs    = 10,
+			suffix   = 'zzto2l2q'
+		       ),
+		    cfg(data_name = 'ZZTo4L',
+			path     = '{0}/Summer16_ZZto4L_amcatnlo/'.format(path),
+			nJobs    = 10,
+			suffix   = 'zzto4l'
+		       ),
+		    ]
+######################### WW #######################mc_dict['Summer16_WW'] = [
+mc_dict['Summer16_WW'] = [
+		    cfg(data_name = 'WWTo2L2Nu',
+			path     = '{0}/Summer16_WWTo2L2Nu_powheg/'.format(path),
+			nJobs    = 10,
+			suffix   = 'wwto2l2nu'
+		       ),
+		    ]
+########################## WZ  #######################
+mc_dict['Summer16_WZ'] = [
+		    cfg(data_name = 'WZTo2L2Q',
+			path     = '{0}/Summer16_WZTo2L2Q_amcatnlo/'.format(path),
+			nJobs    = 10,
+			suffix   = 'wzto2l2q'
+		       ),
+		    cfg(data_name = 'WZTo3LNu',
+			#path     = '{0}/W4JetsToLNu_TuneCUETP8M1_13TeV-madgraphMLM-pythia8'.format(path),
+			path     = '{0}/Summer16_WZTo3LNu_powheg/'.format(path),
+			nJobs    = 10,
+			suffix   = 'wzto3lnu'
+		       ),
+		    ]
 
-mc_dict['t'] = [
-#    cfg(data_name = 'T_s-channel',
-#        path     = '{0}/Summer16_ST_s-channel_4f_leptonDecays_amcatnlo'.format(path),
-#        nJobs    = 10,
-#        suffix   = 't_s'
-#       ),
-#    cfg(data_name = 'Tbar_s-channel',
-#        path     = '{0}/'.format(path),
-#        nJobs    = 10,
-#        suffix   = 'tbar_s'
-#       ),
-    #cfg(data_name = 'T_t-channel',
-    #    path     = '{0}/Summer16_ST_t_channel_top_4f_inclusiveDecays_TuneCUETP8M2T4'.format(path),
-    #    nJobs    = 10,
-    #    suffix   = 't_t'
-    #   ),
-    #cfg(data_name = 'Tbar_t-channel',
-    #    path     = '{0}/Summer16_ST_t_channel_antitop_4f_inclusiveDecays_TuneCUETP8M2T4'.format(path),
-    #    nJobs    = 10,
-    #    suffix   = 'tbar_t'
-    #   ),
-    cfg(data_name = 'T_tW-channel',
-        path     = '{0}/Summer16_ST_tW_top_5f_inclusiveDecays_TuneCUETP8M2T4'.format(path),
-        nJobs    = 10,
-        suffix   = 't_tw'
-       ),
-    cfg(data_name = 'Tbar_tW-channel',
-        path     = '{0}/Summer16_ST_tW_antitop_5f_inclusiveDecays_TuneCUETP8M2T4'.format(path),
-        nJobs    = 10,
-        suffix   = 'tbar_tw'
-       ),
-    ]
+########################## ZG ######################
+mc_dict['ZG_ZToLL']=[	
+		 	cfg(data_name = 'ZG_ZToLL',
+		 	    path     = '/eos/uscms/store/user/jbueghly/sync_mc/ZGTo2LG_amcatnlo_all_gen/',
+			    nJobs    = 10,
+			    suffix   = 'zg_ztoll'
+			),
+		]
+######################################################################
 
-mc_dict['diboson'] = [
-    # Diboson
-    cfg(data_name = 'WW',
-        path     = '{0}/Summer16_WWTo2L2Nu_powheg'.format(path),
-        nJobs    = 10,
-        suffix   = 'ww'
-       ),
-    cfg(data_name = 'WZJetsTo2L2Q',
-        path     = '{0}/Summer16_WZTo2L2Q_amcatnlo'.format(path),
-        nJobs    = 10,
-        suffix   = 'wz_2l2q'
-       ),
-    cfg(data_name = 'WZJetsTo3LNu',
-        path     = '{0}/Summer16_WZTo3LNu_powheg'.format(path),
-        nJobs    = 10,
-        suffix   = 'wz_3lnu'
-       ),
-    cfg(data_name = 'ZZJetsTo2L2Nu',
-        path     = '{0}/Summer16_ZZTo2L2Nu_powheg'.format(path),
-        nJobs    = 10,
-        suffix   = 'zz_2l2nu'
-       ),
-    cfg(data_name = 'ZZJetsTo2L2Q',
-        path     = '{0}/Summer16_ZZTo2L2Q_amcatnlo'.format(path),
-        nJobs    = 10,
-        suffix   = 'zz_2l2q'
-       ),
-    cfg(data_name = 'ZZJetsTo4L',
-        path     = '{0}/Summer16_ZZto4L_amcatnlo'.format(path),
-        nJobs    = 10,
-        suffix   = 'zz_4l'
-       ),
-    ]
+VBF_dict = {}
+
+VBF_dict['VBFHToZG_ZToJJ']=[	
+			    cfg(data_name = 'VBFHToZG_ZToJJ',
+			        path     = '/eos/uscms/store/user/corderom/sync_mc/VBFHToZG_ZToJJ/',
+			        nJobs    = 10,
+			        suffix   = 'vbfhtozg_ztojj'
+			       ),
+				]
+
+VBF_dict['VBFHToZG_ZToJJ_ONE']=[	
+			    cfg(data_name = 'VBFHToZG_ZToJJ_ONE',
+			        path     = '/eos/uscms/store/user/corderom/sync_mc/VBFHToZG_ZToJJ_ONE/',
+			        nJobs    = 10,
+			        suffix   = 'vbfhtozg_ztojj_one'
+			       ),
+				]
+
 
 batch_list = []
 batch_list += sum([data_dict[n] for n in data_samples], []) 
-batch_list += sum([mc_dict[n] for n in mc_samples], []) 
+#batch_list += sum([mc_dict[n] for n in mc_samples], []) 
+
+#batch_list += sum([VBF_dict[n] for n in vbf_samples], []) 
 batch = bm.BatchMaster(config_list = batch_list, 
                        stage_dir   = 'batch',
                        selection   = selection,
                        period      = period,
                        executable  = executable,
-                       location    = 'nut3'
+                       location    = 'lpc'
                      )
 batch.submit_to_batch()
 
