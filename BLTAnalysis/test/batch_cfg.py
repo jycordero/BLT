@@ -1,4 +1,4 @@
-mport BLT.BLTAnalysis.BatchMaster as bm
+import BLT.BLTAnalysis.BatchMaster as bm
 
 import sys
 
@@ -29,7 +29,7 @@ elif selection == 'elelg':
 #mc_samples   = ['ZZTo2L2Q','WZTo2L2Q','WZTo1L1Nu2Q']
 
 mc_samples = []
-mc_samples += ['Summer16_WW','Summer16_WZ']
+#mc_samples += ['Summer16_WW','Summer16_WZ']
 mc_samples += ['Summer16_ZZ']
 #mc_samples += ['TT']
 #mc_samples += ['DYJets']
@@ -427,8 +427,8 @@ VBF_dict['VBFHToZG_ZToJJ_ONE']=[
 
 
 batch_list = []
-batch_list += sum([data_dict[n] for n in data_samples], []) 
-#batch_list += sum([mc_dict[n] for n in mc_samples], []) 
+#batch_list += sum([data_dict[n] for n in data_samples], []) 
+batch_list += sum([mc_dict[n] for n in mc_samples], []) 
 
 #batch_list += sum([VBF_dict[n] for n in vbf_samples], []) 
 batch = bm.BatchMaster(config_list = batch_list, 
