@@ -11,8 +11,8 @@
 <bin file="train_muons.cc" name="train_muons"></bin>
 <bin file="train_electrons.cc" name="train_electrons"></bin>-->
 
-<!--bin file="zgAnalyzer.cc" name="zgAnalyzer"></bin-->
-<bin file="hzgAnalyzer.cc" name="hzgAnalyzer"></bin>
+<bin file="zgAnalyzer.cc" name="zgAnalyzer"></bin>
+<!--bin file="hzgAnalyzer.cc" name="hzgAnalyzer"></bin-->
 
 <!--
 <bin file="hzgAnalyzerVBF.cc" name="hzgAnalyzerVBF"></bin>
