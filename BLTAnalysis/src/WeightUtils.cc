@@ -576,19 +576,23 @@ float WeightUtils::GetPhotonMVAIdEff(TPhoton& photon) const
             break;
         }
     }*/
-
+    float tmpPhotonPt = (photon.pt < 150.) ? photon.pt : 149.;
     float weight = 1;
     //if (photon.calibPt < 150.) {
     //    weight *= _mva_gammaSF_ID[ptBin]->Eval(photon.scEta);
     //}
-    weight *= _mva_gammaSF->GetBinContent(_mva_gammaSF->FindBin(photon.scEta, photon.pt));
+    
+    //weight *= _mva_gammaSF->GetBinContent(_mva_gammaSF->FindBin(photon.scEta, photon.pt));
+    weight *= _mva_gammaSF->GetBinContent(_mva_gammaSF->FindBin(photon.scEta, tmpPhotonPt));
 
     // electron veto scale factor
     if (fabs(photon.scEta) <= 1.49)
         weight *= 0.9938;
     else if (fabs(photon.scEta) > 1.49)
         weight *= 0.9875;
-    
+
+    if (weight == 0)
+	weight = 1.; 
     return weight;
 }
 

@@ -41,18 +41,12 @@ echo $PATH
 pwd
 cat input.txt
 ### Run the analyzer
-#if [[ $DATANAME == DoubleMuon* ]]; then
-#	echo $DATANAME ALL EVENTS 
-#	zgAnalyzer input.txt -1 $DATANAME $SUFFIX $SELECTION $PERIOD $COUNT
-#else 
-#	echo $DATANAME REDUCED EVENTS
-#	zgAnalyzer input.txt 300000 $DATANAME $SUFFIX $SELECTION $PERIOD $COUNT
-#fi
+#DimuonAnalyzer input.txt -1 $DATANAME $SUFFIX $SELECTION $PERIOD $COUNT
+#MultileptonAnalyzer input.txt -1 $DATANAME $SUFFIX $SELECTION $PERIOD $COUNT
+#zjpsiAnalyzerV2 input.txt -1 $DATANAME $SUFFIX $SELECTION $PERIOD $COUNT
+hzgAnalyzerVBF input.txt -1 $DATANAME $SUFFIX $SELECTION $PERIOD $COUNT
+#gbrTrainAnalyzer input.txt -1 $DATANAME $SUFFIX $SELECTION $PERIOD $COUNT
+#upsilonGammaAnalyzer input.txt -1 $DATANAME $SUFFIX $SELECTION $PERIOD $COUNT
 
-#zgAnalyzer input.txt 250000 $DATANAME $SUFFIX $SELECTION $PERIOD $COUNT
-#zgAnalyzer_MuEff input.txt -1 $DATANAME $SUFFIX $SELECTION $PERIOD $COUNT
-
-zgAnalyzer input.txt -1 $DATANAME $SUFFIX $SELECTION $PERIOD $COUNT
-#zgAnalyzer input.txt 250000 $DATANAME $SUFFIX $SELECTION $PERIOD $COUNT
 ### Copy output and cleanup ###
 cp output_${DATANAME}_${COUNT}.root ${_CONDOR_SCRATCH_DIR}

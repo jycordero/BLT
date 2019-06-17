@@ -1,0 +1,3 @@
+root://cmseos.fnal.gov//store/user/corderom/sync_mc/VBFHToZG_ZToJJ_ONE//HIG-RunIISummer16MiniAODv2-03277_20.root
+
+

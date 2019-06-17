@@ -63,7 +63,7 @@ class BatchMaster():
             batch_tmp.write('Requirements = Memory >= 199 &&OpSys == "LINUX"&& (Arch != "DUMMY" )&& Disk > 1000000\n')
         elif self._location == 'lpc':
             batch_tmp.write('Requirements          = OpSys == "LINUX"&& (Arch != "DUMMY" )\n')
-            batch_tmp.write('request_disk          = 2000000\n')
+            batch_tmp.write('request_disk          = 4000000\n')
             batch_tmp.write('request_memory        = 2048\n')
         batch_tmp.write('\n')
 

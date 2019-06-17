@@ -51,84 +51,99 @@ Cuts::Cuts() {
         for (unsigned int j =0; j<3; j++)
             EAPho[i][j] = EAPhoTemp[i][j];
 
-
     vetoElID.cutName                      = "vetoElID";
-    vetoElID.dEtaIn[0]                    = 0.007;
-    vetoElID.dPhiIn[0]                    = 0.8;
-    vetoElID.sigmaIetaIeta[0]             = 0.01;
-    vetoElID.HadOverEm[0]                 = 0.15;
-    vetoElID.dxy[0]                       = 0.04;
-    vetoElID.dz[0]                        = 0.2;
+    vetoElID.dEtaIn[0]                    = 0.00749;
+    vetoElID.dPhiIn[0]                    = 0.228;
+    vetoElID.sigmaIetaIeta[0]             = 0.0115;
+    vetoElID.HadOverEm[0]                 = 0.356;
+    vetoElID.dxy[0]                       = 1;
+    vetoElID.dz[0]                        = 1;
     vetoElID.fabsEPDiff[0]                = 99999;
-    vetoElID.ConversionMissHits[0]        = 99999;
+    vetoElID.ConversionMissHits[0]        = 0;
+    vetoElID.numberOfLostHits[0]	  = 2;
+    vetoElID.energyInverse[0]		  = 0.299;
 
-    vetoElID.dEtaIn[1]                    = 0.01;
-    vetoElID.dPhiIn[1]                    = 0.7;
-    vetoElID.sigmaIetaIeta[1]             = 0.03;
-    vetoElID.HadOverEm[1]                 = 999999;
-    vetoElID.dxy[1]                       = 0.04;
-    vetoElID.dz[1]                        = 0.2;
+    vetoElID.dEtaIn[1]                    = 0.00895;
+    vetoElID.dPhiIn[1]                    = 0.213;
+    vetoElID.sigmaIetaIeta[1]             = 0.037;
+    vetoElID.HadOverEm[1]                 = 0.211;
+    vetoElID.dxy[1]                       = 1;
+    vetoElID.dz[1]                        = 1;
     vetoElID.fabsEPDiff[1]                = 999999;
-    vetoElID.ConversionMissHits[1]        = 999999;
+    vetoElID.ConversionMissHits[1]        = 0;
+    vetoElID.numberOfLostHits[1]	  = 3;
+    vetoElID.energyInverse[1]		  = 0.15;
 
     // tight electorn ID
     tightElID.cutName                    = "tightElID";
-    tightElID.dEtaIn[0]                  = 0.004;
-    tightElID.dPhiIn[0]                  = 0.03;
-    tightElID.sigmaIetaIeta[0]           = 0.01;
-    tightElID.HadOverEm[0]               = 0.12;
-    tightElID.dxy[0]                     = 0.02;
-    tightElID.dz[0]                      = 0.1;
+    tightElID.dEtaIn[0]                  = 0.00308;
+    tightElID.dPhiIn[0]                  = 0.0816;
+    tightElID.sigmaIetaIeta[0]           = 0.00998;
+    tightElID.HadOverEm[0]               = 0.0414;
+    tightElID.dxy[0]                     = 1;
+    tightElID.dz[0]                      = 1;
     tightElID.fabsEPDiff[0]              = 0.05;
     tightElID.ConversionMissHits[0]      = 0;
+    tightElID.numberOfLostHits[0]	 = 1;
+    tightElID.energyInverse[0]		 = 0.0129;
 
-    tightElID.dEtaIn[1]                  = 0.007;
-    tightElID.dPhiIn[1]                  = 0.03;
-    tightElID.sigmaIetaIeta[1]           = 0.03;
-    tightElID.HadOverEm[1]               = 0.10;
-    tightElID.dxy[1]                     = 0.02;
-    tightElID.dz[1]                      = 0.1;
+    tightElID.dEtaIn[1]                  = 0.00605;
+    tightElID.dPhiIn[1]                  = 0.0394;
+    tightElID.sigmaIetaIeta[1]           = 0.0292;
+    tightElID.HadOverEm[1]               = 0.0641;
+    tightElID.dxy[1]                     = 1;
+    tightElID.dz[1]                      = 1;
     tightElID.fabsEPDiff[1]              = 0.05;
-    tightElID.ConversionMissHits[1]      = 1;
+    tightElID.ConversionMissHits[1]      = 0;
+    tightElID.numberOfLostHits[1]	 = 1;
+    tightElID.energyInverse[1]		 = 0.0129;
 
     // medium electron ID
     mediumElID.cutName                    = "mediumElID";
-    mediumElID.dEtaIn[0]                  = 0.004;
-    mediumElID.dPhiIn[0]                  = 0.06;
-    mediumElID.sigmaIetaIeta[0]           = 0.01;
-    mediumElID.HadOverEm[0]               = 0.12;
-    mediumElID.dxy[0]                     = 0.02;
-    mediumElID.dz[0]                      = 0.1;
+    mediumElID.dEtaIn[0]                  = 0.00311;
+    mediumElID.dPhiIn[0]                  = 0.103;
+    mediumElID.sigmaIetaIeta[0]           = 0.00998;
+    mediumElID.HadOverEm[0]               = 0.253;
+    mediumElID.dxy[0]                     = 1;
+    mediumElID.dz[0]                      = 1;
     mediumElID.fabsEPDiff[0]              = 0.05;
-    mediumElID.ConversionMissHits[0]      = 1;
+    mediumElID.ConversionMissHits[0]      = 0;
+    mediumElID.numberOfLostHits[0]	  = 1;
+    mediumElID.energyInverse[0]		  = 0.134;
 
-    mediumElID.dEtaIn[1]                  = 0.007;
-    mediumElID.dPhiIn[1]                  = 0.03;
-    mediumElID.sigmaIetaIeta[1]           = 0.03;
-    mediumElID.HadOverEm[1]               = 0.10;
-    mediumElID.dxy[1]                     = 0.02;
-    mediumElID.dz[1]                      = 0.1;
+    mediumElID.dEtaIn[1]                  = 0.00609;
+    mediumElID.dPhiIn[1]                  = 0.045;
+    mediumElID.sigmaIetaIeta[1]           = 0.0298;
+    mediumElID.HadOverEm[1]               = 0.0878;
+    mediumElID.dxy[1]                     = 1;
+    mediumElID.dz[1]                      = 1;
     mediumElID.fabsEPDiff[1]              = 0.05;
-    mediumElID.ConversionMissHits[1]      = 1;
-
+    mediumElID.ConversionMissHits[1]      = 0;
+    mediumElID.numberOfLostHits[1]	  = 1;
+    mediumElID.energyInverse[1]		  = 0.13;
+    // loose electron ID
     looseElID.cutName                     = "looseElID";
-    looseElID.dEtaIn[0]                   = 0.007;
-    looseElID.dPhiIn[0]                   = 0.15;
-    looseElID.sigmaIetaIeta[0]            = 0.01;
-    looseElID.HadOverEm[0]                = 0.12;
-    looseElID.dxy[0]                      = 0.02;
-    looseElID.dz[0]                       = 0.2;
+    looseElID.dEtaIn[0]                   = 0.00477;
+    looseElID.dPhiIn[0]                   = 0.222;
+    looseElID.sigmaIetaIeta[0]            = 0.011;
+    looseElID.HadOverEm[0]                = 0.298;
+    looseElID.dxy[0]                      = 1;
+    looseElID.dz[0]                       = 1;
     looseElID.fabsEPDiff[0]               = 0.05;
-    looseElID.ConversionMissHits[0]       = 1;
+    looseElID.ConversionMissHits[0]       = 0;
+    looseElID.numberOfLostHits[0]	  = 1;
+    looseElID.energyInverse[0]		  = 0.241;
 
-    looseElID.dEtaIn[1]                   = 0.009;
-    looseElID.dPhiIn[1]                   = 0.10;
-    looseElID.sigmaIetaIeta[1]            = 0.03;
-    looseElID.HadOverEm[1]                = 0.10;
-    looseElID.dxy[1]                      = 0.02;
-    looseElID.dz[1]                       = 0.2;
+    looseElID.dEtaIn[1]                   = 0.00868;
+    looseElID.dPhiIn[1]                   = 0.213;
+    looseElID.sigmaIetaIeta[1]            = 0.0314;
+    looseElID.HadOverEm[1]                = 0.101;
+    looseElID.dxy[1]                      = 1;
+    looseElID.dz[1]                       = 1;
     looseElID.fabsEPDiff[1]               = 0.05;
-    looseElID.ConversionMissHits[1]       = 1;
+    looseElID.ConversionMissHits[1]       = 0;
+    looseElID.numberOfLostHits[1]	  = 1;
+    looseElID.energyInverse[1]		  = 0.14;
 
     mvaPreElID.cutName                    = "mvaPreElID";
     mvaPreElID.dEtaIn[0]                  = 99999;
@@ -191,6 +206,26 @@ Cuts::Cuts() {
     tightElIso.relCombIso              = 0.1;
 
     /* Muon ID */
+	vetoMuID.cutName 			= "vetoMuID";
+	//vetoMuID.pt				= 10;
+	//vetoMuID.eta				= 2.4;
+	vetoMuID.IsPF				= 1;
+	vetoMuID.IsGLB				= 1;
+	vetoMuID.NormalizedChi2			= 10;
+	vetoMuID.NumberOfValidMuonHits		= 0;
+	vetoMuID.NumberOfValidPixelHits		= 0;
+	vetoMuID.NumberOfMatchedStations	= 1;
+	vetoMuID.TrackLayersWithMeasurement 	= 5; 
+	vetoMuID.dz				= 0.2;
+	vetoMuID.dxy				= 0.5;
+/*
+                && GetMuonIsolation(muon)/muonP4.Pt() < 0.15
+*/         
+    looseMuID.cutName			= "looseMuID";
+    looseMuID.IsPF			= 1;
+    looseMuID.IsGLB			= 1;
+    looseMuID.IsTRK			= 1;
+      
     tightMuID.cutName                     = "tightMuID";
     tightMuID.IsPF                        = 1;
     tightMuID.IsGLB                       = 1;
@@ -203,20 +238,21 @@ Cuts::Cuts() {
     tightMuID.dxy                         = 0.2;
     tightMuID.dz                          = 0.5;
 
+
     /* Muon ISO */
-    amumuMuDetIso.cutName                    = "amumuMuDetIso";
+    amumuMuDetIso.cutName                  = "amumuMuDetIso";
     amumuMuDetIso.hcalIso                  = 99999;
     amumuMuDetIso.ecalIso                  = 99999;
     amumuMuDetIso.trkIso                   = 0.1;
     amumuMuDetIso.relCombIso               = 0.2;
 
-    looseMuDetIso.cutName                    = "looseMuDetIso";
+    looseMuDetIso.cutName                  = "looseMuDetIso";
     looseMuDetIso.hcalIso                  = 99999;
     looseMuDetIso.ecalIso                  = 99999;
     looseMuDetIso.trkIso                   = 99999;
     looseMuDetIso.relCombIso               = 0.2;
 
-    tightMuDetIso.cutName                    = "tightMuDetIso";
+    tightMuDetIso.cutName                  = "tightMuDetIso";
     tightMuDetIso.hcalIso                  = 99999;
     tightMuDetIso.ecalIso                  = 99999;
     tightMuDetIso.trkIso                   = 99999;
@@ -233,7 +269,8 @@ Cuts::Cuts() {
     tightMuIso.nhIso04                    = 99999;
     tightMuIso.phIso04                    = 99999;
     tightMuIso.relCombIso04               = 0.12;
-
+    
+    /* Photon */
     loosePhID.cutName                     = "loosePhID";
     loosePhID.PassedEleSafeVeto[0]        = 1;
     loosePhID.HadOverEm[0]                = 0.05;
@@ -252,23 +289,24 @@ Cuts::Cuts() {
     loosePhIso.nhIso[1]                 = 2.9;
     loosePhIso.phIso[1]                 = 99999;
 
+    //
     mediumPhID.cutName                    = "mediumPhID";
     mediumPhID.PassedEleSafeVeto[0]       = 1;
-    mediumPhID.HadOverEm[0]               = 0.05;
-    mediumPhID.sigmaIetaIeta[0]           = 0.011;
+    mediumPhID.HadOverEm[0]               = 0.0396;
+    mediumPhID.sigmaIetaIeta[0]           = 0.01022;
 
     mediumPhID.PassedEleSafeVeto[1]       = 1;
-    mediumPhID.HadOverEm[1]               = 0.05;
-    mediumPhID.sigmaIetaIeta[1]           = 0.033;
+    mediumPhID.HadOverEm[1]               = 0.0219;
+    mediumPhID.sigmaIetaIeta[1]           = 0.03001;
 
     mediumPhIso.cutName                   = "mediumPhIso";
-    mediumPhIso.chIso[0]                = 1.5;
-    mediumPhIso.nhIso[0]                = 1.0;
-    mediumPhIso.phIso[0]                = 0.7;
+    mediumPhIso.chIso[0]                = 0.441;
+    mediumPhIso.nhIso[0]                = 2.725;
+    mediumPhIso.phIso[0]                = 2.571;
 
-    mediumPhIso.chIso[1]                = 1.2;
-    mediumPhIso.nhIso[1]                = 1.5;
-    mediumPhIso.phIso[1]                = 1.0;
+    mediumPhIso.chIso[1]                = 0.441;
+    mediumPhIso.nhIso[1]                = 1.715;
+    mediumPhIso.phIso[1]                = 3.863;
 
     preSelPhID.cutName                    = "preSelPhID";
     preSelPhID.PassedEleSafeVeto[0]       = 1;
@@ -368,7 +406,8 @@ Cuts::Cuts() {
     hwwMVAID.sip[3]                         = -99;
     hwwMVAID.sip[4]                         = -99;
     hwwMVAID.sip[5]                         = -99;
-
+    
+    //Jet ID
     vbfJetID.cutName                        = "vbfJetID";
     vbfJetID.betaStarC[0]                   = 0.2;
     vbfJetID.dR2Mean[0]                     = 0.06;
@@ -377,16 +416,49 @@ Cuts::Cuts() {
     vbfJetID.dR2Mean[2]                     = 0.05;
     vbfJetID.dR2Mean[3]                     = 0.055;
 
-    looseJetID.cutName                      = "looseJetID";
-    looseJetID.NHF                          = 0.99;
-    looseJetID.NEMF                         = 0.99;
-    looseJetID.NumConst                     = 1;
-    looseJetID.MUF                          = 0.8;
-    looseJetID.CHF                          = 0;
-    looseJetID.CHM                          = 0;
-    looseJetID.CEMF                         = 0.99;
-    looseJetID.CSV                          = -99;
+    // Loose Jet ID
+    looseJetID.cutName[0]                      = "looseJetID";
+    looseJetID.NHF[0]                          = 0.99;
+    looseJetID.NEMF[0]                         = 0.99;
+    looseJetID.NumConst[0]                     = 1;
 
+    looseJetID.MUF[1]                          = 9999;
+    looseJetID.CHF[1]                          = 0;
+    looseJetID.CHM[1]                          = 0;
+    looseJetID.CEMF[1]                         = 0.99;
+    looseJetID.CSV[1]                          = -99;
+
+    looseJetID.cutName[2]                      = "looseJetID";
+    looseJetID.NHF[2]                          = 0.98;
+    looseJetID.NEMF[2]                         = 0.01;
+    looseJetID.NumNeuPart[2]                   = 2;
+
+    looseJetID.cutName[3]                      = "looseJetID";
+    looseJetID.NEMF[3]                         = 0.90;
+    looseJetID.NumNeuPart[3]                     = 10;
+
+    // tight Jet ID    
+    tightJetID.cutName[0]                      = "tightJetID";
+    tightJetID.NHF[0]                          = 0.90;
+    tightJetID.NEMF[0]                         = 0.90;
+    tightJetID.NumConst[0]                     = 1;
+
+    tightJetID.MUF[1]                          = 9999;
+    tightJetID.CHF[1]                          = 0;
+    tightJetID.CHM[1]                          = 0;
+    tightJetID.CEMF[1]                         = 0.99;
+    tightJetID.CSV[1]                          = -99;
+
+    tightJetID.cutName[2]                      = "tightJetID";
+    tightJetID.NHF[2]                          = 0.98;
+    tightJetID.NEMF[2]                         = 0.01;
+    tightJetID.NumNeuPart[2]                   = 2;
+
+    tightJetID.cutName[3]                      = "tightJetID";
+    tightJetID.NEMF[3]                         = 0.90;
+    tightJetID.NumNeuPart[3]                   = 10;
+    
+/*
     bJetID.cutName                          = "bJetID";
     bJetID.NHF                              = 0.99;
     bJetID.NEMF                             = 0.99;
@@ -396,4 +468,5 @@ Cuts::Cuts() {
     bJetID.CHM                              = 0;
     bJetID.CEMF                             = 0.99;
     bJetID.CSV                              = 0.898;  // medium WP
+*/
 }

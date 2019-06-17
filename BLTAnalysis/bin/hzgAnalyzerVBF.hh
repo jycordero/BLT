@@ -25,6 +25,8 @@
 #include "BLT/BLTAnalysis/interface/ParticleSelector.hh"
 #include "BLT/BLTAnalysis/interface/WeightUtils.h"
 
+#include "BLT/BLTAnalysis/interface/RoccoR.h"
+
 // BaconAna class definitions (might need to add more)
 #include "BaconAna/Utils/interface/TTrigger.hh"
 
@@ -62,10 +64,14 @@ public:
 
     TFile *outFile;
     TTree *outTree;
+    TTree *outGenTree;
+    TTree *outBugTree;
 
     // Lumi mask
     RunLumiRangeMap lumiMask;
 
+    // rochester muon corrections
+    RoccoR *muonCorr;
     TRandom3 *rng;
 
     // Params and cuts
@@ -78,17 +84,59 @@ public:
     std::unique_ptr<WeightUtils>        weights;
 
     std::vector<string> triggerNames;
-
+    int nTrig, noPass;
     // Branches in the output file
     
     // event data
-    UInt_t runNumber, lumiSection, nPV, nPartons;
+    UInt_t runNumber, lumiSection, nPV, nPartons, eventStep;
     ULong64_t evtNumber;
     Bool_t triggerStatus;
     Float_t nPU;
     Float_t xPV, yPV, zPV;
     UInt_t nJets, nCentralJets, nFwdJets, nBJets, nMuons, nElectrons, nTaus, nPhotons;
+ 
+    // Debugging
+    Bool_t debugFlag; 
+
+    // Generator Level
+    TLorentzVector genJetOneP4, genJetTwoP4;
+    TLorentzVector genJetThreeP4, genJetFourP4;
+    TLorentzVector genZBosonP4;
+    TLorentzVector genHiggsP4;
+    TLorentzVector genPhotonP4;
+    TLorentzVector genLeptonP4;
+    TLorentzVector genNeutrinoP4;
+    UInt_t nJetPass_Sel;
+    UInt_t nEl_elel , nEl_mumu , nEl_tautau , nEl_hh;
+    UInt_t nMu_elel , nMu_mumu , nMu_tautau , nMu_hh;
+    UInt_t nTau_elel , nTau_mumu , nTau_tautau , nTau_hh;
+    UInt_t nHad_elel , nHad_mumu , nHad_tautau , nHad_hh;
+    UInt_t nB,nPh,nLep,nGen, nVBF;
+    Bool_t fB,fPh,fLep, flagGen, fVBF;
+    Bool_t haveJet, haveAntiJet, fEvent;
+
+    Int_t nLepton, LeptonMom, nLeptonMom;    
+
+    Int_t leptonTagCharge;
+    Int_t nPre_Mu,nPre_El,nPre_Ph,nPre_Jet;
+    Int_t nPartCount;
+    Int_t nSel_Mu,nSel_El,nSel_Ph,nSel_Jet;
+    // Cuts
+    // Pre/Selection
+    Float_t PreSel_pt_mu;
+    Float_t PreSel_eta_mu;
+    Float_t Sel_pt_mu1, Sel_pt_mu2;
+
+    Float_t PreSel_pt_el;
+    Float_t PreSel_eta_el;
+    Float_t Sel_pt_el1;
+
+    Float_t PreSel_pt_ph;
+    Float_t Sel_pt_ph;
+    Float_t PreSel_eta_ph;
    
+    Float_t PreSel_pt_jet;
+    Float_t PreSel_eta_jet; 
     // weights
     Int_t genWeight;
     Float_t eventWeight, triggerWeight, puWeight;
@@ -99,6 +147,7 @@ public:
     Float_t photonIDWeight;
 
     // physics object Lorentz vectors
+    TLorentzVector leptonOneP4, leptonTwoP4;
     Float_t leptonOnePt, leptonOneEta, leptonOnePhi;
     Float_t leptonTwoPt, leptonTwoEta, leptonTwoPhi;
 
@@ -111,8 +160,6 @@ public:
     Float_t leptonOneD0, leptonTwoD0;
     Float_t leptonOneDZ, leptonTwoDZ;
     Float_t leptonOneRecoWeight, leptonTwoRecoWeight;
-
-    Bool_t leptonOneECALDriven, leptonTwoECALDriven;
     
     // tau data
     Int_t tauDecayMode;
@@ -120,6 +167,7 @@ public:
     //UInt_t tauPhotonMult, tauChHadMult;
 
     // photon data
+    TLorentzVector photonOneP4, photonP4;
     Float_t photonOnePt, photonOneEta, photonOnePhi;
     Float_t photonOneR9;
     Float_t photonOneMVA;
@@ -131,6 +179,7 @@ public:
     Bool_t isTightDijetTag;
 
     // jet data
+    TLorentzVector jetOneP4, jetTwoP4, jetThreeP4;
     Float_t jetOnePt, jetOneEta, jetOnePhi, jetOneM;
     Float_t jetTwoPt, jetTwoEta, jetTwoPhi, jetTwoM;
     Float_t jetOneTag, jetTwoTag, jetThreeTag, jetFourTag;
@@ -142,13 +191,25 @@ public:
     Float_t genPhotonPt, genPhotonEta, genPhotonPhi;
     Int_t genLeptonOneId, genLeptonTwoId;
     Bool_t genPhotonFHPFS, genPhotonIPFS;
+    
+    //Int_t genOneId, genTwoId, genOneMother, genTwoMother, genCategory;
+    //TLorentzVector genOneP4, genTwoP4;
+    //Bool_t fromHardProcessFinalState, isPromptFinalState, hasPhotonMatch;
     Bool_t vetoDY;
 
     // dilepton data
     Float_t dileptonPt, dileptonEta, dileptonPhi, dileptonM;
     Float_t dileptonDEta, dileptonDPhi, dileptonDR;
     Float_t dileptonMKin;
-     
+    
+    // dilepton vertex data
+    //Float_t dileptonVertexOneX, dileptonVertexOneY, dileptonVertexOneZ;
+    //Float_t dileptonVertexTwoX, dileptonVertexTwoY, dileptonVertexTwoZ;
+    //Float_t dileptonVertexOneXErr, dileptonVertexOneYErr, dileptonVertexOneZErr;
+    //Float_t dileptonVertexTwoXErr, dileptonVertexTwoYErr, dileptonVertexTwoZErr;
+    //Float_t dileptonVertexChi2One, dileptonVertexDOFOne;
+    //Float_t dileptonVertexChi2Two, dileptonVertexDOFTwo;
+    
     // dijet data
     Float_t dijetPt, dijetEta, dijetPhi, dijetM;
     Float_t dijetDEta, dijetDPhi, dijetDR;
@@ -173,15 +234,67 @@ public:
     Float_t dileptonPhotonDEta, dileptonPhotonDPhi, dileptonPhotonDR;
     Float_t ptt;
     Float_t zgBigTheta, zgLittleTheta, zgPhi;
-    Float_t zgBigThetaMY, zgLittleThetaMY, zgPhiMY;
-    Float_t zgBigThetaJames, zgLittleThetaJames, zgPhiJames;
     Float_t genBigTheta, genLittleTheta, genPhi;
 
     // other
     Float_t llgJJDEta, llgJJDPhi, llgJJDR;
     Float_t zepp;
 
+    float GetMuonIsolation(const baconhep::TMuon*);
+    float GetElectronIsolation(const baconhep::TElectron*, float);
+    float GetPhotonIsolation(const baconhep::TPhoton*, float);
+
+    void EvalMuonEnergyResolution(std::map<string, float>, std::map<string, int>, float&, float&, float&, float&, float&, float&);
+    void EvalElectronEnergyResolution(std::map<string, float>, float&, float&, float&, float&, float&, float&);
+    void find_optimized(double*, double&, double&);
+
     //ClassDef(hzgAnalyzer,0);
 };
+
+double GetDoubleSidedCB(double x, double mean, double sigma, double alphaL,
+                                          double powerL, double alphaR, double powerR)
+{
+   // Returns value of double-sided Crystal Ball function for given parameters.
+   //
+   // Negative powerL and/or powerR means an infinite value.
+    double a = (x - mean) / sigma;
+    // left power-law or exponential tail
+   if (a < -alphaL) {
+      if (powerL < 0) // infinite powerL
+         return exp(0.5 * alphaL*alphaL + alphaL*a);
+       double b = powerL/alphaL;
+      return exp(-0.5 * alphaL*alphaL) * pow(b/(b - alphaL - a), powerL);
+   }
+    // Gaussian core
+   if (a <= alphaR)
+      return exp(-0.5*a*a);
+    // right exponential tail
+   if (powerR < 0) // infinite powerR
+      return exp(0.5 * alphaR*alphaR - alphaR*a);
+    // right power-law tail
+   double b = powerR/alphaR;
+   return exp(-0.5 * alphaR*alphaR) * pow(b/(b - alphaR + a), powerR);
+}
+ Double_t NegativeProbability(Double_t* x, Double_t* p)
+{
+   // Negative probability density function to minimize.
+    // lepton energies to optimize
+   double e1 = x[0];
+   double e2 = x[1];
+    double m02 = p[0];       // lepton mass squared
+   double cosAlpha = p[1];  // cosine of the angle between lepton directions
+    // two-lepton invariant mass squared
+   double mz2 = 2 * (e1*e2 + m02
+                     - sqrt(e1*e1 - m02) * sqrt(e2*e2 - m02) * cosAlpha);
+    // relativistic Breit-Wigner
+   double a = mz2 - MZ*MZ;
+   double probZ = 1/(a*a + mz2*mz2 * WZ*WZ/(MZ*MZ));
+    // p[2] = first reconstructed energy
+   // p[3] = second reconstructed energy
+   // p[4], ... = parameters of energy resolution functions
+    double prob1 = GetDoubleSidedCB(e1/p[2], p[4], p[5], p[6], p[7], p[8], p[9]);
+   double prob2 = GetDoubleSidedCB(e2/p[3], p[10], p[11], p[12], p[13], p[14], p[15]);
+    return -probZ * prob1 * prob2;
+}
 
 #endif  // HZGANALYZER_HH

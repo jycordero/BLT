@@ -15,8 +15,15 @@ public:
     float EAEl[7];
     float EAPho[7][3];
 
+
+
+
+    //////////////////////////////////////////////////////
+    // Muon Cuts
     struct muIDCuts {
-        float IsPF;
+        //float pt;
+	//float eta;
+	float IsPF;
         float IsGLB;
         float IsTRK;
         float NormalizedChi2;
@@ -27,7 +34,7 @@ public:
         float dxy;
         float dz;
         std::string cutName;
-    } tightMuID;
+    } looseMuID, tightMuID, vetoMuID;
 
     struct muIsoCuts {
         float chIso04;
@@ -44,7 +51,18 @@ public:
         float relCombIso;
         std::string cutName;
     } looseMuDetIso, tightMuDetIso, amumuMuDetIso;
+    /////////////////////////////////////////////////////
 
+
+
+
+
+
+
+
+
+    ////////////////////////////////////////////////////
+    // Electron Cuts
     struct elIDCuts {
         //broken into [0] barrel and [1] endcap
         float dEtaIn[2];
@@ -58,7 +76,8 @@ public:
         float dr03TkSumPt[2];
         float dr03EcalRecHitSumEt[2];
         float dr03HcalTowerSumEt[2];
-        int   numberOfLostHits[2];
+        unsigned int   numberOfLostHits[2];
+	float energyInverse[2];
         std::string cutName;
     } vetoElID, looseElID, mediumElID, tightElID, mvaPreElID;
 
@@ -75,6 +94,11 @@ public:
     } looseElIso, mediumElIso, tightElIso;
 
 
+
+
+
+    ////////////////////////////////////////////////////
+    // Photon Cuts
     struct phIDCuts {
         //broken into [0] barrel and [1] endcap
         float PassedEleSafeVeto[2];
@@ -101,7 +125,7 @@ public:
         float mvaValCat4;
         std::string cutName;
     } catPhMVAID, looseMVAPhID, tightMVAPhID;
-
+    ////////////////////////////////////////////////////
     struct elMVACuts {
         float mvaVal[6];
         float pt[2];
@@ -118,17 +142,23 @@ public:
         std::string cutName;
     } vbfJetID;
 
+
+
+
+    ////////////////////////////////////////////////////
+    // Jet Cuts
     struct jetIDCuts {
-        unsigned int NumConst;
-        unsigned int CHM;
-        float NHF;
-        float NEMF;
-        float CHF;
-        float CEMF;
-        float MUF;
-        float CSV;
-        std::string cutName;
-    } looseJetID, bJetID;
+        unsigned int NumConst[4];
+	unsigned int NumNeuPart[4];
+        unsigned int CHM[4];
+        float NHF[4];
+        float NEMF[4];
+        float CHF[4];
+        float CEMF[4];
+        float MUF[4];
+        float CSV[4];
+        std::string cutName[4];
+    } looseJetID, tightJetID, bJetID;
 };
 
 #endif  // CUTS_HH

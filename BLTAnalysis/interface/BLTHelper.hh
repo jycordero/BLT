@@ -28,10 +28,18 @@ static const double MUON_MASS = 0.105658369;
 static const double ZMASS = 91.188;
 static const double PSIMASS = 3.097;
 
-static const int ELE_PDGID  = 11;  // e-
-static const int MUON_PDGID = 13;  // mu-
-static const int TAU_PDGID = 15;   // tau-
-static const int Z_PDGID = 23;
+static const int D_PDGID 	= 1;   // d-quark
+static const int U_PDGID 	= 2;   // u-quark
+static const int S_PDGID 	= 3;   // s-quark
+static const int C_PDGID 	= 4;   // c-quark
+static const int B_PDGID  	= 5;   // b-quark  
+static const int T_PDGID 	= 6;   // t-quark
+static const int ELE_PDGID 	= 11;  // e-
+static const int MUON_PDGID 	= 13;  // mu-
+static const int TAU_PDGID 	= 15;  // tau-
+static const int WP_PDGID 	= 24;  // Wp
+static const int Z_PDGID 	= 23;  // Z0
+static const int H_PDGID 	= 25;  // h0
 
 // Math
 double quad_sum(double x, double y);
