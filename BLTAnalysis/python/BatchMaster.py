@@ -63,7 +63,7 @@ class BatchMaster():
             batch_tmp.write('Requirements = Memory >= 199 &&OpSys == "LINUX"&& (Arch != "DUMMY" )&& Disk > 1000000\n')
         elif self._location == 'lpc':
             batch_tmp.write('Requirements          = OpSys == "LINUX"&& (Arch != "DUMMY" )\n')
-            batch_tmp.write('request_disk          = 2000000\n')
+            batch_tmp.write('request_disk          = 4000000\n')
             batch_tmp.write('request_memory        = 2048\n')
         batch_tmp.write('\n')
 
@@ -109,12 +109,7 @@ class BatchMaster():
             exit()
         else:
             cmssw_version = os.getenv('CMSSW_BASE').split('/')[-1]
-            #os.system('tar czf {0}/source.tar.gz -C $CMSSW_BASE/.. {1} --exclude="*.scram"'.format(self._stage_dir, cmssw_version))
-            #os.system('tar czf {0}/source.tar.gz -C $CMSSW_BASE src --exclude="*.scram"'.format(self._stage_dir))
-            #os.system('tar czf {0}/source.tar.gz * --exclude="*.scram"'.format(self._stage_dir, cmssw_version))
-            os.chdir('{0}'.format(os.getenv('CMSSW_BASE')))
-            os.system('tar czf {0}/src/BLT/BLTAnalysis/test/{1}/source.tar.gz * --exclude="*.scram"'.format(os.getenv('CMSSW_BASE'), self._stage_dir))
-            os.chdir('{0}/src/BLT/BLTAnalysis/test'.format(os.getenv('CMSSW_BASE')))
+            os.system('tar czf {0}/source.tar.gz -C $CMSSW_BASE/.. {1}'.format(self._stage_dir, cmssw_version))
 
         subprocess.call('cp {0} {1}'.format(self._executable, self._stage_dir), shell=True)
         os.chdir(self._stage_dir)
@@ -127,3 +122,4 @@ class BatchMaster():
                 sourceFiles = self.split_jobs_by_dataset(cfg._path, cfg._nJobs)
                 self.make_batch_lpc(cfg, sourceFiles)
                 subprocess.call('condor_submit .batch_tmp_{0}'.format(cfg._data_name), shell=True)
+
