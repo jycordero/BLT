@@ -51,8 +51,7 @@ cat input.txt
 
 
 #zgAnalyzer input.txt -1 $DATANAME $SUFFIX $SELECTION $PERIOD $COUNT
-#hzgAnalyzer input.txt -1 $DATANAME $SUFFIX $SELECTION $PERIOD $COUNT
-hzgAnalyzer input.txt 1000 $DATANAME $SUFFIX $SELECTION $PERIOD $COUNT
+hzgAnalyzer input.txt -1 $DATANAME $SUFFIX $SELECTION $PERIOD $COUNT
 
 ### Copy output and cleanup ###
 cp output_${DATANAME}_${COUNT}.root ${_CONDOR_SCRATCH_DIR}

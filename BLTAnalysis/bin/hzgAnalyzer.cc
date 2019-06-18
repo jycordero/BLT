@@ -170,6 +170,12 @@ void hzgAnalyzer::Begin(TTree *tree)
     outTree->Branch("photonOneR9", &photonOneR9);
     outTree->Branch("photonOneMVA", &photonOneMVA);
     outTree->Branch("photonOneERes", &photonOneERes);
+    outTree->Branch("photonOneSieie", &photonOneSieie);
+    outTree->Branch("photonOneSipip", &photonOneSipip);
+    outTree->Branch("photonOneIch", &photonOneIch);
+    outTree->Branch("photonOneIneu", &photonOneIneu);
+    outTree->Branch("photonOneIph", &photonOneIph);
+
     outTree->Branch("passElectronVeto", &passElectronVeto);
 
     // jets
@@ -1303,6 +1309,13 @@ Bool_t hzgAnalyzer::Process(Long64_t entry)
         photonOnePhi  = photonOneP4.Phi();
         photonOneMVA = photons[photonIndex]->mva;
         photonOneERes = photons[photonIndex]->eRes;
+        photonOneSieie = photons[photonIndex]->sieie;
+        photonOneSipip = photons[photonIndex]->sipip;
+        photonOneHoverE = photons[photonIndex]->hovere;
+        photonOneIph = photons[photonIndex]->gammaIso;
+        photonOneIch = photons[photonIndex]->chHadIso;
+        photonOneIneu = photons[photonIndex]->neuHadIso;
+
         passElectronVeto = photons[photonIndex]->passElectronVeto;  
         if (!isData)
             photonOneR9 = weights->GetCorrectedPhotonR9(*photons[photonIndex]);
@@ -2077,6 +2090,13 @@ Bool_t hzgAnalyzer::Process(Long64_t entry)
         photonOnePhi  = photonOneP4.Phi();
         photonOneMVA = photons[photonIndex]->mva;
         photonOneERes = photons[photonIndex]->eRes;
+
+        photonOneSieie   = photons[photonIndex]->sieie;
+        photonOneSipip   = photons[photonIndex]->sipip;
+        photonOneHoverE  = photons[photonIndex]->hovere;
+        photonOneIph     = photons[photonIndex]->gammaIso;
+        photonOneIch     = photons[photonIndex]->chHadIso;
+        photonOneIneu    = photons[photonIndex]->neuHadIso;
         passElectronVeto = photons[photonIndex]->passElectronVeto;  
         if (!isData)
             photonOneR9 = weights->GetCorrectedPhotonR9(*photons[photonIndex]);

@@ -129,6 +129,12 @@ public:
     Float_t photonOneR9;
     Float_t photonOneMVA;
     Float_t photonOneERes;
+    Float_t photonOneSieie ;
+    Float_t photonOneSipip;
+    Float_t photonOneHoverE;
+    Float_t photonOneIph;
+    Float_t photonOneIch;  
+    Float_t photonOneIneu;  
     Bool_t passElectronVeto;
 
     Bool_t isLeptonTag;
