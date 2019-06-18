@@ -284,11 +284,11 @@ mc_dict['TT'] = [
     ]
 
 ########################## DYJets #######################
+path = '/eos/uscms/store/group/lpcbacon/12'
 mc_dict['DYJets'] = [
     cfg(data_name = 'DYJets',
-	path     = '/eos/uscms/store/user/jbueghly/sync_mc/DYJetsToLL_M-50_amcatnlo_all_gen_tmp/',
-        #path     = '/eos/uscms/store/group/lpcbacon/12/Summer16_DYJetsToLL_M-50_amcatnlo/',
-        #path     = '/eos/uscms/store/group/lpcbacon/12d/DYJetsToLL_M-50_madgraph/',
+	#path     = '/eos/uscms/store/user/jbueghly/sync_mc/DYJetsToLL_M-50_amcatnlo_all_gen_tmp/',
+        path     = '{0}/Summer16_DYJetsToLL_M-50_amcatnlo/'.format(path),
         nJobs    = 50,
         suffix   = 'dyjets'
 	#suffic   = 'DYJets'
@@ -296,73 +296,36 @@ mc_dict['DYJets'] = [
     ]
 
 ########################## WJets #######################
-#path = '/eos/uscms/store/group/lpcbacon/12/Summer16_W1JetsToLNu/'
-path = '/eos/uscms/store/group/lpcbacon/12'
+
 mc_dict['Summer16_WJets'] = [
-	    cfg(data_name = 'W1JetsToLNu',
-		#path     = '{0}/W1JetsToLNu_TuneCUETP8M1_13TeV-madgraphMLM-pythia8'.format(path),
-		#path     = '{0}/W1JetsToLNu_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/sync_workarea_W1JetsToLNu_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/190123_200719/0000/'.format(path),
-		path     = '{0}/Summer16_W1JetsToLNu/'.format(path),
-		nJobs    = 50,
-		#suffix   = 'W1JetsToLNu'
-		suffix   = 'w1jetstolnu'
-	       ),
-	    cfg(data_name = 'W2JetsToLNu',
-		#path     = '{0}/W2JetsToLNu_TuneCUETP8M1_13TeV-madgraphMLM-pythia8'.format(path),
-		#path     = '{0}/W2JetsToLNu_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/sync_workarea_W2JetsToLNu_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/190104_213056/0000/'.format(path),
-		path     = '{0}/Summer16_W2JetsToLNu/'.format(path),
-		nJobs    = 50,
-		#suffix   = 'W2JetsToLNu'
-		suffix = 'w2jetstolnu'
-	       ),
-	    cfg(data_name = 'W3JetsToLNu',
-		#path     = '{0}/W3JetsToLNu_TuneCUETP8M1_13TeV-madgraphMLM-pythia8'.format(path),
-		#path     = '{0}/W3JetsToLNu_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/sync_workarea_W3JetsToLNu_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/190104_213255/0000/'.format(path),
-		path     = '{0}/Summer16_W3JetsToLNu/'.format(path),
-		nJobs    = 10,
-		#suffix   = 'W3JetsToLNu'
-		suffix   = 'w3jetstolnu'
-	       ),
-	    cfg(data_name = 'W4JetsToLNu',
-		#path     = '{0}/W4JetsToLNu_TuneCUETP8M1_13TeV-madgraphMLM-pythia8'.format(path),
-		#path     = '{0}/W4JetsToLNu_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/sync_workarea_W4JetsToLNu_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/190104_214223/0000/'.format(path),
-		path     = '{0}/Summer16_W4JetsToLNu/'.format(path),
-		nJobs    = 10,
-		#suffix   = 'W4JetsToLNu'
-		suffix   = 'w4jetstolnu'
-	       ),
-    ]
+			    cfg(data_name = 'W1JetsToLNu',
+				path     = '{0}/Summer16_W1JetsToLNu/'.format(path),
+				nJobs    = 50,
+				suffix   = 'w1jetstolnu'
+			       ),
+			    cfg(data_name = 'W2JetsToLNu',
+				path     = '{0}/Summer16_W2JetsToLNu/'.format(path),
+				nJobs    = 50,
+				suffix = 'w2jetstolnu'
+			       ),
+			    cfg(data_name = 'W3JetsToLNu',
+				path     = '{0}/Summer16_W3JetsToLNu/'.format(path),
+				nJobs    = 10,
+				suffix   = 'w3jetstolnu'
+			       ),
+			    cfg(data_name = 'W4JetsToLNu',
+				path     = '{0}/Summer16_W4JetsToLNu/'.format(path),
+				nJobs    = 10,
+				suffix   = 'w4jetstolnu'
+			       ),
+			    ]
 
 
-########################## WZ #######################
-mc_dict['WZTo2L2Q'] = [
-    cfg(data_name = 'WZTo2L2Q',
-        #path     = '{0}/W4JetsToLNu_TuneCUETP8M1_13TeV-madgraphMLM-pythia8'.format(path),
-        path     = '/eos/uscms/store/user/jbueghly/sync_mc/WZTo2L2Q_amcatnlo/',
-        nJobs    = 10,
-        suffix   = 'wzto2l2q'
-       ),
-    ]
 
 
-mc_dict['WZTo1L1Nu2Q'] = [
-    cfg(data_name = 'WZTo1L1Nu2Q',
-        path     = '/eos/uscms/store/user/corderom/sync_mc/WZTo1L1Nu2Q_13TeV_amcatnloFXFX_madspin_pythia8/sync_workarea_WZTo1L1Nu2Q_13TeV_amcatnloFXFX_madspin_pythia8/190203_065615/0000/',
-        nJobs    = 10,
-        suffix   = 'wzto1l1nu2q'
-       ),
-    ]
 #############################################################
 path = '/eos/uscms/store/group/lpcbacon/12'
 
-######################### ZZ #######################
-mc_dict['WJets'] = [
-	    cfg(data_name = 'WJets',
-		path     = '/eos/uscms/store/user/jbueghly/sync_mc/DYJetsToLL_M-50_amcatnlo_all_gen_tmp/',
-		nJobs    = 50,
-		suffix   = 'wjets'
-	       ),
-	    ]
 ######################### ZZ #######################
 mc_dict['Summer16_ZZ'] = [
 		    cfg(data_name = 'ZZTo2L2Nu',
