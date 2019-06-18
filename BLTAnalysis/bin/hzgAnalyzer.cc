@@ -785,7 +785,7 @@ Bool_t hzgAnalyzer::Process(Long64_t entry)
             std::cout << "raw jet pt, jet pt, nate_jet_pt, jet eta, jet phi" << std::endl;
             std::cout << jet->ptRaw << ", " << jetP4.Pt() << ", " << jet->ptRaw*jec << ", " << jetP4.Eta() << ", " << jetP4.Phi() << std::endl;
         } 
-        /*bool muOverlap = false;
+        bool muOverlap = false;
         for (const auto& mu: veto_muons) {
             if (jetP4.DeltaR(mu) < 0.4) {
                 muOverlap = true;
@@ -805,7 +805,7 @@ Bool_t hzgAnalyzer::Process(Long64_t entry)
                 phoOverlap = true;
                 break;
             }
-        }*/
+        }
 
         if (
                 jet->pt > 30 
