@@ -29,10 +29,11 @@ elif selection == 'elelg':
 #mc_samples   = ['ZZTo2L2Q','WZTo2L2Q','WZTo1L1Nu2Q']
 
 mc_samples = []
+mc_samples += ['Summer16_WJets']
 #mc_samples += ['Summer16_WW','Summer16_WZ']
 #mc_samples += ['Summer16_ZZ']
 #mc_samples += ['TT']
-mc_samples += ['DYJets']
+#mc_samples += ['DYJets']
 #mc_samples += ['ZG_ZToLL']
 
 #vbf_samples = ['VBFHToZG_ZToJJ']
@@ -53,41 +54,41 @@ data_dict['double_mu'] = [
              nJobs     = 30,
              suffix    = 'DoubleMuon_2016B'
             ),
-         cfg(data_name = 'DoubleMuon_2016C_v1',
-             path      = '{0}/DoubleMuon_Run2016C-03Feb2017-v1'.format(path),
-             nJobs     = 30,
-             suffix    = 'DoubleMuon_2016C'
-            ),
-         cfg(data_name = 'DoubleMuon_2016D_v1',
-             path      = '{0}/DoubleMuon_Run2016D-03Feb2017-v1'.format(path),
-             nJobs     = 30,
-             suffix    = 'DoubleMuon_2016D'
-            ),
-         cfg(data_name = 'DoubleMuon_2016E_v1',
-            path      = '{0}/DoubleMuon_Run2016E-03Feb2017-v1'.format(path),
-            nJobs     = 30,
-            suffix    = 'DoubleMuon_2016E'
-           ),
-         cfg(data_name = 'DoubleMuon_2016F_v1',
-             path      = '{0}/DoubleMuon_Run2016F-03Feb2017-v1'.format(path),
-             nJobs     = 30,
-             suffix    = 'DoubleMuon_2016F'
-            ),
-         cfg(data_name = 'DoubleMuon_2016G_v1',
-             path      = '{0}/DoubleMuon_Run2016G-03Feb2017-v1'.format(path),
-             nJobs     = 30,
-             suffix    = 'DoubleMuon_2016G'
-            ),
-         cfg(data_name = 'DoubleMuon_2016H_v2',
-             path      = '{0}/DoubleMuon_Run2016H-03Feb2017_ver2-v1'.format(path),
-             nJobs     = 30,
-             suffix    = 'DoubleMuon_2016H'
-            ),
-         cfg(data_name = 'DoubleMuon_2016H_v3',
-             path      = '{0}/DoubleMuon_Run2016H-03Feb2017_ver3-v1'.format(path),
-             nJobs     = 30,
-             suffix    = 'DoubleMuon_2016H'
-            ),
+         #cfg(data_name = 'DoubleMuon_2016C_v1',
+         #    path      = '{0}/DoubleMuon_Run2016C-03Feb2017-v1'.format(path),
+         #    nJobs     = 30,
+         #    suffix    = 'DoubleMuon_2016C'
+         #   ),
+         #cfg(data_name = 'DoubleMuon_2016D_v1',
+         #    path      = '{0}/DoubleMuon_Run2016D-03Feb2017-v1'.format(path),
+         #    nJobs     = 30,
+         #    suffix    = 'DoubleMuon_2016D'
+         #   ),
+         #cfg(data_name = 'DoubleMuon_2016E_v1',
+         #   path      = '{0}/DoubleMuon_Run2016E-03Feb2017-v1'.format(path),
+         #   nJobs     = 30,
+         #   suffix    = 'DoubleMuon_2016E'
+         #  ),
+         #cfg(data_name = 'DoubleMuon_2016F_v1',
+         #    path      = '{0}/DoubleMuon_Run2016F-03Feb2017-v1'.format(path),
+         #    nJobs     = 30,
+         #    suffix    = 'DoubleMuon_2016F'
+         #   ),
+         #cfg(data_name = 'DoubleMuon_2016G_v1',
+         #    path      = '{0}/DoubleMuon_Run2016G-03Feb2017-v1'.format(path),
+         #    nJobs     = 30,
+         #    suffix    = 'DoubleMuon_2016G'
+         #   ),
+         #cfg(data_name = 'DoubleMuon_2016H_v2',
+         #    path      = '{0}/DoubleMuon_Run2016H-03Feb2017_ver2-v1'.format(path),
+         #    nJobs     = 30,
+         #    suffix    = 'DoubleMuon_2016H'
+         #   ),
+         #cfg(data_name = 'DoubleMuon_2016H_v3',
+         #    path      = '{0}/DoubleMuon_Run2016H-03Feb2017_ver3-v1'.format(path),
+         #    nJobs     = 30,
+         #    suffix    = 'DoubleMuon_2016H'
+         #   ),
 
 ]
 
@@ -241,6 +242,8 @@ data_dict['single_el'] = [
 
 #----------------------------------------------------
 #---------------------------------------------------
+
+########################## ZH #######################
 path = '/eos/uscms/store/user/corderom/sync_mc'
 mc_dict = {}
 mc_dict['ZH'] = [
@@ -250,6 +253,8 @@ mc_dict['ZH'] = [
         suffix   = 'ZH_HToZG_ZToAll'
        ),
     ]
+
+########################## WH #######################
 mc_dict['WplusH'] = [
     cfg(data_name = 'WplusH_HToZG_WToAll',
         path     = '{0}/WplusH_HToZG_WToAll_M125_13TeV_powheg_pythia8/sync_workarea_1_WplusH_HToZG_WToAll_M125_13TeV_powheg_pythia8/181116_184911/0000'.format(path),
@@ -268,6 +273,7 @@ mc_dict['WminusH'] = [
        ),
     ]
 
+########################## TT  #######################
 mc_dict['TT'] = [
     cfg(data_name = 'TT',
         #path     = '{0}/TT_TuneCUETP8M2T4_13TeV-powheg-pythia8/'.format(path),
@@ -277,6 +283,7 @@ mc_dict['TT'] = [
        ),
     ]
 
+########################## DYJets #######################
 mc_dict['DYJets'] = [
     cfg(data_name = 'DYJets',
 	path     = '/eos/uscms/store/user/jbueghly/sync_mc/DYJetsToLL_M-50_amcatnlo_all_gen_tmp/',
@@ -288,46 +295,46 @@ mc_dict['DYJets'] = [
        ),
     ]
 
-mc_dict['W1Jets'] = [
-    cfg(data_name = 'W1JetsToLNu',
-        #path     = '{0}/W1JetsToLNu_TuneCUETP8M1_13TeV-madgraphMLM-pythia8'.format(path),
-        path     = '{0}/W1JetsToLNu_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/sync_workarea_W1JetsToLNu_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/190123_200719/0000/'.format(path),
-        nJobs    = 50,
-        #suffix   = 'W1JetsToLNu'
-	suffix   = 'w1jetstolnu'
-       ),
+########################## WJets #######################
+#path = '/eos/uscms/store/group/lpcbacon/12/Summer16_W1JetsToLNu/'
+path = '/eos/uscms/store/group/lpcbacon/12'
+mc_dict['Summer16_WJets'] = [
+	    cfg(data_name = 'W1JetsToLNu',
+		#path     = '{0}/W1JetsToLNu_TuneCUETP8M1_13TeV-madgraphMLM-pythia8'.format(path),
+		#path     = '{0}/W1JetsToLNu_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/sync_workarea_W1JetsToLNu_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/190123_200719/0000/'.format(path),
+		path     = '{0}/Summer16_W1JetsToLNu/'.format(path),
+		nJobs    = 50,
+		#suffix   = 'W1JetsToLNu'
+		suffix   = 'w1jetstolnu'
+	       ),
+	    cfg(data_name = 'W2JetsToLNu',
+		#path     = '{0}/W2JetsToLNu_TuneCUETP8M1_13TeV-madgraphMLM-pythia8'.format(path),
+		#path     = '{0}/W2JetsToLNu_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/sync_workarea_W2JetsToLNu_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/190104_213056/0000/'.format(path),
+		path     = '{0}/Summer16_W2JetsToLNu/'.format(path),
+		nJobs    = 50,
+		#suffix   = 'W2JetsToLNu'
+		suffix = 'w2jetstolnu'
+	       ),
+	    cfg(data_name = 'W3JetsToLNu',
+		#path     = '{0}/W3JetsToLNu_TuneCUETP8M1_13TeV-madgraphMLM-pythia8'.format(path),
+		#path     = '{0}/W3JetsToLNu_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/sync_workarea_W3JetsToLNu_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/190104_213255/0000/'.format(path),
+		path     = '{0}/Summer16_W3JetsToLNu/'.format(path),
+		nJobs    = 10,
+		#suffix   = 'W3JetsToLNu'
+		suffix   = 'w3jetstolnu'
+	       ),
+	    cfg(data_name = 'W4JetsToLNu',
+		#path     = '{0}/W4JetsToLNu_TuneCUETP8M1_13TeV-madgraphMLM-pythia8'.format(path),
+		#path     = '{0}/W4JetsToLNu_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/sync_workarea_W4JetsToLNu_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/190104_214223/0000/'.format(path),
+		path     = '{0}/Summer16_W4JetsToLNu/'.format(path),
+		nJobs    = 10,
+		#suffix   = 'W4JetsToLNu'
+		suffix   = 'w4jetstolnu'
+	       ),
     ]
 
-mc_dict['W2Jets'] = [
-    cfg(data_name = 'W2JetsToLNu',
-        #path     = '{0}/W2JetsToLNu_TuneCUETP8M1_13TeV-madgraphMLM-pythia8'.format(path),
-        path     = '{0}/W2JetsToLNu_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/sync_workarea_W2JetsToLNu_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/190104_213056/0000/'.format(path),
-        nJobs    = 50,
-        #suffix   = 'W2JetsToLNu'
-	suffix = 'w2jetstolnu'
-       ),
-    ]
 
-mc_dict['W3Jets'] = [
-    cfg(data_name = 'W3JetsToLNu',
-        #path     = '{0}/W3JetsToLNu_TuneCUETP8M1_13TeV-madgraphMLM-pythia8'.format(path),
-        path     = '{0}/W3JetsToLNu_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/sync_workarea_W3JetsToLNu_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/190104_213255/0000/'.format(path),
-        nJobs    = 10,
-        #suffix   = 'W3JetsToLNu'
-	suffix   = 'w3jetstolnu'
-       ),
-    ]
-
-mc_dict['W4Jets'] = [
-    cfg(data_name = 'W4JetsToLNu',
-        #path     = '{0}/W4JetsToLNu_TuneCUETP8M1_13TeV-madgraphMLM-pythia8'.format(path),
-        path     = '{0}/W4JetsToLNu_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/sync_workarea_W4JetsToLNu_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/190104_214223/0000/'.format(path),
-        nJobs    = 10,
-        #suffix   = 'W4JetsToLNu'
-        suffix   = 'w4jetstolnu'
-       ),
-    ]
-
+########################## WZ #######################
 mc_dict['WZTo2L2Q'] = [
     cfg(data_name = 'WZTo2L2Q',
         #path     = '{0}/W4JetsToLNu_TuneCUETP8M1_13TeV-madgraphMLM-pythia8'.format(path),
@@ -350,12 +357,12 @@ path = '/eos/uscms/store/group/lpcbacon/12'
 
 ######################### ZZ #######################
 mc_dict['WJets'] = [
-    cfg(data_name = 'WJets',
-	path     = '/eos/uscms/store/user/jbueghly/sync_mc/DYJetsToLL_M-50_amcatnlo_all_gen_tmp/',
-        nJobs    = 50,
-        suffix   = 'wjets'
-       ),
-    ]
+	    cfg(data_name = 'WJets',
+		path     = '/eos/uscms/store/user/jbueghly/sync_mc/DYJetsToLL_M-50_amcatnlo_all_gen_tmp/',
+		nJobs    = 50,
+		suffix   = 'wjets'
+	       ),
+	    ]
 ######################### ZZ #######################
 mc_dict['Summer16_ZZ'] = [
 		    cfg(data_name = 'ZZTo2L2Nu',
@@ -374,7 +381,7 @@ mc_dict['Summer16_ZZ'] = [
 			suffix   = 'zzto4l'
 		       ),
 		    ]
-######################### WW #######################mc_dict['Summer16_WW'] = [
+######################### WW #######################
 mc_dict['Summer16_WW'] = [
 		    cfg(data_name = 'WWTo2L2Nu',
 			path     = '{0}/Summer16_WWTo2L2Nu_powheg/'.format(path),
@@ -405,7 +412,7 @@ mc_dict['ZG_ZToLL']=[
 			    suffix   = 'zg_ztoll'
 			),
 		]
-######################################################################
+######################### VBF ZG #################################
 
 VBF_dict = {}
 
@@ -425,6 +432,7 @@ VBF_dict['VBFHToZG_ZToJJ_ONE']=[
 			       ),
 				]
 
+####################################################################
 
 batch_list = []
 #batch_list += sum([data_dict[n] for n in data_samples], []) 
