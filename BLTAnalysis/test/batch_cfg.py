@@ -4,7 +4,6 @@ import sys
 
 ''' Specify parameters '''
 cfg        = bm.JobConfig
-#path       = '/eos/uscms/store/user/corderom/sync_mc'
 path       = 'root://cmseos.fnal.gov//store/user/corderom/sync_mc'
 executable = 'execBatch.sh'
 #selection  = 'jetjetgmjetjet'
@@ -22,32 +21,48 @@ if selection == 'mumug':
 elif selection == 'elelg':	
 	data_samples = ['double_el']
 
-#mc_samples   = ['TT']
-#mc_samples   = ['DYJets']
-#mc_samples   = ['W1Jets','W2Jets','W3Jets','W4Jets' ]
-#mc_samples   = ['ZH','WplusH','WminusH']#,'TT','W2Jets','W3Jets' ]
-#mc_samples   = ['ZZTo2L2Q','WZTo2L2Q','WZTo1L1Nu2Q']
-
 mc_samples = []
-mc_samples += ['Summer16_WJets']
+################################################
+mc_samples += ['JB_TT']
+#mc_samples += ['JB_DYJets']
+#mc_samples += ['JB_ZG']
+mc_samples += ['JB_WJets']
+mc_samples += ['JB_WZ','JB_ZH','JB_ZZ']
+
+
+
+#mc_samples  += ['JC_TT']
+#mc_samples  += ['JC_DYJets']
+#mc_samples  += ['JC_ZH','JC_WplusH','JC_WminusH']
+
+#vbf_samples += ['JC_VBFHToZG_ZToJJ']
+#vbf_samples += ['JC_VBFHToZG_ZToJJ_ONE']
+
+###############################################
+########### !! DO NOT USE !!  #################
+### There are some photons variables like  ####
+### calibPt that are not in the general    ####
+### ntuples and for this shouldn't be used ####
+###############################################
+#mc_samples += ['Summer16_WJets']
 #mc_samples += ['Summer16_WW','Summer16_WZ']
 #mc_samples += ['Summer16_ZZ']
 #mc_samples += ['TT']
 #mc_samples += ['DYJets']
 #mc_samples += ['ZG_ZToLL']
+##########################################
 
-#vbf_samples = ['VBFHToZG_ZToJJ']
-#vbf_samples = ['VBFHToZG_ZToJJ_ONE']
 
 ''' 
     Set job configurations.  The order of arguments is: (Dataset, path to data,
     number of jobs, arguments to pass to executable, output directory name)
 '''
 ############## DATA ########################
-data_dict = {}
-
-##############  DOUBLE MUON DATA ########################
 path = '/eos/uscms/store/group/lpcbacon/12d'
+
+
+data_dict = {}
+##############  DOUBLE MUON DATA ########################
 data_dict['double_mu'] = [
          cfg(data_name = 'DoubleMuon_2016B_v2',
              path      = '{0}/DoubleMuon_Run2016B-03Feb2017_ver2-v2'.format(path),
@@ -242,11 +257,14 @@ data_dict['single_el'] = [
 
 #----------------------------------------------------
 #---------------------------------------------------
+#######################################################
+##################### JC SAMPLES #######################
+#######################################################
+path = '/eos/uscms/store/user/corderom/sync_mc'
 
 ########################## ZH #######################
-path = '/eos/uscms/store/user/corderom/sync_mc'
 mc_dict = {}
-mc_dict['ZH'] = [
+mc_dict['JC_ZH'] = [
     cfg(data_name = 'ZH_HToZG_ZToAll',
         path     = '{0}/ZH_HToZG_ZToAll_M-125_13TeV_powheg_pythia8'.format(path),
         nJobs    = 50,
@@ -255,26 +273,23 @@ mc_dict['ZH'] = [
     ]
 
 ########################## WH #######################
-mc_dict['WplusH'] = [
-    cfg(data_name = 'WplusH_HToZG_WToAll',
-        path     = '{0}/WplusH_HToZG_WToAll_M125_13TeV_powheg_pythia8/sync_workarea_1_WplusH_HToZG_WToAll_M125_13TeV_powheg_pythia8/181116_184911/0000'.format(path),
-        nJobs    = 50,
-        #suffix   = 'WplusH_HToZG_WToAll'
-	suffix   = 'wplush' 
-       ),
-    ]
-
-mc_dict['WminusH'] = [
-    cfg(data_name = 'WminusH_HtoZG_WToAll',
-        path     = '{0}/WminusH_HToZG_WToAll_M125_13TeV_powheg_pythia8/sync_workarea_1_WminusH_HToZG_WToAll_M125_13TeV_powheg_pythia8/181116_185036/0000'.format(path),
-        nJobs    = 40,
-        #suffix   = 'WminusH_HtoZG_WToAll'
-	suffix   = 'wminush'
-       ),
-    ]
+mc_dict['JC_WH'] = [
+		    cfg(data_name = 'WplusH_HToZG_WToAll',
+			path     = '{0}/WplusH_HToZG_WToAll_M125_13TeV_powheg_pythia8/sync_workarea_1_WplusH_HToZG_WToAll_M125_13TeV_powheg_pythia8/181116_184911/0000'.format(path),
+			nJobs    = 50,
+			#suffix   = 'WplusH_HToZG_WToAll'
+			suffix   = 'wplush' 
+		       ),
+		    cfg(data_name = 'JC_WminusH_HtoZG_WToAll',
+			path     = '{0}/WminusH_HToZG_WToAll_M125_13TeV_powheg_pythia8/sync_workarea_1_WminusH_HToZG_WToAll_M125_13TeV_powheg_pythia8/181116_185036/0000'.format(path),
+			nJobs    = 40,
+			#suffix   = 'WminusH_HtoZG_WToAll'
+			suffix   = 'wminush'
+		       ),
+		    ]
 
 ########################## TT  #######################
-mc_dict['TT'] = [
+mc_dict['JC_TT'] = [
     cfg(data_name = 'TT',
         #path     = '{0}/TT_TuneCUETP8M2T4_13TeV-powheg-pythia8/'.format(path),
         path     = '{0}/TT_TuneCUETP8M2T4_13TeV-powheg-pythia8/sync_workarea_TT_TuneCUETP8M2T4_13TeV-powheg-pythia8/190123_203318/0000/'.format(path),
@@ -283,9 +298,33 @@ mc_dict['TT'] = [
        ),
     ]
 
+######################### VBF ZG #################################
+
+VBF_dict = {}
+
+VBF_dict['JC_VBFHToZG_ZToJJ']=[	
+			    cfg(data_name = 'VBFHToZG_ZToJJ',
+			        path     = '{0}/VBFHToZG_ZToJJ/'.format(path),
+			        nJobs    = 10,
+			        suffix   = 'vbfhtozg_ztojj'
+			       ),
+				]
+
+VBF_dict['JC_VBFHToZG_ZToJJ_ONE']=[	
+			    cfg(data_name = 'VBFHToZG_ZToJJ_ONE',
+			        path     = '{0}/VBFHToZG_ZToJJ_ONE/'.format(path),
+			        nJobs    = 10,
+			        suffix   = 'vbfhtozg_ztojj_one'
+			       ),
+				]
+
+#######################################################
+############### GENERAL SAMPLES #######################
+#######################################################
+
 ########################## DYJets #######################
 path = '/eos/uscms/store/group/lpcbacon/12'
-mc_dict['DYJets'] = [
+mc_dict['Summer16_DYJets'] = [
     cfg(data_name = 'DYJets',
 	#path     = '/eos/uscms/store/user/jbueghly/sync_mc/DYJetsToLL_M-50_amcatnlo_all_gen_tmp/',
         path     = '{0}/Summer16_DYJetsToLL_M-50_amcatnlo/'.format(path),
@@ -320,11 +359,6 @@ mc_dict['Summer16_WJets'] = [
 			       ),
 			    ]
 
-
-
-
-#############################################################
-path = '/eos/uscms/store/group/lpcbacon/12'
 
 ######################### ZZ #######################
 mc_dict['Summer16_ZZ'] = [
@@ -367,34 +401,94 @@ mc_dict['Summer16_WZ'] = [
 		       ),
 		    ]
 
+
+#######################################################
+################## JB SAMPLES #########################
+#######################################################
+path = '/eos/uscms/store/user/jbueghly/sync_mc/'
+
+#########################  TT  #######################
+mc_dict['JB_TT'] = [
+		    cfg(data_name = 'TT',
+			path     = '{0}/TT_powheg'.format(path),
+			nJobs    = 30,
+			suffix   = 'tt'
+		       ),
+			]
+
+########################## DYJets  #######################
+mc_dict['JB_DYJets'] = [
+		    cfg(data_name = 'DYJets',
+			path     = '{0}/DYJetsToLL_M-50_amcatnlo_all_gen'.format(path),
+			nJobs    = 30,
+			suffix   = 'dyjets'
+		       ),
+			]
+######################## WJets  #######################
+mc_dict['JB_WJets'] = [
+		    cfg(data_name = 'W1JetsToLNu',
+			path     = '{0}/W1JetsToLNu_madgraph'.format(path),
+			nJobs    = 30,
+			suffix   = 'w1jetstolnu'
+		       ),
+		    cfg(data_name = 'W2JetsToLNu',
+			path     = '{0}/W2JetsToLNu_madgraph'.format(path),
+			nJobs    = 30,
+			suffix   = 'w2jetstolnu'
+		       ),
+		    cfg(data_name = 'W3JetsToLNu',
+			path     = '{0}/W3JetsToLNu_madgraph'.format(path),
+			nJobs    = 30,
+			suffix   = 'w3jetstolnu'
+		       ),
+		    cfg(data_name = 'W4JetsToLNu',
+			path     = '{0}/W4JetsToLNu_madgraph'.format(path),
+			nJobs    = 30,
+			suffix   = 'w4jetstolnu'
+		       ),
+		    ]
+########################## WZ  #######################
+mc_dict['JB_WZ'] = [
+		    cfg(data_name = 'WZTo2L2Q',
+			path     = '{0}/WZTo2L2Q_amcatnlo'.format(path),
+			nJobs    = 30,
+			suffix   = 'wzto2l2q'
+		       ),
+		    cfg(data_name = 'WZTo3LNu',
+			path     = '{0}/WZTo3LNu_powheg'.format(path),
+			nJobs    = 30,
+			suffix   = 'wzto3lnu'
+		       ),
+			]
+########################## ZH  #######################
+mc_dict['JB_ZH'] = [
+                    cfg(data_name = 'ZHToZG',
+                        path     = '{0}/ZHtoZG_M-125_powheg'.format(path),
+                        nJobs    = 30,
+                        suffix   = 'zhtozg'
+                       ),
+                        ]
+########################## ZZ  #######################
+mc_dict['JB_ZZ'] = [
+                    cfg(data_name = 'ZZTo2L2Q',
+                        path     = '{0}/ZZTo2L2Q_amcatnlo'.format(path),
+                        nJobs    = 30,
+                        suffix   = 'zzto2l2q'
+                       ),
+                    cfg(data_name = 'ZZTo4L',
+                        path     = '{0}/ZZTo4L_amcatnlo'.format(path),
+                        nJobs    = 30,
+                        suffix   = 'zzto4l'
+                       ),
+                        ]
 ########################## ZG ######################
-mc_dict['ZG_ZToLL']=[	
+mc_dict['JB_ZG_ZToLL']=[	
 		 	cfg(data_name = 'ZG_ZToLL',
-		 	    path     = '/eos/uscms/store/user/jbueghly/sync_mc/ZGTo2LG_amcatnlo_all_gen/',
+		 	    path     = '{0}/ZGTo2LG_amcatnlo_all_gen/'.format(path),
 			    nJobs    = 10,
 			    suffix   = 'zg_ztoll'
 			),
 		]
-######################### VBF ZG #################################
-
-VBF_dict = {}
-
-VBF_dict['VBFHToZG_ZToJJ']=[	
-			    cfg(data_name = 'VBFHToZG_ZToJJ',
-			        path     = '/eos/uscms/store/user/corderom/sync_mc/VBFHToZG_ZToJJ/',
-			        nJobs    = 10,
-			        suffix   = 'vbfhtozg_ztojj'
-			       ),
-				]
-
-VBF_dict['VBFHToZG_ZToJJ_ONE']=[	
-			    cfg(data_name = 'VBFHToZG_ZToJJ_ONE',
-			        path     = '/eos/uscms/store/user/corderom/sync_mc/VBFHToZG_ZToJJ_ONE/',
-			        nJobs    = 10,
-			        suffix   = 'vbfhtozg_ztojj_one'
-			       ),
-				]
-
 ####################################################################
 
 batch_list = []
