@@ -30,11 +30,13 @@ elif selection == 'elelg':
 #mc_samples   = ['ZZTo2L2Q','WZTo2L2Q','WZTo1L1Nu2Q']
 
 mc_samples = []
-mc_samples += ['Summer16_WW','Summer16_WZ']
-mc_samples += ['Summer16_ZZ']
+#mc_samples += ['Summer16_WZ']
+#mc_samples += ['Summer16_ZZ']
 #mc_samples += ['TT']
 #mc_samples += ['DYJets']
 #mc_samples += ['ZG_ZToLL']
+mc_samples += ['WJets']
+
 
 #vbf_samples = ['VBFHToZG_ZToJJ']
 #vbf_samples = ['VBFHToZG_ZToJJ_ONE']
@@ -289,45 +291,36 @@ mc_dict['DYJets'] = [
        ),
     ]
 
-mc_dict['W1Jets'] = [
-    cfg(data_name = 'W1JetsToLNu',
-        #path     = '{0}/W1JetsToLNu_TuneCUETP8M1_13TeV-madgraphMLM-pythia8'.format(path),
-        path     = '{0}/W1JetsToLNu_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/sync_workarea_W1JetsToLNu_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/190123_200719/0000/'.format(path),
-        nJobs    = 50,
-        #suffix   = 'W1JetsToLNu'
-	suffix   = 'w1jetstolnu'
-       ),
-    ]
-
-mc_dict['W2Jets'] = [
-    cfg(data_name = 'W2JetsToLNu',
-        #path     = '{0}/W2JetsToLNu_TuneCUETP8M1_13TeV-madgraphMLM-pythia8'.format(path),
-        path     = '{0}/W2JetsToLNu_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/sync_workarea_W2JetsToLNu_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/190104_213056/0000/'.format(path),
-        nJobs    = 50,
-        #suffix   = 'W2JetsToLNu'
-	suffix = 'w2jetstolnu'
-       ),
-    ]
-
-mc_dict['W3Jets'] = [
-    cfg(data_name = 'W3JetsToLNu',
-        #path     = '{0}/W3JetsToLNu_TuneCUETP8M1_13TeV-madgraphMLM-pythia8'.format(path),
-        path     = '{0}/W3JetsToLNu_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/sync_workarea_W3JetsToLNu_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/190104_213255/0000/'.format(path),
-        nJobs    = 10,
-        #suffix   = 'W3JetsToLNu'
-	suffix   = 'w3jetstolnu'
-       ),
-    ]
-
-mc_dict['W4Jets'] = [
-    cfg(data_name = 'W4JetsToLNu',
-        #path     = '{0}/W4JetsToLNu_TuneCUETP8M1_13TeV-madgraphMLM-pythia8'.format(path),
-        path     = '{0}/W4JetsToLNu_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/sync_workarea_W4JetsToLNu_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/190104_214223/0000/'.format(path),
-        nJobs    = 10,
-        #suffix   = 'W4JetsToLNu'
-        suffix   = 'w4jetstolnu'
-       ),
-    ]
+mc_dict['WJets'] = [
+		    cfg(data_name = 'W1JetsToLNu',
+			#path     = '{0}/W1JetsToLNu_TuneCUETP8M1_13TeV-madgraphMLM-pythia8'.format(path),
+			path     = '{0}/W1JetsToLNu_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/sync_workarea_W1JetsToLNu_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/190123_200719/0000/'.format(path),
+			nJobs    = 50,
+			#suffix   = 'W1JetsToLNu'
+			suffix   = 'w1jetstolnu'
+		       ),
+		    cfg(data_name = 'W2JetsToLNu',
+			#path     = '{0}/W2JetsToLNu_TuneCUETP8M1_13TeV-madgraphMLM-pythia8'.format(path),
+			path     = '{0}/W2JetsToLNu_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/sync_workarea_W2JetsToLNu_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/190104_213056/0000/'.format(path),
+			nJobs    = 50,
+			#suffix   = 'W2JetsToLNu'
+			suffix = 'w2jetstolnu'
+		       ),
+		    cfg(data_name = 'W3JetsToLNu',
+			#path     = '{0}/W3JetsToLNu_TuneCUETP8M1_13TeV-madgraphMLM-pythia8'.format(path),
+			path     = '{0}/W3JetsToLNu_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/sync_workarea_W3JetsToLNu_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/190104_213255/0000/'.format(path),
+			nJobs    = 10,
+			#suffix   = 'W3JetsToLNu'
+			suffix   = 'w3jetstolnu'
+		       ),
+		    cfg(data_name = 'W4JetsToLNu',
+			#path     = '{0}/W4JetsToLNu_TuneCUETP8M1_13TeV-madgraphMLM-pythia8'.format(path),
+			path     = '{0}/W4JetsToLNu_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/sync_workarea_W4JetsToLNu_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/190104_214223/0000/'.format(path),
+			nJobs    = 10,
+			#suffix   = 'W4JetsToLNu'
+			suffix   = 'w4jetstolnu'
+		       ),
+		    ]
 
 mc_dict['WZTo2L2Q'] = [
     cfg(data_name = 'WZTo2L2Q',
@@ -350,32 +343,25 @@ mc_dict['WZTo1L1Nu2Q'] = [
 path = '/eos/uscms/store/group/lpcbacon/12'
 
 ######################### ZZ #######################
-mc_dict['WJets'] = [
-    cfg(data_name = 'WJets',
-	path     = '/eos/uscms/store/user/jbueghly/sync_mc/DYJetsToLL_M-50_amcatnlo_all_gen_tmp/',
-        nJobs    = 50,
-        suffix   = 'wjets'
-       ),
-    ]
-######################### ZZ #######################
+path = '/eos/uscms/store/user/jbueghly/sync_mc'
 mc_dict['Summer16_ZZ'] = [
-		    cfg(data_name = 'ZZTo2L2Nu',
-			path     = '{0}/Summer16_ZZTo2L2Nu_powheg/'.format(path),
-			nJobs    = 10,
-			suffix   = 'zzto2l2nu'
-		       ),
-		    cfg(data_name = 'ZZTo2L2Q',
-			path     = '{0}/Summer16_ZZTo2L2Q_amcatnlo/'.format(path),
-			nJobs    = 10,
-			suffix   = 'zzto2l2q'
-		       ),
+		    #cfg(data_name = 'ZZTo2L2Nu',
+		    #    path     = '{0}/ZZTo2L2Q_amcatnlo/'.format(path),
+		    #    nJobs    = 10,
+		    #    suffix   = 'zzto2l2nu'
+		    #   ),
+		    #cfg(data_name = 'ZZTo2L2Q',
+		    #    path     = '{0}/ZZTo2L2Q_amcatnlo/'.format(path),
+		    #    nJobs    = 10,
+		    #    suffix   = 'zzto2l2q'
+		    #   ),
 		    cfg(data_name = 'ZZTo4L',
-			path     = '{0}/Summer16_ZZto4L_amcatnlo/'.format(path),
+			path     = '{0}/ZZTo4L_amcatnlo/'.format(path),
 			nJobs    = 10,
 			suffix   = 'zzto4l'
 		       ),
 		    ]
-######################### WW #######################mc_dict['Summer16_WW'] = [
+######################### WW #######################
 mc_dict['Summer16_WW'] = [
 		    cfg(data_name = 'WWTo2L2Nu',
 			path     = '{0}/Summer16_WWTo2L2Nu_powheg/'.format(path),
@@ -386,13 +372,13 @@ mc_dict['Summer16_WW'] = [
 ########################## WZ  #######################
 mc_dict['Summer16_WZ'] = [
 		    cfg(data_name = 'WZTo2L2Q',
-			path     = '{0}/Summer16_WZTo2L2Q_amcatnlo/'.format(path),
+			path     = '{0}/WZTo2L2Q_amcatnlo/'.format(path),
 			nJobs    = 10,
 			suffix   = 'wzto2l2q'
 		       ),
 		    cfg(data_name = 'WZTo3LNu',
 			#path     = '{0}/W4JetsToLNu_TuneCUETP8M1_13TeV-madgraphMLM-pythia8'.format(path),
-			path     = '{0}/Summer16_WZTo3LNu_powheg/'.format(path),
+			path     = '{0}/WZTo3LNu_powheg/'.format(path),
 			nJobs    = 10,
 			suffix   = 'wzto3lnu'
 		       ),
@@ -428,8 +414,8 @@ VBF_dict['VBFHToZG_ZToJJ_ONE']=[
 
 
 batch_list = []
-batch_list += sum([data_dict[n] for n in data_samples], []) 
-#batch_list += sum([mc_dict[n] for n in mc_samples], []) 
+#batch_list += sum([data_dict[n] for n in data_samples], []) 
+batch_list += sum([mc_dict[n] for n in mc_samples], []) 
 
 #batch_list += sum([VBF_dict[n] for n in vbf_samples], []) 
 batch = bm.BatchMaster(config_list = batch_list, 

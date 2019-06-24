@@ -772,7 +772,7 @@ Bool_t zgAnalyzer::Process(Long64_t entry)
             cout << photon->pt << ", " << photon->calibPt << ", " << photon->eta << ", " << photon->scEta << ", " << photon->phi << ", " << photon->mva 
                  << ", " << photon->passElectronVeto << endl;
         }
-
+	cout << "------PHOTON PT:: " << photon->calibPt << endl;
         if (
                 // ID conditions
                 photon->pt > 10
