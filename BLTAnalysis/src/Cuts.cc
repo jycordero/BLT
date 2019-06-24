@@ -290,7 +290,15 @@ Cuts::Cuts() {
     loosePhIso.phIso[1]                 = 99999;
 
     //
-    mediumPhID.cutName                    = "mediumPhID";
+    mediumPhID.cutName                    = "mediumPhID"; 
+    mediumPhID.PassedEleSafeVeto[0]       = 1;
+    mediumPhID.HadOverEm[0]               = 0.08;
+    mediumPhID.sigmaIetaIeta[0]           = 0.015;
+
+    mediumPhID.PassedEleSafeVeto[1]       = 1;
+    mediumPhID.HadOverEm[1]               = 0.05;
+    mediumPhID.sigmaIetaIeta[1]           = 0.045;
+    /*
     mediumPhID.PassedEleSafeVeto[0]       = 1;
     mediumPhID.HadOverEm[0]               = 0.0396;
     mediumPhID.sigmaIetaIeta[0]           = 0.01022;
@@ -298,6 +306,7 @@ Cuts::Cuts() {
     mediumPhID.PassedEleSafeVeto[1]       = 1;
     mediumPhID.HadOverEm[1]               = 0.0219;
     mediumPhID.sigmaIetaIeta[1]           = 0.03001;
+    */
 
     mediumPhIso.cutName                   = "mediumPhIso";
     mediumPhIso.chIso[0]                = 0.441;
