@@ -13,8 +13,8 @@
 // =============================================================================
 
 
-#ifndef HZGANALYZER_HH
-#define HZGANALYZER_HH
+#ifndef ZGANALYZER_HH
+#define ZGANALYZER_HH
 
 // Analysis tools
 #include "BLT/BLTAnalysis/interface/BLTSelector.hh"
@@ -64,10 +64,8 @@ public:
 
     TFile *outFile;
     TTree *outTree;
-    TTree *outGenTree;
-    TTree *outBugTree;
 
-    TH1D *hTotalNegEvents;
+    TH1D *hTotalEventsGen;
 
     // Lumi mask
     RunLumiRangeMap lumiMask;
@@ -86,57 +84,17 @@ public:
     std::unique_ptr<WeightUtils>        weights;
 
     std::vector<string> triggerNames;
-    int nTrig, noPass;
+
     // Branches in the output file
     
     // event data
-    UInt_t runNumber, lumiSection, nPV, nPartons, eventStep;
+    UInt_t runNumber, lumiSection, nPV, nPartons;
     ULong64_t evtNumber;
     Bool_t triggerStatus;
     Float_t nPU;
     Float_t xPV, yPV, zPV;
     UInt_t nJets, nCentralJets, nFwdJets, nBJets, nMuons, nElectrons, nTaus, nPhotons;
- 
-    // Debugging
-    Bool_t debugFlag; 
-
-    // Generator Level
-    TLorentzVector genJetOneP4, genJetTwoP4;
-    TLorentzVector genPhotonP4;
-    TLorentzVector genLeptonP4;
-    TLorentzVector genNeutrinoP4;
-    TLorentzVector genZbosonP4;
-    UInt_t nJetPass_Sel;
-    UInt_t nEl_elel , nEl_mumu , nEl_tautau , nEl_hh;
-    UInt_t nMu_elel , nMu_mumu , nMu_tautau , nMu_hh;
-    UInt_t nTau_elel , nTau_mumu , nTau_tautau , nTau_hh;
-    UInt_t nHad_elel , nHad_mumu , nHad_tautau , nHad_hh;
-    UInt_t nB,nPh,nLep,nGen;
-    Bool_t fB,fPh,fLep, flagGen;
-    Int_t nLepton, LeptonMom, nLeptonMom;    
-
-    Int_t leptonTagCharge;
-    Int_t nPre_Mu,nPre_El,nPre_Ph,nPre_Jet;
-    Int_t nPartCount;
-    Int_t nSel_Mu,nSel_El,nSel_Ph,nSel_Jet;
-    
-    Int_t nMuProbe,nMuProbePass;
-    // Cuts
-    // Pre/Selection
-    Float_t PreSel_pt_mu;
-    Float_t PreSel_eta_mu;
-    Float_t Sel_pt_mu1, Sel_pt_mu2;
-
-    Float_t PreSel_pt_el;
-    Float_t PreSel_eta_el;
-    Float_t Sel_pt_el1, Sel_pt_el2;
-
-    Float_t PreSel_pt_ph;
-    Float_t Sel_pt_ph;
-    Float_t PreSel_eta_ph;
    
-    Float_t PreSel_pt_jet;
-    Float_t PreSel_eta_jet; 
     // weights
     Int_t genWeight;
     Float_t eventWeight, triggerWeight, puWeight;
@@ -145,13 +103,14 @@ public:
     Float_t muonIDWeightOne, muonIDWeightTwo;
     Float_t muonTrigWeightOne, muonTrigWeightTwo;
     Float_t photonIDWeight;
+    Int_t Sgen,SgenAccep;
 
     // physics object Lorentz vectors
-    TLorentzVector leptonOneP4, leptonTwoP4, dileptonP4;
-    Float_t leptonOneM, leptonOneE, leptonOneEt, leptonOnePt, leptonOneEta, leptonOnePhi;
-    Float_t leptonTwoM, leptonTwoE, leptonTwoEt, leptonTwoPt, leptonTwoEta, leptonTwoPhi;
+    Float_t leptonOnePt, leptonOneEta, leptonOnePhi;
+    Float_t leptonTwoPt, leptonTwoEta, leptonTwoPhi;
 
     Float_t leptonOnePtKin, leptonTwoPtKin;
+    Float_t leptonOnePtKinJames, leptonTwoPtKinJames;
 
     // Additional lepton data
     Float_t leptonOneIso, leptonTwoIso;
@@ -159,7 +118,11 @@ public:
     Int_t leptonOneFlavor, leptonTwoFlavor;
     Float_t leptonOneD0, leptonTwoD0;
     Float_t leptonOneDZ, leptonTwoDZ;
+    Float_t leptonOneCharge, leptonTwoCharge;
+    Float_t leptonOneTag, leptonTwoTag;
     Float_t leptonOneRecoWeight, leptonTwoRecoWeight;
+
+    Bool_t leptonOneECALDriven, leptonTwoECALDriven;
     
     // tau data
     Int_t tauDecayMode;
@@ -167,38 +130,26 @@ public:
     //UInt_t tauPhotonMult, tauChHadMult;
 
     // photon data
-    TLorentzVector photonOneP4, photonP4;
-    Float_t photonOneE, photonOneEt;
-    Float_t photonOneM, photonOnePt, photonOneEta, photonOnePhi;
+    Float_t photonOnePt, photonOneEta, photonOnePhi;
     Float_t photonOneR9;
     Float_t photonOneMVA;
     Float_t photonOneERes;
+    Float_t photonOneSieie, photonOneHoverE, photonOneIneu, photonOneIph, photonOneIch;
     Bool_t passElectronVeto;
-
-    Float_t photonOneSieie; 
-    Float_t photonOneHoverE;
-    Float_t photonOneIneu;
-    Float_t photonOneIph;
-    Float_t photonOneIch;
 
     Bool_t isLeptonTag;
     Bool_t isDijetTag;
     Bool_t isTightDijetTag;
 
     // jet data
-    TLorentzVector jetOneP4, jetTwoP4,jetThreeP4;
     Float_t jetOnePt, jetOneEta, jetOnePhi, jetOneM;
     Float_t jetTwoPt, jetTwoEta, jetTwoPhi, jetTwoM;
     Float_t jetOneTag, jetTwoTag, jetThreeTag, jetFourTag;
     Float_t met, metPhi, metNC, metPhiNC, ht, htPhi, htSum;
 
     // generator level data
-    Float_t genLeptonOneE, genLeptonOneM, genLeptonOnePt, genLeptonOneEta, genLeptonOnePhi;
-    Float_t genLeptonTwoE, genLeptonTwoM, genLeptonTwoPt, genLeptonTwoEta, genLeptonTwoPhi;
-    Float_t genPhotonOneE, genPhotonOneM, genPhotonOnePt, genPhotonOneEta, genPhotonOnePhi;
-    Float_t genDileptonE, genDileptonM, genDileptonPt, genDileptonEta, genDileptonPhi;
-    Float_t genDilepgmE, genDilepgmM, genDilepgmPt, genDilepgmEta, genDilepgmPhi;
-
+    Float_t genLeptonOnePt, genLeptonOneEta, genLeptonOnePhi;
+    Float_t genLeptonTwoPt, genLeptonTwoEta, genLeptonTwoPhi;
     Float_t genPhotonPt, genPhotonEta, genPhotonPhi;
     Int_t genLeptonOneId, genLeptonTwoId;
     Bool_t genPhotonFHPFS, genPhotonIPFS;
@@ -209,14 +160,11 @@ public:
     Bool_t vetoDY;
 
     // dilepton data
-    Float_t dileptonE, dileptonPt, dileptonEta, dileptonPhi, dileptonM;
+    Float_t dileptonPt, dileptonEta, dileptonPhi, dileptonM;
     Float_t dileptonDEta, dileptonDPhi, dileptonDR;
     Float_t dileptonMKin;
+    Float_t dileptonMKinJames;
     
-    // dilepgm data
-    Float_t dilepgmE, dilepgmPt, dilepgmEta, dilepgmPhi, dilepgmM;
-    Float_t dilepgmDEta, dilepgmDPhi, dilepgmDR;
-    Float_t dilepgmMKin;
     // dilepton vertex data
     //Float_t dileptonVertexOneX, dileptonVertexOneY, dileptonVertexOneZ;
     //Float_t dileptonVertexTwoX, dileptonVertexTwoY, dileptonVertexTwoZ;
@@ -243,12 +191,15 @@ public:
     // three body
     Float_t llgPt, llgEta, llgPhi, llgM, llgPtOverM;
     Float_t llgMKin;
+    Float_t llgMKinJames;
     Float_t l1PhotonDEta, l1PhotonDPhi, l1PhotonDR;
     Float_t l2PhotonDEta, l2PhotonDPhi, l2PhotonDR;
     Float_t lPhotonDRMax, lPhotonDRMin;
     Float_t dileptonPhotonDEta, dileptonPhotonDPhi, dileptonPhotonDR;
     Float_t ptt;
     Float_t zgBigTheta, zgLittleTheta, zgPhi;
+    Float_t zgLittleThetaMY;
+    Float_t zgBigThetaJames, zgLittleThetaJames, zgPhiJames;
     Float_t genBigTheta, genLittleTheta, genPhi;
 
     // other

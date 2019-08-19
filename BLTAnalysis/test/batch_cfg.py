@@ -9,8 +9,9 @@ executable = 'execBatch.sh'
 #selection  = 'jetjetgmjetjet'
 #selection  = 'mumugm'
 
-selection  = 'mumug'
+#selection  = 'mumug'
 #selection  = 'elelg'
+selection  = 'ee'
 
 period     = '2016'
 
@@ -18,6 +19,10 @@ period     = '2016'
 #data_samples = ['single_el']
 if selection == 'mumug':
 	data_samples = ['double_mu']
+elif selection == 'mumu':
+	data_samples = ['double_mu']
+elif selection == 'ee':	
+	data_samples = ['double_el']
 elif selection == 'elelg':	
 	data_samples = ['double_el']
 
@@ -27,7 +32,9 @@ mc_samples = []
 #mc_samples += ['JB_ZG_ZToLL']
 #mc_samples += ['JB_WJets']
 mc_samples += ['JB_DYJets']
-mc_samples += ['JB_WZ','JB_ZH','JB_ZZ']
+#mc_samples += ['JB_WZ','JB_ZZ']
+
+#mc_samples += ['JC_ZGToLLG']
 
 
 
@@ -317,6 +324,16 @@ VBF_dict['JC_VBFHToZG_ZToJJ_ONE']=[
 			       ),
 				]
 
+########################## ZG ######################
+mc_dict['JC_ZGToLLG']=[	
+		 	cfg(data_name = 'ZGToLLG',
+		 	    path     = '{0}/ZGToLLG_01J_5f_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/'.format(path),
+		 	    #path     = '{0}/ZGTo2LG_amcatnlo_all_gen/'.format(path),
+			    #path     = '{0}/ZGTo2LG_amcatnlo_calib/'.format(path),
+			    nJobs    = 10,
+			    suffix   = 'zgtollg'
+			),
+		]
 #######################################################
 ############### GENERAL SAMPLES #######################
 #######################################################
@@ -491,7 +508,7 @@ mc_dict['JB_ZG_ZToLL']=[
 
 batch_list = []
 batch_list += sum([data_dict[n] for n in data_samples], []) 
-#batch_list += sum([mc_dict[n] for n in mc_samples], []) 
+batch_list += sum([mc_dict[n] for n in mc_samples], []) 
 
 #batch_list += sum([VBF_dict[n] for n in vbf_samples], []) 
 batch = bm.BatchMaster(config_list = batch_list, 

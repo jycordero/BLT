@@ -80,9 +80,9 @@ Cuts::Cuts() {
     tightElID.dPhiIn[0]                  = 0.0816;
     tightElID.sigmaIetaIeta[0]           = 0.00998;
     tightElID.HadOverEm[0]               = 0.0414;
-    tightElID.dxy[0]                     = 1;
-    tightElID.dz[0]                      = 1;
-    tightElID.fabsEPDiff[0]              = 0.05;
+    tightElID.dxy[0]                     = 0.05;
+    tightElID.dz[0]                      = 0.1;
+    tightElID.fabsEPDiff[0]              = 0.0588;
     tightElID.ConversionMissHits[0]      = 0;
     tightElID.numberOfLostHits[0]	 = 1;
     tightElID.energyInverse[0]		 = 0.0129;
@@ -91,9 +91,9 @@ Cuts::Cuts() {
     tightElID.dPhiIn[1]                  = 0.0394;
     tightElID.sigmaIetaIeta[1]           = 0.0292;
     tightElID.HadOverEm[1]               = 0.0641;
-    tightElID.dxy[1]                     = 1;
-    tightElID.dz[1]                      = 1;
-    tightElID.fabsEPDiff[1]              = 0.05;
+    tightElID.dxy[1]                     = 0.1;
+    tightElID.dz[1]                      = 0.2;
+    tightElID.fabsEPDiff[1]              = 0.0571;
     tightElID.ConversionMissHits[1]      = 0;
     tightElID.numberOfLostHits[1]	 = 1;
     tightElID.energyInverse[1]		 = 0.0129;
@@ -273,21 +273,21 @@ Cuts::Cuts() {
     /* Photon */
     loosePhID.cutName                     = "loosePhID";
     loosePhID.PassedEleSafeVeto[0]        = 1;
-    loosePhID.HadOverEm[0]                = 0.05;
-    loosePhID.sigmaIetaIeta[0]            = 0.012;
+    loosePhID.HadOverEm[0]                = 0.0597;
+    loosePhID.sigmaIetaIeta[0]            = 0.01031;
 
     loosePhID.PassedEleSafeVeto[1]        = 1;
-    loosePhID.HadOverEm[1]                = 0.05;
-    loosePhID.sigmaIetaIeta[1]            = 0.034;
+    loosePhID.HadOverEm[1]                = 0.0481;
+    loosePhID.sigmaIetaIeta[1]            = 0.03013;
 
     loosePhIso.cutName                    = "loosePhIso";
-    loosePhIso.chIso[0]                 = 2.6;
-    loosePhIso.nhIso[0]                 = 3.5;
-    loosePhIso.phIso[0]                 = 1.3;
+    loosePhIso.chIso[0]                 = 1.295;
+    loosePhIso.nhIso[0]                 = 10.910;
+    loosePhIso.phIso[0]                 = 3.630;
 
-    loosePhIso.chIso[1]                 = 2.3;
-    loosePhIso.nhIso[1]                 = 2.9;
-    loosePhIso.phIso[1]                 = 99999;
+    loosePhIso.chIso[1]                 = 1.011;
+    loosePhIso.nhIso[1]                 = 5.931;
+    loosePhIso.phIso[1]                 = 6.641;
 
     //
     mediumPhID.cutName                    = "mediumPhID"; 
@@ -313,7 +313,7 @@ Cuts::Cuts() {
     mediumPhIso.nhIso[0]                = 2.725;
     mediumPhIso.phIso[0]                = 2.571;
 
-    mediumPhIso.chIso[1]                = 0.441;
+    mediumPhIso.chIso[1]                = 0.442;
     mediumPhIso.nhIso[1]                = 1.715;
     mediumPhIso.phIso[1]                = 3.863;
 

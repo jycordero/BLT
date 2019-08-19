@@ -137,6 +137,19 @@ public:
     Float_t photonOneSieie, photonOneHoverE, photonOneIneu, photonOneIph, photonOneIch;
     Bool_t passElectronVeto;
 
+    Float_t phtonOneSieip;      
+    Float_t photonOneSipip;     
+    Float_t photonOneSrr;       
+    Float_t photonOneE2x2;      
+    Float_t photonOneE5x5;      
+    Float_t photonOneScEtaWidth; 
+    Float_t photonOneScPhiWidth; 
+    Float_t photonOneScRawE; 
+    Float_t photonOnePreShowerE; 
+    Float_t photonOneScBrem; 
+
+
+
     Bool_t isLeptonTag;
     Bool_t isDijetTag;
     Bool_t isTightDijetTag;

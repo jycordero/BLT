@@ -12,6 +12,7 @@
 <bin file="train_electrons.cc" name="train_electrons"></bin>-->
 
 <bin file="zgAnalyzer.cc" name="zgAnalyzer"></bin>
+<bin file="zAnalyzer.cc" name="zAnalyzer"></bin>
 <!--bin file="hzgAnalyzer.cc" name="hzgAnalyzer"></bin-->
 
 <!--

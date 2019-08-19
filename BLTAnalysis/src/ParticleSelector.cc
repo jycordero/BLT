@@ -495,12 +495,13 @@ bool ParticleSelector::PassPhotonIso(const baconhep::TPhoton* ph, const Cuts::ph
                 (
                  fabs(ph->scEta) < 1.4442
                  && max((double)chIsoCor,0.)      < cutLevel.chIso[0]
-                 && max((double)nhIsoCor,0.)      < cutLevel.nhIso[0] + 0.04*ph->pt
-                 && max((double)phIsoCor,0.)      < cutLevel.phIso[0] + 0.005*ph->pt
+                 && max((double)nhIsoCor,0.)      < cutLevel.nhIso[0] + 0.0148*ph->pt + 0.000017*ph->pt*ph->pt
+                 && max((double)phIsoCor,0.)      < cutLevel.phIso[0] + 0.0047*ph->pt 
                 ) || (
                     fabs(ph->scEta) > 1.566
                     && max((double)chIsoCor,0.)      < cutLevel.chIso[1]
-                    && max((double)nhIsoCor,0.)      < cutLevel.nhIso[1] + 0.04*ph->pt
+                    && max((double)nhIsoCor,0.)      < cutLevel.nhIso[1] + 0.0163*ph->pt + 0.000014*ph->pt*ph->pt
+                    && max((double)phIsoCor,0.)      < cutLevel.phIso[1] + 0.0034*ph->pt 
                     )
            ) isoPass = true;
     } if(cutLevel.cutName == "mediumPhIso"){
@@ -522,13 +523,13 @@ bool ParticleSelector::PassPhotonIso(const baconhep::TPhoton* ph, const Cuts::ph
                 (
                  fabs(ph->scEta) < 1.4442
                  && max((double)chIsoCor,0.)      < cutLevel.chIso[0]
-                 && max((double)nhIsoCor,0.)      < cutLevel.nhIso[0] + 0.04*ph->pt
-                 && max((double)phIsoCor,0.)      < cutLevel.phIso[0] + 0.005*ph->pt
+                 && max((double)nhIsoCor,0.)      < cutLevel.nhIso[0] + 0.0148*ph->pt + 0.000017*ph->pt*ph->pt
+                 && max((double)phIsoCor,0.)      < cutLevel.phIso[0] + 0.0047*ph->pt
                 ) || (
                     fabs(ph->scEta) > 1.566
                     && max((double)chIsoCor,0.)      < cutLevel.chIso[1]
-                    && max((double)nhIsoCor,0.)      < cutLevel.nhIso[1] + 0.04*ph->pt
-                    && max((double)phIsoCor,0.)      < cutLevel.phIso[1] + 0.005*ph->pt
+                    && max((double)nhIsoCor,0.)      < cutLevel.nhIso[1] + 0.0163*ph->pt + 0.000014*ph->pt*ph->pt
+                    && max((double)phIsoCor,0.)      < cutLevel.phIso[1] + 0.0034*ph->pt
                     )
            ) isoPass = true;
     }

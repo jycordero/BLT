@@ -13,8 +13,8 @@
 // =============================================================================
 
 
-#ifndef HZGANALYZER_HH
-#define HZGANALYZER_HH
+#ifndef ZANALYZER_HH
+#define ZANALYZER_HH
 
 // Analysis tools
 #include "BLT/BLTAnalysis/interface/BLTSelector.hh"
@@ -51,10 +51,10 @@
 #define MZ 91.1876
 #define WZ 2.4952
 
-class zgAnalyzer_MuEff: public BLTSelector {
+class zAnalyzer: public BLTSelector {
 public:
-    zgAnalyzer_MuEff();
-    ~zgAnalyzer_MuEff();
+    zAnalyzer();
+    ~zAnalyzer();
 
     void   Begin(TTree *tree);
     Bool_t Process(Long64_t entry);
@@ -64,8 +64,8 @@ public:
 
     TFile *outFile;
     TTree *outTree;
-    TTree *outGenTree;
-    TTree *outBugTree;
+
+    TH1D *hTotalEventsGen;
 
     // Lumi mask
     RunLumiRangeMap lumiMask;
@@ -84,57 +84,17 @@ public:
     std::unique_ptr<WeightUtils>        weights;
 
     std::vector<string> triggerNames;
-    int nTrig, noPass;
+
     // Branches in the output file
     
     // event data
-    UInt_t runNumber, lumiSection, nPV, nPartons, eventStep;
+    UInt_t runNumber, lumiSection, nPV, nPartons;
     ULong64_t evtNumber;
     Bool_t triggerStatus;
     Float_t nPU;
     Float_t xPV, yPV, zPV;
     UInt_t nJets, nCentralJets, nFwdJets, nBJets, nMuons, nElectrons, nTaus, nPhotons;
- 
-    // Debugging
-    Bool_t debugFlag; 
-
-    // Generator Level
-    TLorentzVector genJetOneP4, genJetTwoP4;
-    TLorentzVector genPhotonP4;
-    TLorentzVector genLeptonP4;
-    TLorentzVector genNeutrinoP4;
-    TLorentzVector genZbosonP4;
-    UInt_t nJetPass_Sel;
-    UInt_t nEl_elel , nEl_mumu , nEl_tautau , nEl_hh;
-    UInt_t nMu_elel , nMu_mumu , nMu_tautau , nMu_hh;
-    UInt_t nTau_elel , nTau_mumu , nTau_tautau , nTau_hh;
-    UInt_t nHad_elel , nHad_mumu , nHad_tautau , nHad_hh;
-    UInt_t nB,nPh,nLep,nGen;
-    Bool_t fB,fPh,fLep, flagGen;
-    Int_t nLepton, LeptonMom, nLeptonMom;    
-
-    Int_t leptonTagCharge;
-    Int_t nPre_Mu,nPre_El,nPre_Ph,nPre_Jet;
-    Int_t nPartCount;
-    Int_t nSel_Mu,nSel_El,nSel_Ph,nSel_Jet;
-    
-    Int_t nMuProbe,nMuProbePass;
-    // Cuts
-    // Pre/Selection
-    Float_t PreSel_pt_mu;
-    Float_t PreSel_eta_mu;
-    Float_t Sel_pt_mu1, Sel_pt_mu2;
-
-    Float_t PreSel_pt_el;
-    Float_t PreSel_eta_el;
-    Float_t Sel_pt_el1, Sel_pt_el2;
-
-    Float_t PreSel_pt_ph;
-    Float_t Sel_pt_ph;
-    Float_t PreSel_eta_ph;
    
-    Float_t PreSel_pt_jet;
-    Float_t PreSel_eta_jet; 
     // weights
     Int_t genWeight;
     Float_t eventWeight, triggerWeight, puWeight;
@@ -143,13 +103,14 @@ public:
     Float_t muonIDWeightOne, muonIDWeightTwo;
     Float_t muonTrigWeightOne, muonTrigWeightTwo;
     Float_t photonIDWeight;
+    Int_t Sgen,SgenAccep;
 
     // physics object Lorentz vectors
-    TLorentzVector leptonOneP4, leptonTwoP4;
     Float_t leptonOnePt, leptonOneEta, leptonOnePhi;
     Float_t leptonTwoPt, leptonTwoEta, leptonTwoPhi;
 
     Float_t leptonOnePtKin, leptonTwoPtKin;
+    Float_t leptonOnePtKinJames, leptonTwoPtKinJames;
 
     // Additional lepton data
     Float_t leptonOneIso, leptonTwoIso;
@@ -157,39 +118,27 @@ public:
     Int_t leptonOneFlavor, leptonTwoFlavor;
     Float_t leptonOneD0, leptonTwoD0;
     Float_t leptonOneDZ, leptonTwoDZ;
+    Float_t leptonOneCharge, leptonTwoCharge;
+    Float_t leptonOneTag, leptonTwoTag;
     Float_t leptonOneRecoWeight, leptonTwoRecoWeight;
+
+    Float_t lepTagR9,lepTagSieie, lepTagHoverE, lepTagIneu, lepTagIph, lepTagIch;
+    Float_t lepProbeR9, lepProbeSieie, lepProbeHoverE, lepProbeIneu, lepProbeIph, lepProbeIch;
+    Bool_t leptonOneECALDriven, leptonTwoECALDriven;
     
     // tau data
     Int_t tauDecayMode;
     Float_t tauMVA; 
     //UInt_t tauPhotonMult, tauChHadMult;
 
-    // photon data
-    TLorentzVector photonOneP4, photonP4;
-    Float_t photonOnePt, photonOneEta, photonOnePhi;
-    Float_t photonOneR9;
-    Float_t photonOneMVA;
-    Float_t photonOneERes;
     Bool_t passElectronVeto;
 
     Bool_t isLeptonTag;
     Bool_t isDijetTag;
     Bool_t isTightDijetTag;
 
-    // jet data
-    TLorentzVector jetOneP4, jetTwoP4,jetThreeP4;
-    Float_t jetOnePt, jetOneEta, jetOnePhi, jetOneM;
-    Float_t jetTwoPt, jetTwoEta, jetTwoPhi, jetTwoM;
-    Float_t jetOneTag, jetTwoTag, jetThreeTag, jetFourTag;
     Float_t met, metPhi, metNC, metPhiNC, ht, htPhi, htSum;
 
-    // generator level data
-    Float_t genLeptonOnePt, genLeptonOneEta, genLeptonOnePhi;
-    Float_t genLeptonTwoPt, genLeptonTwoEta, genLeptonTwoPhi;
-    Float_t genPhotonPt, genPhotonEta, genPhotonPhi;
-    Int_t genLeptonOneId, genLeptonTwoId;
-    Bool_t genPhotonFHPFS, genPhotonIPFS;
-    
     //Int_t genOneId, genTwoId, genOneMother, genTwoMother, genCategory;
     //TLorentzVector genOneP4, genTwoP4;
     //Bool_t fromHardProcessFinalState, isPromptFinalState, hasPhotonMatch;
@@ -199,6 +148,7 @@ public:
     Float_t dileptonPt, dileptonEta, dileptonPhi, dileptonM;
     Float_t dileptonDEta, dileptonDPhi, dileptonDR;
     Float_t dileptonMKin;
+    Float_t dileptonMKinJames;
     
     // dilepton vertex data
     //Float_t dileptonVertexOneX, dileptonVertexOneY, dileptonVertexOneZ;
@@ -208,30 +158,19 @@ public:
     //Float_t dileptonVertexChi2One, dileptonVertexDOFOne;
     //Float_t dileptonVertexChi2Two, dileptonVertexDOFTwo;
     
-    // dijet data
-    Float_t dijetPt, dijetEta, dijetPhi, dijetM;
-    Float_t dijetDEta, dijetDPhi, dijetDR;
-
-    // jet, lepton data
-    Float_t l1j1DEta, l1j1DPhi, l1j1DR;
-    Float_t l1j2DEta, l1j2DPhi, l1j2DR;
-    Float_t l2j1DEta, l2j1DPhi, l2j1DR;
-    Float_t l2j2DEta, l2j2DPhi, l2j2DR;
-
-    // jet, photon data
-    Float_t j1PhotonDEta, j1PhotonDPhi, j1PhotonDR;
-    Float_t j2PhotonDEta, j2PhotonDPhi, j2PhotonDR;
-    Float_t jPhotonDRMax, jPhotonDRMin;
 
     // three body
     Float_t llgPt, llgEta, llgPhi, llgM, llgPtOverM;
     Float_t llgMKin;
+    Float_t llgMKinJames;
     Float_t l1PhotonDEta, l1PhotonDPhi, l1PhotonDR;
     Float_t l2PhotonDEta, l2PhotonDPhi, l2PhotonDR;
     Float_t lPhotonDRMax, lPhotonDRMin;
     Float_t dileptonPhotonDEta, dileptonPhotonDPhi, dileptonPhotonDR;
     Float_t ptt;
     Float_t zgBigTheta, zgLittleTheta, zgPhi;
+    Float_t zgLittleThetaMY;
+    Float_t zgBigThetaJames, zgLittleThetaJames, zgPhiJames;
     Float_t genBigTheta, genLittleTheta, genPhi;
 
     // other
@@ -246,7 +185,7 @@ public:
     void EvalElectronEnergyResolution(std::map<string, float>, float&, float&, float&, float&, float&, float&);
     void find_optimized(double*, double&, double&);
 
-    //ClassDef(zgAnalyzer_MuEff,0);
+    //ClassDef(zAnalyzer,0);
 };
 
 double GetDoubleSidedCB(double x, double mean, double sigma, double alphaL,

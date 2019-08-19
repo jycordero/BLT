@@ -364,16 +364,16 @@ Bool_t zgAnalyzer::Process(Long64_t entry)
                 (fInfo->runNum == 1 && fInfo->lumiSec == 428    && fInfo->evtNum == 85455)  ||
                 (fInfo->runNum == 1 && fInfo->lumiSec == 421    && fInfo->evtNum == 84164)  ||
                 //electron channel
-                (fInfo->runNum == 1 && fInfo->lumiSec == 63 && fInfo->evtNum == 12497) ||
-                (fInfo->runNum == 1 && fInfo->lumiSec == 79 && fInfo->evtNum == 15658) ||
-                (fInfo->runNum == 1 && fInfo->lumiSec == 775 && fInfo->evtNum == 154801) ||
-                (fInfo->runNum == 1 && fInfo->lumiSec == 1098 && fInfo->evtNum == 219407) ||
-                (fInfo->runNum == 1 && fInfo->lumiSec == 1549 && fInfo->evtNum == 309788) ||
-                (fInfo->runNum == 1 && fInfo->lumiSec == 1543 && fInfo->evtNum == 308557) ||
-                (fInfo->runNum == 1 && fInfo->lumiSec == 1555 && fInfo->evtNum == 310804) ||
-                (fInfo->runNum == 1 && fInfo->lumiSec == 379 && fInfo->evtNum == 75615) ||
-                (fInfo->runNum == 1 && fInfo->lumiSec == 380 && fInfo->evtNum == 75912) ||
-                (fInfo->runNum == 1 && fInfo->lumiSec == 408 && fInfo->evtNum == 81429) 
+                (fInfo->runNum == 1 && fInfo->lumiSec == 63    && fInfo->evtNum == 12497) ||
+                (fInfo->runNum == 1 && fInfo->lumiSec == 79    && fInfo->evtNum == 15658) ||
+                (fInfo->runNum == 1 && fInfo->lumiSec == 775   && fInfo->evtNum == 154801) ||
+                (fInfo->runNum == 1 && fInfo->lumiSec == 1098  && fInfo->evtNum == 219407) ||
+                (fInfo->runNum == 1 && fInfo->lumiSec == 1549  && fInfo->evtNum == 309788) ||
+                (fInfo->runNum == 1 && fInfo->lumiSec == 1543  && fInfo->evtNum == 308557) ||
+                (fInfo->runNum == 1 && fInfo->lumiSec == 1555  && fInfo->evtNum == 310804) ||
+                (fInfo->runNum == 1 && fInfo->lumiSec == 379   && fInfo->evtNum == 75615) ||
+                (fInfo->runNum == 1 && fInfo->lumiSec == 380   && fInfo->evtNum == 75912) ||
+                (fInfo->runNum == 1 && fInfo->lumiSec == 408   && fInfo->evtNum == 81429) 
                 )
             ) return kTRUE;
 
@@ -595,9 +595,9 @@ Bool_t zgAnalyzer::Process(Long64_t entry)
                    GetMuonIsolation(muon) << ", " << muon->trkIso << endl;
         }
 
-        if (   /*  
+        if (   
                // tight muon ID and ISO
-               muonP4.Pt() > 5.
+               muonP4.Pt() > 10.
                && fabs(muonP4.Eta()) < 2.4
                && (muon->typeBits & baconhep::kPFMuon) 
                && (muon->typeBits & baconhep::kGlobal) 
@@ -608,42 +608,10 @@ Bool_t zgAnalyzer::Process(Long64_t entry)
                && fabs(muon->dz)   < 0.5
                && muon->nTkLayers  > 5 
                && muon->nValidHits > 0
-               //&& GetMuonIsolation(muon)/muonP4.Pt() < 0.15
+               && GetMuonIsolation(muon)/muonP4.Pt() < 0.15
            ){
             muons.push_back(muon);
-        } */
-
-                // h->ZZ->4l "tight" ID and pf_isorel < 0.35
-                muonP4.Pt() > 5.
-                && fabs(muonP4.Eta()) < 2.4
-                && fabs(muon->d0) < 0.5
-                && fabs(muon->dz) < 1.0
-                && (((muon->typeBits & baconhep::kGlobal) || 
-                   ((muon->typeBits & baconhep::kTracker) && muon->nMatchStn > 0)) &&
-                   (muon->btt != 2)) // Global muon or (arbitrated) tracker muon
-                && fabs(muon->sip3d) < 4.0                 
-                && GetMuonIsolation(muon)/muonP4.Pt() < 0.35
-
-                ) {
-                    // We now have h->ZZ->4l "loose" muons
-                    if (muonP4.Pt() < 200.0) {
-                        if (muon->pogIDBits & baconhep::kPOGLooseMuon)
-                            muons.push_back(muon);
-                    }
-                    else {
-                        // need to pass the tracker high-pt ID
-                        if (
-                                (muon->pogIDBits & baconhep::kPOGLooseMuon) ||
-                                (muon->nMatchStn > 1
-                                && (muon->ptErr/muon->pt) < 0.3 
-                                && fabs(muon->d0) < 0.2
-                                && fabs(muon->dz) < 0.5
-                                && muon->nPixHits > 0
-                                && muon->nTkLayers > 5)
-                           )
-                            muons.push_back(muon);
-                    }
-                }
+        } 
                     
 
         // muons for jet veto
@@ -689,14 +657,15 @@ Bool_t zgAnalyzer::Process(Long64_t entry)
         } 
 
         if (
-                electron->calibPt > 7
+                electron->calibPt > 11
                 && fabs(electron->scEta) < 2.5
                 //&& particleSelector->PassElectronMVA(electron, cuts->hzzMVAID)
                 && particleSelector->PassElectronID(electron, cuts->tightElID)
-                && GetElectronIsolation(electron, fInfo->rhoJet)/electronP4.Pt() < 0.35
+		&& particleSelector->PassElectronIso(electron,cuts->tightElIso)
+                //&& GetElectronIsolation(electron, fInfo->rhoJet)/electronP4.Pt() < 0.35
                 && fabs(electron->d0) < 0.5
                 && fabs(electron->dz) < 1.0
-                && fabs(electron->sip3d) < 4.0 
+                //&& fabs(electron->sip3d) < 4.0 
            ) {
             electrons.push_back(electron);
             veto_electrons.push_back(electronP4);
@@ -766,7 +735,8 @@ Bool_t zgAnalyzer::Process(Long64_t entry)
         
         TLorentzVector photonP4;
         photonP4.SetPtEtaPhiM(photon->calibPt, photon->eta, photon->phi, 0.);
-    
+    	//cout << " ---------PhotonP4 PT :: " << photonP4.Pt() << endl;
+    	cout << " ---------Photon PT :: " << photon->pt << " cal: " << photon->calibPt << endl;
         if (sync_print_precut) {
             cout << "photon_pt, photon_calibpt, photon_eta, photon_sc_eta, photon_phi, photon_mva, pass_electron_veto" << endl;
             cout << photon->pt << ", " << photon->calibPt << ", " << photon->eta << ", " << photon->scEta << ", " << photon->phi << ", " << photon->mva 
@@ -775,10 +745,11 @@ Bool_t zgAnalyzer::Process(Long64_t entry)
 
         if (
                 // ID conditions
-                photon->pt > 10
+                photon->calibPt > 10
                 && fabs(photon->scEta) < 2.5 
                 && (fabs(photon->scEta) <= 1.4442 || fabs(photon->scEta) >= 1.566)
-                && particleSelector->PassPhotonMVA(photon, cuts->looseMVAPhID)
+                //&& particleSelector->PassPhotonMVA(photon, cuts->looseMVAPhID)
+                && particleSelector->PassPhotonID(photon, cuts->mediumPhID)
                 && photon->passElectronVeto
             ) {
             photons.push_back(photon);
@@ -819,7 +790,7 @@ Bool_t zgAnalyzer::Process(Long64_t entry)
             std::cout << "raw jet pt, jet pt, nate_jet_pt, jet eta, jet phi" << std::endl;
             std::cout << jet->ptRaw << ", " << jetP4.Pt() << ", " << jet->ptRaw*jec << ", " << jetP4.Eta() << ", " << jetP4.Phi() << std::endl;
         } 
-        /*bool muOverlap = false;
+        bool muOverlap = false;
         for (const auto& mu: veto_muons) {
             if (jetP4.DeltaR(mu) < 0.4) {
                 muOverlap = true;
@@ -835,20 +806,19 @@ Bool_t zgAnalyzer::Process(Long64_t entry)
         }
         bool phoOverlap = false;
         for (const auto& pho: veto_photons) {
-            ROR] Server responded with an error: [3010] Locating relative path 'srcDir=/eos/uscms/store/user/corderom/2017_mc_samples/FullSamples/GluGluHToZG_ZToLL_M-125_13TeV_powheg_pythia8/2017_data_prod_GluGluHToZG_ZToLL_M-125_13TeV_powheg_pythia8_RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_reali/190531_035156/0000' is disallowed.
-
+            if (jetP4.DeltaR(pho) < 0.4) {
                 phoOverlap = true;
                 break;
             }
-        }*/
+        }
 
         if (
                 jet->pt > 30 
                 && fabs(jet->eta) < 4.7
                 && particleSelector->PassJetID(jet, cuts->looseJetID)
-                //&& !muOverlap 
-                //&& !elOverlap
-                //&& !phoOverlap
+                && !muOverlap 
+                && !elOverlap
+                && !phoOverlap
            ) {
             
             jets.push_back(jet);
@@ -910,7 +880,7 @@ Bool_t zgAnalyzer::Process(Long64_t entry)
     nPhotons   = photons.size();
 
     if (params->selection == "mumug") {
-        if (muons.size() < 1) 
+        if (muons.size() < 2) 
             return kTRUE;
         hTotalEvents->Fill(5);
         if (photons.size() < 1)
@@ -962,10 +932,12 @@ Bool_t zgAnalyzer::Process(Long64_t entry)
             return kTRUE;
         hTotalEvents->Fill(7);
 
-        if (leptonOneP4.Pt() <= 20.0) 
+        //if (leptonOneP4.Pt() <= 20.0) 
+        if (leptonOneP4.Pt() <= 25.0) 
             return kTRUE;
 
-        if (leptonTwoP4.Pt() <= 10.0)
+        //if (leptonTwoP4.Pt() <= 10.0)
+        if (leptonTwoP4.Pt() <= 20.0)
             return kTRUE;
 
         if (sync_print_precut) {
@@ -1024,7 +996,7 @@ Bool_t zgAnalyzer::Process(Long64_t entry)
                      << dileptonP4.M() << ", " << tempLLG.M() << ", " 
                      << this_dr1 << ", " << this_dr2 << endl;
             }
-
+	    //std::cout << " Photon Pt" << tempPhoton.Pt() << std::endl;
             if (
                 tempPhoton.Pt() > 15.0 
                 //&& tempPhoton.Et()/tempLLG.M() > (15.0/110.0) 
@@ -1037,6 +1009,7 @@ Bool_t zgAnalyzer::Process(Long64_t entry)
                 break;
             }
         }
+	
 
         if (!hasValidPhoton)
             return kTRUE;
@@ -1287,6 +1260,18 @@ Bool_t zgAnalyzer::Process(Long64_t entry)
         photonOneIph = photons[photonIndex]->gammaIso;
         photonOneIneu = photons[photonIndex]->neuHadIso;
         photonOneIch = photons[photonIndex]->chHadIso;
+
+	/*
+	leptonOnePhotonOneDEta = fabs(leptonOneP4.Eta() - photonOneP4.Eta());
+	leptonOnePhotonOneDPhi = fabs(leptonOneP4.DeltaPhi(photonOneP4));
+	leptonOnePhotonOneDR   =      leptonOneP4.DeltaR(photonOneP4);
+
+	leptonTwoPhotonOneDEta = fabs(leptonTwoP4.Eta() - photonOneP4.Eta());
+	leptonTwoPhotonOneDPhi = fabs(leptonTwoP4.DeltaPhi(photonOneP4));
+	leptonTwoPhotonOneDR   =      leptonTwoP4.DeltaR(photonOneP4);
+	*/
+
+
 	/*
 	cout << "------- Fill Gen -------------\n";
 	genLeptonOnePt  = genLeptons[0]->pt;
@@ -1764,7 +1749,7 @@ Bool_t zgAnalyzer::Process(Long64_t entry)
         if (leptonOneP4.Pt() <= 25.0)
             return kTRUE;
 
-        if (leptonTwoP4.Pt() <= 15.0)
+        if (leptonTwoP4.Pt() <= 20.0)
             return kTRUE;
         
 	cout << "-------Lepton Pass --------\n";

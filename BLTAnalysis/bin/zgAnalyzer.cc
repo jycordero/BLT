@@ -186,6 +186,17 @@ void zgAnalyzer::Begin(TTree *tree)
     outTree->Branch("photonOneIph",&photonOneIph);
     outTree->Branch("photonOneIch",&photonOneIch);
 
+    outTree->Branch("photonOneSieip"     ,&photonOneSieip);      
+    outTree->Branch("photonOneSipip"     ,&photonOneSipip);     
+    outTree->Branch("photonOneSrr"       ,&photonOneSrr);       
+    outTree->Branch("photonOneE2x2"      ,&photonOneE2x2);      
+    outTree->Branch("photonOneE5x5"      ,&photonOneE5x5);      
+    outTree->Branch("photonOneScEtaWidth",&photonOneScEtaWidth); 
+    outTree->Branch("photonOneScPhiWidth",&photonOneScPhiWidth); 
+    outTree->Branch("photonOneScRawE"    ,&photonOneScRawE); 
+    outTree->Branch("photonOnePreShowerE",&photonOnePreShowerE); 
+    outTree->Branch("photonOneScBrem"    ,&photonOneScBrem); 
+
     // jets
     outTree->Branch("jetOnePt", &jetOnePt);
     outTree->Branch("jetOneEta", &jetOneEta);
@@ -657,14 +668,15 @@ Bool_t zgAnalyzer::Process(Long64_t entry)
         } 
 
         if (
-                electron->calibPt > 7
+                electron->calibPt > 11
                 && fabs(electron->scEta) < 2.5
                 //&& particleSelector->PassElectronMVA(electron, cuts->hzzMVAID)
                 && particleSelector->PassElectronID(electron, cuts->tightElID)
-                && GetElectronIsolation(electron, fInfo->rhoJet)/electronP4.Pt() < 0.35
+		&& particleSelector->PassElectronIso(electron,cuts->tightElIso)
+                //&& GetElectronIsolation(electron, fInfo->rhoJet)/electronP4.Pt() < 0.35
                 && fabs(electron->d0) < 0.5
                 && fabs(electron->dz) < 1.0
-                && fabs(electron->sip3d) < 4.0 
+                //&& fabs(electron->sip3d) < 4.0 
            ) {
             electrons.push_back(electron);
             veto_electrons.push_back(electronP4);
@@ -734,7 +746,8 @@ Bool_t zgAnalyzer::Process(Long64_t entry)
         
         TLorentzVector photonP4;
         photonP4.SetPtEtaPhiM(photon->calibPt, photon->eta, photon->phi, 0.);
-    	cout << " ---------Photon PT :: " << photonP4.Pt() << endl;
+    	//cout << " ---------PhotonP4 PT :: " << photonP4.Pt() << endl;
+    	cout << " ---------Photon PT :: " << photon->pt << " cal: " << photon->calibPt << endl;
         if (sync_print_precut) {
             cout << "photon_pt, photon_calibpt, photon_eta, photon_sc_eta, photon_phi, photon_mva, pass_electron_veto" << endl;
             cout << photon->pt << ", " << photon->calibPt << ", " << photon->eta << ", " << photon->scEta << ", " << photon->phi << ", " << photon->mva 
@@ -747,7 +760,8 @@ Bool_t zgAnalyzer::Process(Long64_t entry)
                 && fabs(photon->scEta) < 2.5 
                 && (fabs(photon->scEta) <= 1.4442 || fabs(photon->scEta) >= 1.566)
                 //&& particleSelector->PassPhotonMVA(photon, cuts->looseMVAPhID)
-                && particleSelector->PassPhotonID(photon, cuts->mediumPhID)
+                //&& particleSelector->PassPhotonID(photon, cuts->mediumPhID)
+                && particleSelector->PassPhotonID(photon, cuts->loosePhID)
                 && photon->passElectronVeto
             ) {
             photons.push_back(photon);
@@ -996,7 +1010,7 @@ Bool_t zgAnalyzer::Process(Long64_t entry)
             }
 	    //std::cout << " Photon Pt" << tempPhoton.Pt() << std::endl;
             if (
-                tempPhoton.Pt() > 15.0 
+                tempPhoton.Pt() > 20.0 
                 //&& tempPhoton.Et()/tempLLG.M() > (15.0/110.0) 
                 //&& dileptonP4.M() + tempLLG.M() > 185.0 
                 //&& tempLLG.M() > 100. && tempLLG.M() < 180. 
@@ -1231,8 +1245,8 @@ Bool_t zgAnalyzer::Process(Long64_t entry)
 
 	cout << "------- Fill -------------\n";
         leptonOnePt     = leptonOneP4.Pt();
-        leptonOneEta     = leptonOneP4.Eta();
-        leptonOnePhi     = leptonOneP4.Phi();
+        leptonOneEta    = leptonOneP4.Eta();
+        leptonOnePhi    = leptonOneP4.Phi();
         leptonOneIso    = GetMuonIsolation(muons[muonOneIndex]);
         leptonOneFlavor = muons[muonOneIndex]->q*13;
         leptonOneDZ     = muons[muonOneIndex]->dz;
@@ -1240,26 +1254,37 @@ Bool_t zgAnalyzer::Process(Long64_t entry)
         leptonOneCharge = muons[muonOneIndex]->q;
             
         leptonTwoPt     = leptonTwoP4.Pt();
-        leptonTwoEta     = leptonTwoP4.Eta();
-        leptonTwoPhi     = leptonTwoP4.Phi();
+        leptonTwoEta    = leptonTwoP4.Eta();
+        leptonTwoPhi    = leptonTwoP4.Phi();
         leptonTwoIso    = GetMuonIsolation(muons[muonTwoIndex]);
         leptonTwoFlavor = muons[muonTwoIndex]->q*13;
         leptonTwoDZ     = muons[muonTwoIndex]->dz;
         leptonTwoD0     = muons[muonTwoIndex]->d0;
         leptonTwoCharge = muons[muonTwoIndex]->q;
 
-        photonOnePt  = photonOneP4.Pt();
-        photonOneEta  = photonOneP4.Eta();
-        photonOnePhi  = photonOneP4.Phi();
-        photonOneMVA = photons[photonIndex]->mva;
-        photonOneERes = photons[photonIndex]->eRes;
-        photonOneSieie = photons[photonIndex]->sieie;
+        photonOnePt     = photonOneP4.Pt();
+        photonOneEta    = photonOneP4.Eta();
+        photonOnePhi    = photonOneP4.Phi();
+        photonOneMVA    = photons[photonIndex]->mva;
+        photonOneERes   = photons[photonIndex]->eRes;
+        photonOneSieie  = photons[photonIndex]->sieie;
         photonOneHoverE = photons[photonIndex]->hovere;
-        photonOneIph = photons[photonIndex]->gammaIso;
-        photonOneIneu = photons[photonIndex]->neuHadIso;
-        photonOneIch = photons[photonIndex]->chHadIso;
+        photonOneIph    = photons[photonIndex]->gammaIso;
+        photonOneIneu   = photons[photonIndex]->neuHadIso;
+        photonOneIch    = photons[photonIndex]->chHadIso;
 
-	/*
+	phtonOneSieip       = photons[photonIndex]->sieip;
+	photonOneSipip      = photons[photonIndex]->sipip;
+	photonOneSrr        = photons[photonIndex]->srr;
+	photonOneE2x2       = photons[photonIndex]->e2x2;
+	photonOneE5x5       = photons[photonIndex]->e5x5;
+	photonOneScEtaWidth = photons[photonIndex]->scEtaWidth;
+	photonOneScPhiWidth = photons[photonIndex]->scPhiWidth;
+	photonOneScRawE     = photons[photonIndex]->scRawE;
+	photonOnePreShowerE = photons[photonIndex]->scESEn;
+	photonOneScBrem     = photons[photonIndex]->scBrem;
+	
+	/*                    photons[photonIndex]->
 	leptonOnePhotonOneDEta = fabs(leptonOneP4.Eta() - photonOneP4.Eta());
 	leptonOnePhotonOneDPhi = fabs(leptonOneP4.DeltaPhi(photonOneP4));
 	leptonOnePhotonOneDR   =      leptonOneP4.DeltaR(photonOneP4);
@@ -1747,7 +1772,7 @@ Bool_t zgAnalyzer::Process(Long64_t entry)
         if (leptonOneP4.Pt() <= 25.0)
             return kTRUE;
 
-        if (leptonTwoP4.Pt() <= 15.0)
+        if (leptonTwoP4.Pt() <= 20.0)
             return kTRUE;
         
 	cout << "-------Lepton Pass --------\n";
@@ -2038,15 +2063,28 @@ Bool_t zgAnalyzer::Process(Long64_t entry)
         leptonTwoECALDriven = (electrons[electronTwoIndex]->typeBits & baconhep::kEcalDriven);
 	leptonTwoCharge     = electrons[electronTwoIndex]->q;        
 
-        photonOnePt  = photonOneP4.Pt();
-        photonOneEta  = photonOneP4.Eta();
-        photonOnePhi  = photonOneP4.Phi();
-        photonOneMVA = photons[photonIndex]->mva;
-        photonOneERes = photons[photonIndex]->eRes;
+        photonOnePt    = photonOneP4.Pt();
+        photonOneEta   = photonOneP4.Eta();
+        photonOnePhi   = photonOneP4.Phi();
+        photonOneMVA   = photons[photonIndex]->mva;
+        photonOneERes  = photons[photonIndex]->eRes;
         photonOneSieie = photons[photonIndex]->sieie;
-        photonOneIph = photons[photonIndex]->gammaIso;
-        photonOneIneu = photons[photonIndex]->neuHadIso;
-        photonOneIch = photons[photonIndex]->chHadIso;
+        photonOneIph   = photons[photonIndex]->gammaIso;
+        photonOneIneu  = photons[photonIndex]->neuHadIso;
+        photonOneIch   = photons[photonIndex]->chHadIso;
+
+	phtonOneSieip       = photons[photonIndex]->sieip;
+	photonOneSipip      = photons[photonIndex]->sipip;
+	photonOneSrr        = photons[photonIndex]->srr;
+	photonOneE2x2       = photons[photonIndex]->e2x2;
+	photonOneE5x5       = photons[photonIndex]->e5x5;
+	photonOneScEtaWidth = photons[photonIndex]->scEtaWidth;
+	photonOneScPhiWidth = photons[photonIndex]->scPhiWidth;
+	photonOneScRawE     = photons[photonIndex]->scRawE;
+	photonOnePreShowerE = photons[photonIndex]->scESEn;
+	photonOneScBrem     = photons[photonIndex]->scBrem;
+
+
 	/*
 	cout << "------- Fill GEN -------------\n";
 	genLeptonOnePt  = genLeptons[0]->pt;
