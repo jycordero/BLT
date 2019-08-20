@@ -8,56 +8,54 @@ path       = 'root://cmseos.fnal.gov//store/user/corderom/sync_mc'
 executable = 'execBatch.sh'
 #selection  = 'jetjetgmjetjet'
 #selection  = 'mumugm'
+legacy = True
 
-#selection  = 'mumug'
+selection  = 'mumug'
 #selection  = 'elelg'
-selection  = 'ee'
+#selection  = 'ee'
 
 period     = '2016'
 
 #data_samples = ['single_mu']
 #data_samples = ['single_el']
-if selection == 'mumug':
-	data_samples = ['double_mu']
-elif selection == 'mumu':
-	data_samples = ['double_mu']
-elif selection == 'ee':	
-	data_samples = ['double_el']
-elif selection == 'elelg':	
-	data_samples = ['double_el']
+if legacy:
+	if selection == 'mumug':
+		data_samples = ['double_mu_legacy']
+	elif selection == 'mumu':
+		data_samples = ['double_mu_legacy']
+	elif selection == 'ee':	
+		data_samples = ['double_el_legacy']
+	elif selection == 'elelg':	
+		data_samples = ['double_el_legacy']
+
+else:
+	if selection == 'mumug':
+		data_samples = ['double_mu']
+	elif selection == 'mumu':
+		data_samples = ['double_mu']
+	elif selection == 'ee':	
+		data_samples = ['double_el']
+	elif selection == 'elelg':	
+		data_samples = ['double_el']
+
 
 mc_samples = []
 ################################################
 #mc_samples += ['JB_TT']
 #mc_samples += ['JB_ZG_ZToLL']
 #mc_samples += ['JB_WJets']
-mc_samples += ['JB_DYJets']
+#mc_samples += ['JB_DYJets']
 #mc_samples += ['JB_WZ','JB_ZZ']
 
-#mc_samples += ['JC_ZGToLLG']
 
 
+################################################
+#mc_samples += ['JC_TT_Legacy']
+#mc_samples += ['JC_DYJets_Legacy']
+#mc_samples += ['JC_ZGToLLG_Legacy']
+#mc_samples += ['JC_WW_Legacy','JC_WZ_Legacy','JC_ZZ_Legacy']
+#mc_samples += ['JC_WJets_Legacy']
 
-#mc_samples  += ['JC_TT']
-#mc_samples  += ['JC_DYJets']
-#mc_samples  += ['JC_ZH','JC_WplusH','JC_WminusH']
-
-#vbf_samples += ['JC_VBFHToZG_ZToJJ']
-#vbf_samples += ['JC_VBFHToZG_ZToJJ_ONE']
-
-###############################################
-########### !! DO NOT USE !!  #################
-### There are some photons variables like  ####
-### calibPt that are not in the general    ####
-### ntuples and for this shouldn't be used ####
-###############################################
-#mc_samples += ['Summer16_WJets']
-#mc_samples += ['Summer16_WW','Summer16_WZ']
-#mc_samples += ['Summer16_ZZ']
-#mc_samples += ['TT']
-#mc_samples += ['DYJets']
-#mc_samples += ['ZG_ZToLL']
-##########################################
 
 
 ''' 
@@ -506,8 +504,132 @@ mc_dict['JB_ZG_ZToLL']=[
 		]
 ####################################################################
 
+
+#----------------------------------------------------
+#---------------------------------------------------
+#######################################################
+##################### JC SAMPLES Legacy #######################
+#######################################################
+SampleType = 'mc'
+path = '/eos/uscms/store/user/corderom/'+SampleType+'_legacy_2016'
+
+########################## TT  #######################
+mc_dict['JC_TT_Legacy'] = [
+		    cfg(data_name = 'TT',
+			path     = '{0}/TTTo2L2Nu_TuneCUETP8M2_ttHtranche3_13TeV-powheg-pythia8'.format(path),
+			nJobs    = 20,
+			suffix   = 'tt'
+		       ),
+		    ]
+
+########################## ZG ######################
+mc_dict['JC_ZGToLLG_Legacy']=[	
+		 	cfg(data_name = 'ZGToLLG',
+		 	    path     = '{0}/ZGToLLG_01J_5f_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8'.format(path),
+			    nJobs    = 20,
+			    suffix   = 'zgtollg'
+			),
+		]
+
+
+########################## DYJets ######################
+mc_dict['JC_DYJets_Legacy']=[	
+		 	cfg(data_name = 'DYJets',
+		 	    path     = '{0}/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8'.format(path),
+			    nJobs    = 20,
+			    suffix   = 'dyjets'
+			),
+		]
+
+########################## WW  ######################
+mc_dict['JC_WW_Legacy']=[	
+		 	cfg(data_name = 'WWToLNuQQ',
+		 	    path     = '{0}/WWToLNuQQ_13TeV-powheg'.format(path),
+			    nJobs    = 20,
+			    suffix   = 'wwtolnuqq'
+			),
+		 	cfg(data_name = 'WWTo2L2Nu',
+		 	    path     = '{0}/WWTo2L2Nu_13TeV-powheg-herwigpp'.format(path),
+			    nJobs    = 20,
+			    suffix   = 'wwto2l2nu'
+			),
+		]
+
+
+########################## WZ  ######################
+mc_dict['JC_WZ_Legacy']=[	
+		 	cfg(data_name = 'WZTo3LNu',
+		 	    path     = '{0}/WZTo3LNu_TuneCUETP8M1_13TeV-powheg-pythia8'.format(path),
+			    nJobs    = 20,
+			    suffix   = 'wzto3lnu'
+			),
+		]
+
+########################## ZZ  ######################
+mc_dict['JC_ZZ_Legacy']=[	
+		 	cfg(data_name = 'ZZTo2L2Nu',
+		 	    path     = '{0}/ZZTo2L2Nu_13TeV_powheg_pythia8'.format(path),
+			    nJobs    = 20,
+			    suffix   = 'zzto2l2nu'
+			),
+		 	cfg(data_name = 'ZZTo2L2Q',
+		 	    path     = '{0}/ZZTo2L2Q_13TeV_amcatnloFXFX_madspin_pythia8'.format(path),
+			    nJobs    = 20,
+			    suffix   = 'zzto2l2q'
+			),
+		 	cfg(data_name = 'ZZTo4L',
+		 	    path     = '{0}/ZZTo4L_13TeV-amcatnloFXFX-pythia8'.format(path),
+			    nJobs    = 20,
+			    suffix   = 'zzto4l'
+			),
+		]
+
+########################## DoubleMuon  ######################
+SampleType = 'data'
+path = '/eos/uscms/store/user/corderom/'+SampleType+'_legacy_2016'
+
+########################## DoubleMuon  ######################
+data_dict['double_mu_Legacy'] = [
+			 cfg(data_name = 'DoubleMuon_2016B_v1',
+			     path      = '{0}/2016_data_legacy_DoubleMuon_Run2016B-17Jul2018_ver2-v1'.format(path),
+			     nJobs     = 30,
+			     suffix    = 'DoubleMuon_2016B'
+			    ),
+			 cfg(data_name = 'DoubleMuon_2016C_v1',
+			     path      = '{0}/2016_data_legacy_DoubleMuon_Run2016C-17Jul2018-v1'.format(path),
+			     nJobs     = 30,
+			     suffix    = 'DoubleMuon_2016C'
+			    ),
+			 cfg(data_name = 'DoubleMuon_2016D_v1',
+			     path      = '{0}/2016_data_legacy_DoubleMuon_Run2016D-17Jul2018-v1'.format(path),
+			     nJobs     = 30,
+			     suffix    = 'DoubleMuon_2016D'
+			    ),
+			 cfg(data_name = 'DoubleMuon_2016E_v1',
+			    path      = '{0}/2016_data_legacy_DoubleMuon_Run2016E-17Jul2018-v1'.format(path),
+			    nJobs     = 30,
+			    suffix    = 'DoubleMuon_2016E'
+			   ),
+			 cfg(data_name = 'DoubleMuon_2016F_v1',
+			     path      = '{0}/2016_data_legacy_DoubleMuon_Run2016F-17Jul2018-v1'.format(path),
+			     nJobs     = 30,
+			     suffix    = 'DoubleMuon_2016F'
+			    ),
+			 cfg(data_name = 'DoubleMuon_2016G_v1',
+			     path      = '{0}/2016_data_legacy_DoubleMuon_Run2016G-17Jul2018-v1'.format(path),
+			     nJobs     = 30,
+			     suffix    = 'DoubleMuon_2016G'
+			    ),
+			 cfg(data_name = 'DoubleMuon_2016H_v1',
+			     path      = '{0}/2016_data_legacy_DoubleMuon_Run2016H-17Jul2018-v1'.format(path),
+			     nJobs     = 30,
+			     suffix    = 'DoubleMuon_2016H'
+			    ),
+			]
+
+
 batch_list = []
-batch_list += sum([data_dict[n] for n in data_samples], []) 
+#batch_list += sum([data_dict[n] for n in data_samples], []) 
 batch_list += sum([mc_dict[n] for n in mc_samples], []) 
 
 #batch_list += sum([VBF_dict[n] for n in vbf_samples], []) 

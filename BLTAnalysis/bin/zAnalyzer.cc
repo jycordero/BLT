@@ -586,7 +586,7 @@ Bool_t zAnalyzer::Process(Long64_t entry)
     	cout << " ---------Photon PT :: " << photonP4.Pt() << endl;
         if (sync_print_precut) {
             cout << "photon_pt, photon_calibpt, photon_eta, photon_sc_eta, photon_phi, photon_mva, pass_electron_veto" << endl;
-            cout << photon->pt << ", " << photon->calibPt << ", " << photon->eta << ", " << photon->scEta << ", " << photon->phi << ", " << photon->mva 
+            cout << photon->pt << ", " << photon->calibPt << ", " << photon->eta << ", " << photon->scEta << ", " << photon->phi << ", " << photon->mvaFall17V2 
                  << ", " << photon->passElectronVeto << endl;
         }
 
