@@ -149,20 +149,20 @@ void zgAnalyzer::Begin(TTree *tree)
     outTree->Branch("leptonOneCharge", &leptonOneCharge);
     outTree->Branch("leptonOneTag", &leptonOneTag);
 
-    outTree->Branch("leptonTwoPt", &leptonTwoPt);
-    outTree->Branch("leptonTwoEta", &leptonTwoEta);
-    outTree->Branch("leptonTwoPhi", &leptonTwoPhi);
-    outTree->Branch("leptonTwoPtKin", &leptonTwoPtKin);
+    outTree->Branch("leptonTwoPt"        , &leptonTwoPt);
+    outTree->Branch("leptonTwoEta"       , &leptonTwoEta);
+    outTree->Branch("leptonTwoPhi"       , &leptonTwoPhi);
+    outTree->Branch("leptonTwoPtKin"     , &leptonTwoPtKin);
     outTree->Branch("leptonTwoPtKinJames", &leptonTwoPtKinJames);
-    outTree->Branch("leptonTwoIso", &leptonTwoIso);
-    outTree->Branch("leptonTwoFlavor", &leptonTwoFlavor);
-    outTree->Branch("leptonTwoMother", &leptonTwoMother);
-    outTree->Branch("leptonTwoD0", &leptonTwoD0);
-    outTree->Branch("leptonTwoDZ", &leptonTwoDZ);
+    outTree->Branch("leptonTwoIso"       , &leptonTwoIso);
+    outTree->Branch("leptonTwoFlavor"    , &leptonTwoFlavor);
+    outTree->Branch("leptonTwoMother"    , &leptonTwoMother);
+    outTree->Branch("leptonTwoD0"        , &leptonTwoD0);
+    outTree->Branch("leptonTwoDZ"        , &leptonTwoDZ);
     outTree->Branch("leptonTwoRecoWeight", &leptonTwoRecoWeight);
     outTree->Branch("leptonTwoECALDriven", &leptonTwoECALDriven);
-    outTree->Branch("leptonTwoCharge", &leptonTwoCharge);
-    outTree->Branch("leptonTwoTag", &leptonTwoTag);
+    outTree->Branch("leptonTwoCharge"    , &leptonTwoCharge);
+    outTree->Branch("leptonTwoTag"       , &leptonTwoTag);
  
     outTree->Branch("tauDecayMode", &tauDecayMode);
     outTree->Branch("tauMVA", &tauMVA);
@@ -234,14 +234,14 @@ void zgAnalyzer::Begin(TTree *tree)
     outTree->Branch("nBJets", &nBJets);
     
     // dilepton
-    outTree->Branch("dileptonPt", &dileptonPt);
-    outTree->Branch("dileptonEta", &dileptonEta);
-    outTree->Branch("dileptonPhi", &dileptonPhi);
-    outTree->Branch("dileptonM", &dileptonM);
-    outTree->Branch("dileptonDEta", &dileptonDEta);
-    outTree->Branch("dileptonDPhi", &dileptonDPhi);
-    outTree->Branch("dileptonDR", &dileptonDR);
-    outTree->Branch("dileptonMKin", &dileptonMKin);
+    outTree->Branch("dileptonPt"       , &dileptonPt);
+    outTree->Branch("dileptonEta"      , &dileptonEta);
+    outTree->Branch("dileptonPhi"      , &dileptonPhi);
+    outTree->Branch("dileptonM"        , &dileptonM);
+    outTree->Branch("dileptonDEta"     , &dileptonDEta);
+    outTree->Branch("dileptonDPhi"     , &dileptonDPhi);
+    outTree->Branch("dileptonDR"       , &dileptonDR);
+    outTree->Branch("dileptonMKin"     , &dileptonMKin);
     outTree->Branch("dileptonMKinJames", &dileptonMKinJames);
 
     // dilepton vertices
@@ -2252,16 +2252,16 @@ Bool_t zgAnalyzer::Process(Long64_t entry)
 
         if (muonP4.Pt() > tauP4.Pt()) {
             leptonOnePt     = muonP4.Pt();
-            leptonOneEta     = muonP4.Eta();
-            leptonOnePhi     = muonP4.Phi();
+            leptonOneEta    = muonP4.Eta();
+            leptonOnePhi    = muonP4.Phi();
             leptonOneIso    = GetMuonIsolation(muons[0]);
             leptonOneFlavor = muons[0]->q*13;
             leptonOneDZ     = muons[0]->dz;
             leptonOneD0     = muons[0]->d0;
 
             leptonTwoPt     = tauP4.Pt();
-            leptonTwoEta     = tauP4.Eta();
-            leptonTwoPhi     = tauP4.Phi();
+            leptonTwoEta    = tauP4.Eta();
+            leptonTwoPhi    = tauP4.Phi();
             leptonTwoIso    = 0.;
             leptonTwoFlavor = 15*taus[tau_index]->q;
             leptonTwoDZ     = taus[tau_index]->dzLeadChHad;
@@ -2269,16 +2269,16 @@ Bool_t zgAnalyzer::Process(Long64_t entry)
         }
         else {
             leptonOnePt     = tauP4.Pt();
-            leptonOneEta     = tauP4.Eta();
-            leptonOnePhi     = tauP4.Phi();
+            leptonOneEta    = tauP4.Eta();
+            leptonOnePhi    = tauP4.Phi();
             leptonOneIso    = 0.;
             leptonOneFlavor = 15*taus[tau_index]->q;
             leptonOneDZ     = taus[tau_index]->dzLeadChHad;
             leptonOneD0     = taus[tau_index]->d0LeadChHad;
 
             leptonTwoPt     = muonP4.Pt();
-            leptonTwoEta     = muonP4.Eta();
-            leptonTwoPhi     = muonP4.Phi();
+            leptonTwoEta    = muonP4.Eta();
+            leptonTwoPhi    = muonP4.Phi();
             leptonTwoIso    = GetMuonIsolation(muons[0]);
             leptonTwoFlavor = muons[0]->q*13;
             leptonTwoDZ     = muons[0]->dz;
@@ -2313,17 +2313,17 @@ Bool_t zgAnalyzer::Process(Long64_t entry)
 
     if (!isDijetTag) {
         if (jets.size() > 0) {
-            jetOnePt = jets[0]->pt;
-            jetOneEta = jets[0]->eta;
-            jetOnePhi = jets[0]->phi;
-            jetOneM = jets[0]->mass;
-            jetOneTag    = jets[0]->csv;
+            jetOnePt   = jets[0]->pt;
+            jetOneEta  = jets[0]->eta;
+            jetOnePhi  = jets[0]->phi;
+            jetOneM    = jets[0]->mass;
+            jetOneTag  = jets[0]->csv;
         } else {
-            jetOnePt = 0.;
+            jetOnePt  = 0.;
             jetOneEta = 0.;
             jetOnePhi = 0.;
-            jetOneM = 0.;
-            jetOneTag    = 0.;
+            jetOneM   = 0.;
+            jetOneTag = 0.;
         }
 
         if (jets.size() > 1) {

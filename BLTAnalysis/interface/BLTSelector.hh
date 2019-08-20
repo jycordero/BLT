@@ -78,8 +78,6 @@ public :
     TClonesArray            *fTauArr;
     TClonesArray            *fPhotonArr;
     TClonesArray            *fPVArr;
-    TClonesArray            *fDimuonVertexArr;
-    TClonesArray            *fDielectronVertexArr;
     TClonesArray            *fAK4CHSArr;
     TClonesArray            *fAK8CHSArr;
     TClonesArray            *fAddAK8CHSArr;
@@ -98,15 +96,8 @@ public :
     TBranch                 *b_TauArr;
     TBranch                 *b_PhotonArr;
     TBranch                 *b_PVArr;
-    TBranch                 *b_DimuonVertexArr;
-    TBranch                 *b_DielectronVertexArr;
     TBranch                 *b_AK4CHSArr;
-    TBranch                 *b_AK8CHSArr;
-    TBranch                 *b_AddAK8CHSArr;
-    TBranch                 *b_CA15CHSArr;
-    TBranch                 *b_AddCA15CHSArr;
     TBranch                 *b_AK4PuppiArr;
-    TBranch                 *b_AddCA8PuppiArr;
     TBranch                 *b_CA15PuppiArr;
     TBranch                 *b_AddCA15PuppiArr;
 
@@ -145,13 +136,7 @@ void BLTSelector::Init(TTree *tree)
     fTauArr                  = 0;
     fPhotonArr               = 0;
     fPVArr                   = 0;
-    fDimuonVertexArr         = 0;
-    fDielectronVertexArr     = 0;
     fAK4CHSArr               = 0;
-    fAK8CHSArr               = 0;
-    fAddAK8CHSArr            = 0;
-    fCA15CHSArr              = 0;
-    fAddCA15CHSArr           = 0;
     fAK4PuppiArr             = 0;
     fCA15PuppiArr            = 0;
     fAddCA15PuppiArr         = 0;
@@ -165,8 +150,6 @@ void BLTSelector::Init(TTree *tree)
     fChain->SetBranchAddress("Tau", &fTauArr, &b_TauArr);
     fChain->SetBranchAddress("Photon", &fPhotonArr, &b_PhotonArr);
     fChain->SetBranchAddress("PV", &fPVArr, &b_PVArr);
-    fChain->SetBranchAddress("DimuonVertex", &fDimuonVertexArr, &b_DimuonVertexArr);
-    fChain->SetBranchAddress("DielectronVertex", &fDielectronVertexArr, &b_DielectronVertexArr);
     fChain->SetBranchAddress("AK4CHS", &fAK4CHSArr, &b_AK4CHSArr);
     //fChain->SetBranchAddress("AK8CHS", &fAK8CHSArr, &b_AK8CHSArr);
     //fChain->SetBranchAddress("AddAK8CHS", &fAddAK8CHSArr, &b_AddAK8CHSArr);
