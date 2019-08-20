@@ -137,7 +137,7 @@ public:
     Float_t photonOneSieie, photonOneHoverE, photonOneIneu, photonOneIph, photonOneIch;
     Bool_t passElectronVeto;
 
-    Float_t phtonOneSieip;      
+    Float_t photonOneSieip;      
     Float_t photonOneSipip;     
     Float_t photonOneSrr;       
     Float_t photonOneE2x2;      

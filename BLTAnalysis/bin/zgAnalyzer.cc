@@ -1273,7 +1273,7 @@ Bool_t zgAnalyzer::Process(Long64_t entry)
         photonOneIneu   = photons[photonIndex]->neuHadIso;
         photonOneIch    = photons[photonIndex]->chHadIso;
 
-	phtonOneSieip       = photons[photonIndex]->sieip;
+	photonOneSieip       = photons[photonIndex]->sieip;
 	photonOneSipip      = photons[photonIndex]->sipip;
 	photonOneSrr        = photons[photonIndex]->srr;
 	photonOneE2x2       = photons[photonIndex]->e2x2;
@@ -2073,7 +2073,7 @@ Bool_t zgAnalyzer::Process(Long64_t entry)
         photonOneIneu  = photons[photonIndex]->neuHadIso;
         photonOneIch   = photons[photonIndex]->chHadIso;
 
-	phtonOneSieip       = photons[photonIndex]->sieip;
+	photonOneSieip       = photons[photonIndex]->sieip;
 	photonOneSipip      = photons[photonIndex]->sipip;
 	photonOneSrr        = photons[photonIndex]->srr;
 	photonOneE2x2       = photons[photonIndex]->e2x2;
