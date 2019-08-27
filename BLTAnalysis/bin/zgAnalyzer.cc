@@ -332,6 +332,7 @@ void zgAnalyzer::Begin(TTree *tree)
 
 Bool_t zgAnalyzer::Process(Long64_t entry)
 {
+    cout << "PROCESS.......\n";
     GetEntry(entry, 1);  // load all branches
     this->totalEvents++;
     hTotalEvents->Fill(1);
@@ -347,6 +348,8 @@ Bool_t zgAnalyzer::Process(Long64_t entry)
             hTotalEvents->Fill(maxBin);
         }
     }
+    
+    //cout << "ARE WE HERE?? \n";
 
     if (entry%10000==0)  
         std::cout << "... Processing event " << entry 
@@ -357,6 +360,8 @@ Bool_t zgAnalyzer::Process(Long64_t entry)
    
     //bool sync_print = false;
     bool sync_print_precut = false;
+    //bool debug = true;
+    bool debug = false;
     //bool sync_print_precut = true;
 
     if (sync_print_precut) {          
@@ -386,7 +391,9 @@ Bool_t zgAnalyzer::Process(Long64_t entry)
                 (fInfo->runNum == 1 && fInfo->lumiSec == 380   && fInfo->evtNum == 75912) ||
                 (fInfo->runNum == 1 && fInfo->lumiSec == 408   && fInfo->evtNum == 81429) 
                 )
-            ) return kTRUE;
+            ) 
+		return kTRUE;
+	   
 
         cout << "run, lumi, event" << endl;
         cout << fInfo->runNum << ", " << fInfo->lumiSec << ", " << fInfo->evtNum << endl;
@@ -482,6 +489,8 @@ Bool_t zgAnalyzer::Process(Long64_t entry)
 	}
     }
 
+    if (debug)
+	cout<< "Before Lumi mask passed\n";
     /* Apply lumi mask */
     if (isData) {
         RunLumiRangeMap::RunLumiPairType rl(fInfo->runNum, fInfo->lumiSec);
@@ -489,6 +498,9 @@ Bool_t zgAnalyzer::Process(Long64_t entry)
             return kTRUE;
     }
     hTotalEvents->Fill(2);
+
+    if (debug)
+	cout<< "Lumi mask passed\n";
 
     /* Trigger selection */
     bool passTrigger = false;
@@ -644,8 +656,10 @@ Bool_t zgAnalyzer::Process(Long64_t entry)
             veto_muons.push_back(muonP4);
         }
     }
-    
     sort(muons.begin(), muons.end(), sort_by_higher_pt<TMuon>);
+
+    if(debug)
+	cout << "----Muon collection";
 
     /* ELECTRONS */
     vector<TElectron*> electrons;
@@ -684,6 +698,8 @@ Bool_t zgAnalyzer::Process(Long64_t entry)
     }
     sort(electrons.begin(), electrons.end(), sort_by_higher_pt<TElectron>);
 
+    if(debug)
+	cout << "----Electron collection" << endl;
     /* TAUS */
     vector<TTau*> taus;
     vector<TLorentzVector> veto_taus;
@@ -737,9 +753,13 @@ Bool_t zgAnalyzer::Process(Long64_t entry)
     }
     sort(taus.begin(), taus.end(), sort_by_higher_pt<TTau>);
 
+    if(debug)
+	cout << "----Tau collection" << endl;
+
     /* PHOTONS */
     vector <TPhoton*> photons;
     vector<TLorentzVector> veto_photons;
+    cout << "--------- Collection Ph:: " << fPhotonArr->GetEntries() << endl;
     for (int i=0; i<fPhotonArr->GetEntries(); i++) {
         TPhoton* photon = (TPhoton*) fPhotonArr->At(i);
         assert(photon);
@@ -747,7 +767,11 @@ Bool_t zgAnalyzer::Process(Long64_t entry)
         TLorentzVector photonP4;
         photonP4.SetPtEtaPhiM(photon->calibPt, photon->eta, photon->phi, 0.);
     	//cout << " ---------PhotonP4 PT :: " << photonP4.Pt() << endl;
-    	cout << " ---------Photon PT :: " << photon->pt << " cal: " << photon->calibPt << endl;
+    	cout << " ---------Photon PT   :: " << photon->pt << " cal: " << photon->calibPt << endl;
+	cout << "----------Photon Eta  :: " << photon->eta << " scEta: " << photon->scEta << endl;
+	cout << "----------Photon ID   :: " << particleSelector->PassPhotonID(photon, cuts->loosePhID) << endl;
+	cout << "----------Photon Veto :: " << photon->passElectronVeto << endl;
+
         if (sync_print_precut) {
             cout << "photon_pt, photon_calibpt, photon_eta, photon_sc_eta, photon_phi, photon_mva, pass_electron_veto" << endl;
             cout << photon->pt << ", " << photon->calibPt << ", " << photon->eta << ", " << photon->scEta << ", " << photon->phi << ", " << photon->mvaFall17V2 
@@ -770,6 +794,8 @@ Bool_t zgAnalyzer::Process(Long64_t entry)
     } 
     sort(photons.begin(), photons.end(), sort_by_higher_pt<TPhoton>);
 
+    if(debug)
+	cout << "----Photon collection" << endl;
     /* JETS */
     TClonesArray* jetCollection;
     jetCollection = fAK4CHSArr;
@@ -866,6 +892,8 @@ Bool_t zgAnalyzer::Process(Long64_t entry)
     //std::sort(jets.begin(), jets.end(), sort_by_btag);
     std::sort(jets.begin(), jets.end(), sort_by_higher_pt<TJet>);
 
+    if(debug)
+	cout << "----Jet collection" << endl;
     /* MET */
     met    = fInfo->pfMETC;
     metPhi = fInfo->pfMETCphi;
@@ -891,6 +919,12 @@ Bool_t zgAnalyzer::Process(Long64_t entry)
     nTaus      = taus.size();
     nPhotons   = photons.size();
 
+    if(debug){
+	cout << "---------------------------" << params->selection << endl;
+	cout << "--------------------------- MU:: " << nMuons << endl;
+	cout << "--------------------------- PH:: " << nPhotons << endl;
+    }
+
     if (params->selection == "mumug") {
         if (muons.size() < 2) 
             return kTRUE;
@@ -898,7 +932,9 @@ Bool_t zgAnalyzer::Process(Long64_t entry)
         if (photons.size() < 1)
             return kTRUE;
         hTotalEvents->Fill(6);
-       
+
+	cout << "------------ Multiplicity cut" << endl;
+ 
         TLorentzVector leptonOneP4, leptonTwoP4;
         unsigned int muonOneIndex = 0;
         unsigned int muonTwoIndex = 1;

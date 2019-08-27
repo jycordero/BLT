@@ -427,6 +427,22 @@ bool ParticleSelector::PassPhotonID(const baconhep::TPhoton* ph, const Cuts::phI
                     && ph->sieie                     < cutLevel.sigmaIetaIeta[1]
                     )
            ) phoPass = true;
+
+    } else if (cutLevel.cutName == "loosePhID"){
+        if (fabs(ph->scEta) > 1.4442 && fabs(ph->scEta) < 1.566) return phoPass;
+        if (
+                (
+                 fabs(ph->scEta)  < 1.4442
+                 && (!ph->isConv)                == cutLevel.PassedEleSafeVeto[0]
+                 && ph->hovere                    < cutLevel.HadOverEm[0]
+                 && ph->sieie                     < cutLevel.sigmaIetaIeta[0]
+                ) || (
+                    fabs(ph->scEta)  > 1.566
+                    && (!ph->isConv)                == cutLevel.PassedEleSafeVeto[1]
+                    && ph->hovere                    < cutLevel.HadOverEm[1]
+                    && ph->sieie                     < cutLevel.sigmaIetaIeta[1]
+                    )
+           ) phoPass = true;
     }
     return phoPass;
 }
