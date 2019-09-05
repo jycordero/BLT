@@ -108,7 +108,7 @@ public:
         float TrkIso[2];
         float ChPfIso[2];
         std::string cutName;
-    } loosePhID, mediumPhID, preSelPhID;
+    } loosePhID, mediumPhID, preSelPhID,preSelPhIDV2;
 
     struct phIsoCuts {
         float chIso[2];
@@ -116,7 +116,7 @@ public:
         float phIso[2];
         float relCombIso[2];
         std::string cutName;
-    } loosePhIso, mediumPhIso;
+    } loosePhIso, mediumPhIso, preSelPhIso;
 
     struct phMVACuts {
         float mvaValCat1;

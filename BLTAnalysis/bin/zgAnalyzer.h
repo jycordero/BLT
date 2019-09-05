@@ -170,7 +170,7 @@ public:
     //Int_t genOneId, genTwoId, genOneMother, genTwoMother, genCategory;
     //TLorentzVector genOneP4, genTwoP4;
     //Bool_t fromHardProcessFinalState, isPromptFinalState, hasPhotonMatch;
-    Bool_t vetoDY;
+    Bool_t vetoDY, genIsoPass;
 
     // dilepton data
     Float_t dileptonPt, dileptonEta, dileptonPhi, dileptonM;
@@ -222,6 +222,7 @@ public:
     float GetMuonIsolation(const baconhep::TMuon*);
     float GetElectronIsolation(const baconhep::TElectron*, float);
     float GetPhotonIsolation(const baconhep::TPhoton*, float);
+    float GetGenIsolation(const TGenParticle*);
 
     void EvalMuonEnergyResolution(std::map<string, float>, std::map<string, int>, float&, float&, float&, float&, float&, float&);
     void EvalElectronEnergyResolution(std::map<string, float>, float&, float&, float&, float&, float&, float&);

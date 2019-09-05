@@ -83,7 +83,7 @@ Cuts::Cuts() {
     tightElID.dxy[0]                     = 0.05;
     tightElID.dz[0]                      = 0.1;
     tightElID.fabsEPDiff[0]              = 0.0588;
-    tightElID.ConversionMissHits[0]      = 0;
+    tightElID.ConversionMissHits[0]      = 1;
     tightElID.numberOfLostHits[0]	 = 1;
     tightElID.energyInverse[0]		 = 0.0129;
 
@@ -94,7 +94,7 @@ Cuts::Cuts() {
     tightElID.dxy[1]                     = 0.1;
     tightElID.dz[1]                      = 0.2;
     tightElID.fabsEPDiff[1]              = 0.0571;
-    tightElID.ConversionMissHits[1]      = 0;
+    tightElID.ConversionMissHits[1]      = 1;
     tightElID.numberOfLostHits[1]	 = 1;
     tightElID.energyInverse[1]		 = 0.0129;
 
@@ -308,6 +308,15 @@ Cuts::Cuts() {
     mediumPhID.sigmaIetaIeta[1]           = 0.03001;
     */
 
+    preSelPhIso.cutName                   = "preSelPhIso";
+    //preSelPhIso.chIso[0]                = 0.441;
+    //preSelPhIso.nhIso[0]                = 2.725;
+    preSelPhIso.phIso[0]                  = 15;
+
+    //preSelPhIso.chIso[1]                = 0.442;
+    //preSelPhIso.nhIso[1]                = 1.715;
+    preSelPhIso.phIso[1]                  = 15;
+
     mediumPhIso.cutName                   = "mediumPhIso";
     mediumPhIso.chIso[0]                = 0.441;
     mediumPhIso.nhIso[0]                = 2.725;
@@ -317,20 +326,35 @@ Cuts::Cuts() {
     mediumPhIso.nhIso[1]                = 1.715;
     mediumPhIso.phIso[1]                = 3.863;
 
+    preSelPhIDV2.cutName                    = "preSelPhIDV2";
+    preSelPhIDV2.PassedEleSafeVeto[0]       = 1;
+    preSelPhIDV2.HadOverEm[0]               = 0.082;
+    preSelPhIDV2.sigmaIetaIeta[0]           = 0.014;
+    preSelPhIDV2.HcalIso[0]                 = 50;
+    preSelPhIDV2.TrkIso[0]                  = 50;
+    preSelPhIDV2.ChPfIso[0]                 = 4;
+
+    preSelPhIDV2.PassedEleSafeVeto[1]       = 1;
+    preSelPhIDV2.HadOverEm[1]               = 0.075;
+    preSelPhIDV2.sigmaIetaIeta[1]           = 0.034;
+    preSelPhIDV2.HcalIso[1]                 = 4;
+    preSelPhIDV2.TrkIso[1]                  = 4;
+    preSelPhIDV2.ChPfIso[1]                 = 4;
+
     preSelPhID.cutName                    = "preSelPhID";
     preSelPhID.PassedEleSafeVeto[0]       = 1;
-    preSelPhID.HadOverEm[0]               = 0.082;
-    preSelPhID.sigmaIetaIeta[0]           = 0.014;
-    preSelPhID.HcalIso[0]                 = 50;
-    preSelPhID.TrkIso[0]                  = 50;
-    preSelPhID.ChPfIso[0]                 = 4;
+    preSelPhID.HadOverEm[0]               = 0.08;
+    preSelPhID.sigmaIetaIeta[0]           = 0.015;
+    preSelPhID.HcalIso[0]                 = 15;
+    preSelPhID.TrkIso[0]                  = 15;
+    preSelPhID.ChPfIso[0]                 = 15;
 
     preSelPhID.PassedEleSafeVeto[1]       = 1;
-    preSelPhID.HadOverEm[1]               = 0.075;
-    preSelPhID.sigmaIetaIeta[1]           = 0.034;
-    preSelPhID.HcalIso[1]                 = 4;
-    preSelPhID.TrkIso[1]                  = 4;
-    preSelPhID.ChPfIso[1]                 = 4;
+    preSelPhID.HadOverEm[1]               = 0.05;
+    preSelPhID.sigmaIetaIeta[1]           = 0.045;
+    preSelPhID.HcalIso[1]                 = 15;
+    preSelPhID.TrkIso[1]                  = 15;
+    preSelPhID.ChPfIso[1]                 = 15;
 
     catPhMVAID.cutName                    = "catPhMVAID";
     catPhMVAID.mvaValCat1                 = 0.126;

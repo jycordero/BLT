@@ -170,7 +170,6 @@ bool ParticleSelector::PassElectronID(const baconhep::TElectron* el, const Cuts:
 	                && el->nMissingHits <= cutLevel.numberOfLostHits[0]
 	                && fabs(el->d0)     <  cutLevel.dxy[0]
 	                && fabs(el->dz)     <  cutLevel.dz[0]
-	                //&& !el->isConv
 	                && el->isConv == cutLevel.ConversionMissHits[0]
 	           ) elPass = true;
 	} else if (fabs(el->scEta) > 1.4446 && fabs(el->scEta) < 1.566) { // transition
@@ -185,7 +184,6 @@ bool ParticleSelector::PassElectronID(const baconhep::TElectron* el, const Cuts:
 	                && el->nMissingHits <= cutLevel.numberOfLostHits[1]
 	                && fabs(el->d0)     <  cutLevel.dxy[1]
 	                && fabs(el->dz)     <  cutLevel.dz[1]
-	                //&& !el->isConv
 	                && el->isConv == cutLevel.ConversionMissHits[1]
 	           ) elPass = true;
 	    }   	 
@@ -344,7 +342,7 @@ bool ParticleSelector::PassElectronMVA(const baconhep::TElectron* el, const Cuts
 bool ParticleSelector::PassElectronIso(const baconhep::TElectron* el, const Cuts::elIsoCuts& cutLevel) const 
 {
     int iEta = 0;
-    float etaBins[8] = {0., 1., 1.479, 2.0, 2.2, 2.3, 2.4, 2.5};
+    float etaBins[8] = {0., 1., 1.479, 2.0, 2.2, 2.3, 2.4, 5.0};
     float effArea[8] = {0.1703, 0.1715, 0.1213, 0.1230, 0.1635, 0.1937, 0.2393};
     for (unsigned i = 0; i < 8; ++i) {
         if (fabs(el->scEta) > etaBins[i] && fabs(el->scEta) < etaBins[i+1]) {
@@ -374,7 +372,7 @@ bool ParticleSelector::PassPhotonID(const baconhep::TPhoton* ph, const Cuts::phI
     bool phoPass2 = false;
 
     //if (fabs(ph->scEta) > 2.5) return phoPass;  // uncomment to apply eta requirement
-    if (cutLevel.cutName == "preSelPhID") {
+    if (cutLevel.cutName == "preSelPhIDV2") {
         if (fabs(ph->scEta) > 1.4442 && fabs(ph->scEta) < 1.566) return phoPass;
         if (fabs(ph->scEta) < 1.479) {
             if (
@@ -412,6 +410,38 @@ bool ParticleSelector::PassPhotonID(const baconhep::TPhoton* ph, const Cuts::phI
         }
         if (phoPass1 && phoPass2) phoPass = true;
 
+    } else if (cutLevel.cutName == "preSelPhID") {
+        if (fabs(ph->scEta) > 1.4442 && fabs(ph->scEta) < 1.566) return phoPass; 
+        if (fabs(ph->scEta) < 1.479) {
+            if (
+                    //(!ph->isConv) == cutLevel.PassedEleSafeVeto[0]
+                    ph->sieie  < cutLevel.sigmaIetaIeta[0] && 
+                    ph->hovere < cutLevel.HadOverEm[0] 
+               ) phoPass = true;
+	}
+	else{
+	    if(
+                    //(!ph->isConv) == cutLevel.PassedEleSafeVeto[1]
+                    ph->sieie  < cutLevel.sigmaIetaIeta[1] &&
+                    ph->hovere < cutLevel.HadOverEm[1]
+		) phoPass = true;
+	}
+	
+    } else if (cutLevel.cutName == "loosePhID"){
+        if (fabs(ph->scEta) > 1.4442 && fabs(ph->scEta) < 1.566) return phoPass;
+        if (
+                (
+                 fabs(ph->scEta)  < 1.4442
+                 && (!ph->isConv)                == cutLevel.PassedEleSafeVeto[0]
+                 && ph->hovere                    < cutLevel.HadOverEm[0]
+                 && ph->sieie                     < cutLevel.sigmaIetaIeta[0]
+                ) || (
+                    fabs(ph->scEta)  > 1.566
+                    && (!ph->isConv)                == cutLevel.PassedEleSafeVeto[1]
+                    && ph->hovere                    < cutLevel.HadOverEm[1]
+                    && ph->sieie                     < cutLevel.sigmaIetaIeta[1]
+                    )
+           ) phoPass = true;
     } else if (cutLevel.cutName == "mediumPhID"){
         if (fabs(ph->scEta) > 1.4442 && fabs(ph->scEta) < 1.566) return phoPass;
         if (
@@ -428,22 +458,8 @@ bool ParticleSelector::PassPhotonID(const baconhep::TPhoton* ph, const Cuts::phI
                     )
            ) phoPass = true;
 
-    } else if (cutLevel.cutName == "loosePhID"){
-        if (fabs(ph->scEta) > 1.4442 && fabs(ph->scEta) < 1.566) return phoPass;
-        if (
-                (
-                 fabs(ph->scEta)  < 1.4442
-                 && (!ph->isConv)                == cutLevel.PassedEleSafeVeto[0]
-                 && ph->hovere                    < cutLevel.HadOverEm[0]
-                 && ph->sieie                     < cutLevel.sigmaIetaIeta[0]
-                ) || (
-                    fabs(ph->scEta)  > 1.566
-                    && (!ph->isConv)                == cutLevel.PassedEleSafeVeto[1]
-                    && ph->hovere                    < cutLevel.HadOverEm[1]
-                    && ph->sieie                     < cutLevel.sigmaIetaIeta[1]
-                    )
-           ) phoPass = true;
-    }
+    }     
+
     return phoPass;
 }
 
@@ -506,7 +522,14 @@ bool ParticleSelector::PassPhotonIso(const baconhep::TPhoton* ph, const Cuts::ph
     nhIsoCor = ph->neuHadIso - _rhoFactor*nhEA;
     phIsoCor = ph->gammaIso -_rhoFactor*phEA;
 
-    if (cutLevel.cutName == "loosePhIso"){
+    if(cutLevel.cutName == "preSelPhIso"){
+	if (fabs(ph->scEta) < 1.4442){
+		if(phIsoCor < cutLevel.phIso[0]) isoPass = true;
+	}
+	else {
+		if(phIsoCor < cutLevel.phIso[1]) isoPass = true;
+	}
+    } else if (cutLevel.cutName == "loosePhIso"){
         if (
                 (
                  fabs(ph->scEta) < 1.4442
