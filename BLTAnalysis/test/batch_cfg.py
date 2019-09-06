@@ -6,10 +6,10 @@ import sys
 cfg        = bm.JobConfig
 path       = 'root://cmseos.fnal.gov//store/user/corderom/sync_mc'
 executable = 'execBatch.sh'
-#selection  = 'jetjetgmjetjet'
-#selection  = 'mumugm'
+
 legacy = True
 
+#selection  = 'jetjetgmjetjet'
 selection  = 'mumug'
 #selection  = 'elelg'
 #selection  = 'ee'
@@ -50,12 +50,11 @@ mc_samples = []
 
 
 ################################################
-#mc_samples += ['JC_TT_Legacy']
 #mc_samples += ['JC_DYJets_Legacy']
-#mc_samples += ['JC_ZGToLLG_Legacy']
 #mc_samples += ['JC_WW_Legacy','JC_WZ_Legacy','JC_ZZ_Legacy']
-#mc_samples += ['JC_WJets_Legacy']
-
+mc_samples += ['JC_TTTo2L2Nu_Legacy']
+mc_samples += ['JC_WJets_Legacy']
+mc_samples += ['JC_ZGToLLG_Legacy']
 
 
 ''' 
@@ -511,21 +510,21 @@ mc_dict['JB_ZG_ZToLL']=[
 ##################### JC SAMPLES Legacy #######################
 #######################################################
 SampleType = 'mc'
-path = '/eos/uscms/store/user/corderom/'+SampleType+'_legacy_2016'
+path = '/eos/uscms/store/user/corderom/'+SampleType+'_legacy_gen_2016'
 
 ########################## TT  #######################
-mc_dict['JC_TT_Legacy'] = [
-		    cfg(data_name = 'TT',
-			path     = '{0}/TTTo2L2Nu_TuneCUETP8M2_ttHtranche3_13TeV-powheg-pythia8'.format(path),
+mc_dict['JC_TTTo2L2Nu_Legacy'] = [
+		    cfg(data_name = 'TTTo2L2Nu',
+			path     = '{0}/TTTo2L2Nu_TuneCUETP8M2_ttHtranche3_13TeV-powheg-pythia8/2016_mc_legacy_gen_TTTo2L2Nu_TuneCUETP8M2_ttHtranche3_13TeV-powheg-pythia8_RunIISummer16MiniAODv3-PUMoriond17_94X_mcRu/190824_061004'.format(path),
 			nJobs    = 20,
-			suffix   = 'tt'
+			suffix   = 'ttto2l2nu'
 		       ),
 		    ]
 
 ########################## ZG ######################
 mc_dict['JC_ZGToLLG_Legacy']=[	
 		 	cfg(data_name = 'ZGToLLG',
-		 	    path     = '{0}/ZGToLLG_01J_5f_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8'.format(path),
+		 	    path     = '{0}/ZGToLLG_01J_5f_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/2016_mc_legacy_gen_ZGToLLG_01J_5f_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8_RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun/190823_153456'.format(path),
 			    nJobs    = 20,
 			    suffix   = 'zgtollg'
 			),
@@ -535,7 +534,7 @@ mc_dict['JC_ZGToLLG_Legacy']=[
 ########################## DYJets ######################
 mc_dict['JC_DYJets_Legacy']=[	
 		 	cfg(data_name = 'DYJets',
-		 	    path     = '{0}/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8'.format(path),
+		 	    path     = '{0}/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/2016_mc_legacy_gen_DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8_RunIISummer16MiniAODv3-PUMoriond17_94X_mcRu/190824_062451'.format(path),
 			    nJobs    = 20,
 			    suffix   = 'dyjets'
 			),
@@ -544,12 +543,12 @@ mc_dict['JC_DYJets_Legacy']=[
 ########################## WW  ######################
 mc_dict['JC_WW_Legacy']=[	
 		 	cfg(data_name = 'WWToLNuQQ',
-		 	    path     = '{0}/WWToLNuQQ_13TeV-powheg'.format(path),
+		 	    path     = '{0}/WWToLNuQQ_13TeV-powheg/2016_mc_legacy_gen_WWToLNuQQ_13TeV-powheg_RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v2/190824_055930'.format(path),
 			    nJobs    = 20,
 			    suffix   = 'wwtolnuqq'
 			),
 		 	cfg(data_name = 'WWTo2L2Nu',
-		 	    path     = '{0}/WWTo2L2Nu_13TeV-powheg-herwigpp'.format(path),
+		 	    path     = '{0}/WWTo2L2Nu_13TeV-powheg-herwigpp/2016_mc_legacy_gen_WWTo2L2Nu_13TeV-powheg-herwigpp_RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/190824_055749'.format(path),
 			    nJobs    = 20,
 			    suffix   = 'wwto2l2nu'
 			),
@@ -559,7 +558,7 @@ mc_dict['JC_WW_Legacy']=[
 ########################## WZ  ######################
 mc_dict['JC_WZ_Legacy']=[	
 		 	cfg(data_name = 'WZTo3LNu',
-		 	    path     = '{0}/WZTo3LNu_TuneCUETP8M1_13TeV-powheg-pythia8'.format(path),
+		 	    path     = '{0}/WZTo3LNu_TuneCUETP8M1_13TeV-powheg-pythia8/2016_mc_legacy_gen_WZTo3LNu_TuneCUETP8M1_13TeV-powheg-pythia8_RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic/190824_060249'.format(path),
 			    nJobs    = 20,
 			    suffix   = 'wzto3lnu'
 			),
@@ -568,60 +567,67 @@ mc_dict['JC_WZ_Legacy']=[
 ########################## ZZ  ######################
 mc_dict['JC_ZZ_Legacy']=[	
 		 	cfg(data_name = 'ZZTo2L2Nu',
-		 	    path     = '{0}/ZZTo2L2Nu_13TeV_powheg_pythia8'.format(path),
+		 	    path     = '{0}/ZZTo2L2Nu_13TeV_powheg_pythia8/2016_mc_legacy_gen_ZZTo2L2Nu_13TeV_powheg_pythia8_RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/190824_060811'.format(path),
 			    nJobs    = 20,
 			    suffix   = 'zzto2l2nu'
 			),
 		 	cfg(data_name = 'ZZTo2L2Q',
-		 	    path     = '{0}/ZZTo2L2Q_13TeV_amcatnloFXFX_madspin_pythia8'.format(path),
+		 	    path     = '{0}/ZZTo2L2Q_13TeV_amcatnloFXFX_madspin_pythia8/2016_mc_legacy_gen_ZZTo2L2Q_13TeV_amcatnloFXFX_madspin_pythia8_RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptoti/190824_060617'.format(path),
 			    nJobs    = 20,
 			    suffix   = 'zzto2l2q'
 			),
 		 	cfg(data_name = 'ZZTo4L',
-		 	    path     = '{0}/ZZTo4L_13TeV-amcatnloFXFX-pythia8'.format(path),
+		 	    path     = '{0}/ZZTo4L_13TeV-amcatnloFXFX-pythia8/2016_mc_legacy_gen_ZZTo4L_13TeV-amcatnloFXFX-pythia8_RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-/190824_060434'.format(path),
 			    nJobs    = 20,
 			    suffix   = 'zzto4l'
 			),
 		]
 
+mc_dict['JC_WJets_Legacy'] = [
+			    cfg(data_name = 'WJets',
+				path     = '{0}/WJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/2016_mc_legacy_gen_WJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8_RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_as/190824_062650'.format(path),
+				nJobs    = 30,
+				suffix   = 'wjets'
+			       ),
+				]
 ########################## DoubleMuon  ######################
 SampleType = 'data'
 path = '/eos/uscms/store/user/corderom/'+SampleType+'_legacy_2016'
 
 ########################## DoubleMuon  ######################
-data_dict['double_mu_Legacy'] = [
+data_dict['double_mu_legacy'] = [
 			 cfg(data_name = 'DoubleMuon_2016B_v1',
-			     path      = '{0}/2016_data_legacy_DoubleMuon_Run2016B-17Jul2018_ver2-v1'.format(path),
+			     path      = '{0}/DoubleMuon/2016_data_legacy_DoubleMuon_Run2016B-17Jul2018_ver2-v1/190812_184322'.format(path),
 			     nJobs     = 30,
 			     suffix    = 'DoubleMuon_2016B'
 			    ),
 			 cfg(data_name = 'DoubleMuon_2016C_v1',
-			     path      = '{0}/2016_data_legacy_DoubleMuon_Run2016C-17Jul2018-v1'.format(path),
+			     path      = '{0}/DoubleMuon/2016_data_legacy_DoubleMuon_Run2016C-17Jul2018-v1/190812_184520'.format(path),
 			     nJobs     = 30,
 			     suffix    = 'DoubleMuon_2016C'
 			    ),
 			 cfg(data_name = 'DoubleMuon_2016D_v1',
-			     path      = '{0}/2016_data_legacy_DoubleMuon_Run2016D-17Jul2018-v1'.format(path),
+			     path      = '{0}/DoubleMuon/2016_data_legacy_DoubleMuon_Run2016D-17Jul2018-v1/190812_184704'.format(path),
 			     nJobs     = 30,
 			     suffix    = 'DoubleMuon_2016D'
 			    ),
 			 cfg(data_name = 'DoubleMuon_2016E_v1',
-			    path      = '{0}/2016_data_legacy_DoubleMuon_Run2016E-17Jul2018-v1'.format(path),
+			    path      = '{0}/DoubleMuon/2016_data_legacy_DoubleMuon_Run2016E-17Jul2018-v1/190812_184916'.format(path),
 			    nJobs     = 30,
 			    suffix    = 'DoubleMuon_2016E'
 			   ),
 			 cfg(data_name = 'DoubleMuon_2016F_v1',
-			     path      = '{0}/2016_data_legacy_DoubleMuon_Run2016F-17Jul2018-v1'.format(path),
+			     path      = '{0}/DoubleMuon/2016_data_legacy_DoubleMuon_Run2016F-17Jul2018-v1/190812_185121'.format(path),
 			     nJobs     = 30,
 			     suffix    = 'DoubleMuon_2016F'
 			    ),
 			 cfg(data_name = 'DoubleMuon_2016G_v1',
-			     path      = '{0}/2016_data_legacy_DoubleMuon_Run2016G-17Jul2018-v1'.format(path),
+			     path      = '{0}/DoubleMuon/2016_data_legacy_DoubleMuon_Run2016G-17Jul2018-v1/190812_185328'.format(path),
 			     nJobs     = 30,
 			     suffix    = 'DoubleMuon_2016G'
 			    ),
 			 cfg(data_name = 'DoubleMuon_2016H_v1',
-			     path      = '{0}/2016_data_legacy_DoubleMuon_Run2016H-17Jul2018-v1'.format(path),
+			     path      = '{0}/DoubleMuon/2016_data_legacy_DoubleMuon_Run2016H-17Jul2018-v1/190812_185517'.format(path),
 			     nJobs     = 30,
 			     suffix    = 'DoubleMuon_2016H'
 			    ),
@@ -629,8 +635,8 @@ data_dict['double_mu_Legacy'] = [
 
 
 batch_list = []
-#batch_list += sum([data_dict[n] for n in data_samples], []) 
-batch_list += sum([mc_dict[n] for n in mc_samples], []) 
+batch_list += sum([data_dict[n] for n in data_samples], []) 
+#batch_list += sum([mc_dict[n] for n in mc_samples], []) 
 
 #batch_list += sum([VBF_dict[n] for n in vbf_samples], []) 
 batch = bm.BatchMaster(config_list = batch_list, 

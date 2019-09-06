@@ -49,10 +49,17 @@ cat input.txt
 #	zgAnalyzer input.txt 300000 $DATANAME $SUFFIX $SELECTION $PERIOD $COUNT
 #fi
 
+echo "zgAnalyzer input.txt -1"
+echo $DATANAME 
+echo $SUFFIX 
+echo $SELECTION 
+echo $PERIOD 
+echo $COUNT
+
 #zgAnalyzer input.txt 250000 $DATANAME $SUFFIX $SELECTION $PERIOD $COUNT
 #zgAnalyzer_MuEff input.txt -1 $DATANAME $SUFFIX $SELECTION $PERIOD $COUNT
 
-zgAnalyzer input.txt 100 $DATANAME $SUFFIX $SELECTION $PERIOD $COUNT
+zgAnalyzer input.txt -1 $DATANAME $SUFFIX $SELECTION $PERIOD $COUNT
 #zgAnalyzer input.txt 1000 $DATANAME $SUFFIX $SELECTION $PERIOD $COUNT
 #zgAnalyzer input.txt 250000 $DATANAME $SUFFIX $SELECTION $PERIOD $COUNT
 ### Copy output and cleanup ###

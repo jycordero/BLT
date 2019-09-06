@@ -28,6 +28,7 @@
 #include "BaconAna/DataFormats/interface/TMuon.hh"
 #include "BaconAna/DataFormats/interface/TElectron.hh"
 #include "BaconAna/DataFormats/interface/TPhoton.hh"
+#include "BaconAna/DataFormats/interface/TEventInfo.hh"
 
 using namespace std;
 using namespace baconhep;
@@ -57,7 +58,14 @@ class WeightUtils: public TObject {
         float   GetElectronRecoIdEff(TLorentzVector&) const;
         float   GetHZZElectronRecoIdEff(TElectron&) const;
         float   GetPhotonMVAIdEff(TPhoton&) const;
+
         float   GetCorrectedPhotonR9(TPhoton&) const;
+        float   GetCorrectedPhotonEtaWidth(TPhoton&) const;
+        float   GetCorrectedPhotonPhiWidth(TPhoton&) const;
+        float   GetCorrectedPhotonS4(TPhoton&) const;
+        float   GetCorrectedPhotonSieie(TPhoton&) const;
+        float   GetCorrectedPhotonSieip(TPhoton&) const;
+        float   GetCorrectedPhotonRho(TPhoton&, TEventInfo&) const;
 
         ClassDef(WeightUtils, 0);
 
@@ -93,6 +101,24 @@ class WeightUtils: public TObject {
         TH2F *_mva_gammaSF;
 
         TGraph *_photon_r9_barrel, *_photon_r9_endcap;
+
+        TGraph *_photon_etawidth_barrel; 
+        TGraph *_photon_etawidth_endcap;
+ 
+        TGraph *_photon_phiwidth_barrel; 
+        TGraph *_photon_phiwidth_endcap; 
+
+        TGraph *_photon_sieie_barrel;    
+        TGraph *_photon_sieie_endcap;    
+
+        TGraph *_photon_sieip_barrel;    
+        TGraph *_photon_sieip_endcap;    
+
+        TGraph *_photon_s4_barrel;       
+        TGraph *_photon_s4_endcap;       
+
+        TGraph *_photon_rho_barrel;       
+        TGraph *_photon_rho_endcap;       
 
         TH2F *_eff_doubleg_leg1_DATA, *_eff_doubleg_leg1_MC;
         TH2F *_eff_doubleg_leg2_DATA, *_eff_doubleg_leg2_MC;

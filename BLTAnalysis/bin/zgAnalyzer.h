@@ -91,7 +91,7 @@ public:
     UInt_t runNumber, lumiSection, nPV, nPartons;
     ULong64_t evtNumber;
     Bool_t triggerStatus;
-    Float_t nPU;
+    Float_t nPU,Rho;
     Float_t xPV, yPV, zPV;
     UInt_t nJets, nCentralJets, nFwdJets, nBJets, nMuons, nElectrons, nTaus, nPhotons;
    

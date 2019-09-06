@@ -268,10 +268,29 @@ WeightUtils::WeightUtils(string dataPeriod, string selection, bool isRealData)
     _mva_gammaSF = (TH2F *)f_mva_gammaIdSF->Get("EGamma_SF2D");
 
     // photon r9 reweighting
-    fileName = cmssw_base + "/src/BLT/BLTAnalysis/data/photon_r9_reweighting_2016.root";
+    fileName = cmssw_base + "/src/BLT/BLTAnalysis/data/photon_corrections/photon_r9_reweighting_2016.root";
     TFile* f_photon_r9 = new TFile(fileName.c_str(), "OPEN"); 
     _photon_r9_barrel = (TGraph *)f_photon_r9->Get("transffull5x5R9EB");
     _photon_r9_endcap = (TGraph *)f_photon_r9->Get("transffull5x5R9EE");
+
+    // photon r9 reweighting
+    fileName = cmssw_base + "/src/BLT/BLTAnalysis/data/photon_corrections/transformation_pho_presel_BDTUpto6000.root";
+    TFile* f_photon_shower = new TFile(fileName.c_str(), "OPEN"); 
+    _photon_etawidth_barrel = (TGraph *)f_photon_shower->Get("transfEtaWidthEB");
+    _photon_etawidth_endcap = (TGraph *)f_photon_shower->Get("transfEtaWidthEE");
+
+    _photon_phiwidth_barrel = (TGraph *)f_photon_shower->Get("transfPhiWidthEB");
+    _photon_phiwidth_endcap = (TGraph *)f_photon_shower->Get("transfPhiWidthEE");
+
+    _photon_sieie_barrel    = (TGraph *)f_photon_shower->Get("transfSieieEB");
+    _photon_sieie_endcap    = (TGraph *)f_photon_shower->Get("transfSieieEE");
+
+    _photon_sieip_barrel    = (TGraph *)f_photon_shower->Get("transfSieipEB");
+    _photon_sieip_endcap    = (TGraph *)f_photon_shower->Get("transfSieipEE");
+
+    _photon_s4_barrel       = (TGraph *)f_photon_shower->Get("transfS4EB");
+    _photon_s4_endcap       = (TGraph *)f_photon_shower->Get("transfS4EE");
+
 }
 
 void WeightUtils::SetDataBit(bool isRealData)
@@ -595,7 +614,9 @@ float WeightUtils::GetPhotonMVAIdEff(TPhoton& photon) const
 	weight = 1.; 
     return weight;
 }
-
+/////////////////////////////////////////////////////
+//
+//     Correction Functions 
 float WeightUtils::GetCorrectedPhotonR9(TPhoton& photon) const 
 {
     float r9 = photon.r9;
@@ -607,5 +628,77 @@ float WeightUtils::GetCorrectedPhotonR9(TPhoton& photon) const
         std::cout << "bad value of photon scEta: returning original r9" << std::endl;
     
     return r9;
+}
+float WeightUtils::GetCorrectedPhotonEtaWidth(TPhoton& photon) const 
+{
+    float etawidth = photon.scEtaWidth;
+    if (fabs(photon.scEta) < 1.444)
+        etawidth = _photon_etawidth_barrel->Eval(photon.scEtaWidth);
+    else if (fabs(photon.scEta) > 1.566)
+        etawidth = _photon_etawidth_endcap->Eval(photon.scEtaWidth);
+    else
+        std::cout << "bad value of photon scEta: returning original etawidth" << std::endl;
+    
+    return etawidth;
+}
+float WeightUtils::GetCorrectedPhotonPhiWidth(TPhoton& photon) const 
+{
+    float phiwidth = photon.scPhiWidth;
+    if (fabs(photon.scEta) < 1.444)
+        phiwidth = _photon_phiwidth_barrel->Eval(photon.scPhiWidth);
+    else if (fabs(photon.scEta) > 1.566)
+        phiwidth = _photon_phiwidth_endcap->Eval(photon.scPhiWidth);
+    else
+        std::cout << "bad value of photon scEta: returning original phiwidth" << std::endl;
+    
+    return phiwidth;
+}
+float WeightUtils::GetCorrectedPhotonSieie(TPhoton& photon) const 
+{
+    float sieie = photon.sieie;
+    if (fabs(photon.scEta) < 1.444)
+        sieie = _photon_sieie_barrel->Eval(photon.sieie);
+    else if (fabs(photon.scEta) > 1.566)
+        sieie = _photon_sieie_endcap->Eval(photon.sieie);
+    else
+        std::cout << "bad value of photon scEta: returning original sieie" << std::endl;
+    
+    return sieie;
+}
+float WeightUtils::GetCorrectedPhotonSieip(TPhoton& photon) const 
+{
+    float sieip = photon.sieip;
+    if (fabs(photon.scEta) < 1.444)
+        sieip = _photon_sieip_barrel->Eval(photon.sieip);
+    else if (fabs(photon.scEta) > 1.566)
+        sieip = _photon_sieip_endcap->Eval(photon.sieip);
+    else
+        std::cout << "bad value of photon scEta: returning original sieip" << std::endl;
+    
+    return sieip;
+}
+float WeightUtils::GetCorrectedPhotonS4(TPhoton& photon) const 
+{
+    float s4 = photon.e2x2/photon.e5x5;
+    if (fabs(photon.scEta) < 1.444)
+        s4 = _photon_s4_barrel->Eval(s4);
+    else if (fabs(photon.scEta) > 1.566)
+        s4 = _photon_s4_endcap->Eval(s4);
+    else
+        std::cout << "bad value of photon scEta: returning original s4" << std::endl;
+    
+    return s4;
+}
+float WeightUtils::GetCorrectedPhotonRho(TPhoton& photon, TEventInfo& Info) const 
+{
+    float rho = Info.rhoJet;
+    if (fabs(photon.scEta) < 1.444)
+        rho = _photon_rho_barrel->Eval(Info.rhoJet);
+    else if (fabs(photon.scEta) > 1.566)
+        rho = _photon_rho_endcap->Eval(Info.rhoJet);
+    else
+        std::cout << "bad value of photon scEta: returning original rho" << std::endl;
+    
+    return rho;
 }
 
