@@ -131,6 +131,36 @@ bool ParticleSelector::PassMuonID(const baconhep::TMuon* mu, const Cuts::muIDCut
                     	&& test_bits(mu->typeBits, baconhep::kGlobal) == cutLevel.IsGLB
 		) muPass = true;
 	}
+    
+    else if (cutLevel.cutName == "HZZ") {
+        if (
+            fabs(mu->d0) < 0.5
+            && fabs(mu->dz) < 1.0
+            && (((mu->typeBits & baconhep::kGlobal) || 
+               ((mu->typeBits & baconhep::kTracker) && mu->nMatchStn > 0)) &&
+               (mu->btt != 2)) // Global muon or (arbitrated) tracker muon
+            && fabs(mu->sip3d) < 4.0                 
+           ) {
+                // We now have h->ZZ->4l "loose" muons
+                if (mu->pt < 200.0) {
+                    if (mu->pogIDBits & baconhep::kPOGLooseMuon)
+                        muPass = true;
+                }
+                else {
+                    // need to pass the tracker high-pt ID
+                    if (
+                            (mu->pogIDBits & baconhep::kPOGLooseMuon) ||
+                            (mu->nMatchStn > 1
+                            && (mu->ptErr/mu->pt) < 0.3 
+                            && fabs(mu->d0) < 0.2
+                            && fabs(mu->dz) < 0.5
+                            && mu->nPixHits > 0
+                            && mu->nTkLayers > 5)
+                       )
+                        muPass = true;
+                }
+        }
+    }
     return muPass;
 }
 
@@ -335,6 +365,32 @@ bool ParticleSelector::PassElectronMVA(const baconhep::TElectron* el, const Cuts
             }
         }
     }
+    else if (cutLevel.cutName == "looseFall17V2") {
+        if (el->pt > 5. && el->pt < 10.) {
+            if (fabs(el->scEta) < 0.8) {
+                if (el->mvaFall17V2Iso > 0.604775)
+                    elPass = true;
+            } else if (fabs(el->scEta) < 1.479) {
+                if (el->mvaFall17V2Iso > 0.628743)
+                    elPass = true;
+            } else if (fabs(el->scEta) < 2.5) {
+                if (el->mvaFall17V2Iso > 0.896462)
+                   elPass = true;
+            }
+        } else if (el->pt > 10.) {
+            if (fabs(el->scEta) < 0.8) {
+                if (el->mvaFall17V2Iso > -0.145237)
+                    elPass = true;
+            } else if (fabs(el->scEta) < 1.479) {
+                if (el->mvaFall17V2Iso > -0.0315746)
+                    elPass = true;
+            } else if (fabs(el->scEta) < 2.5) {
+                if (el->mvaFall17V2Iso > -0.032173)
+                    elPass = true;
+            }
+        }
+    }
+
     return elPass;
 }
 
@@ -465,21 +521,59 @@ bool ParticleSelector::PassPhotonID(const baconhep::TPhoton* ph, const Cuts::phI
 
 bool ParticleSelector::PassPhotonMVA(const baconhep::TPhoton* ph, const Cuts::phMVACuts& cutLevel) const {
     bool phoPass = false;
-    if (cutLevel.cutName == "looseMVAPhID") {
-        if (ph->mvaFall17V2 > 0.2) 
-            phoPass = true;
-    }
-    else if (cutLevel.cutName == "tightMVAPhID") {
-        if (fabs(ph->scEta) <= 1.479) { // barrel
-            if (ph->mvaFall17V2 > 0.68)
+    //if (cutLevel.cutName == "looseMVAPhID") {
+    //    if (ph->mvaFall17V2 > 0.2) 
+    //        phoPass = true;
+    //}
+    //else if (cutLevel.cutName == "tightMVAPhID") {
+    //    if (fabs(ph->scEta) <= 1.479) { // barrel
+    //        if (ph->mvaFall17V2 > 0.68)
+    //            phoPass = true;
+    //    }
+    //    else { //endcap
+    //        if (ph->mvaFall17V2 > 0.60)
+    //            phoPass = true;
+    //    }
+    //}
+
+    if (_parameters.period == "2016") {
+        if (cutLevel.cutName == "loose") {
+            if (ph->mvaSpring16 > 0.2) {
                 phoPass = true;
+            }
         }
-        else { //endcap
-            if (ph->mvaFall17V2 > 0.60)
+        else if (cutLevel.cutName == "tight") {
+            if (fabs(ph->scEta) <= 1.479) { // barrel
+                if (ph->mvaSpring16 > 0.68) {
+                    phoPass = true;
+                }
+            }
+            else { //endcap
+                if (ph->mvaSpring16 > 0.60) {
+                    phoPass = true;
+                }
+            }
+        }
+    } else if (_parameters.period == "2016Legend") {
+        if (cutLevel.cutName == "loose") {
+            if (ph->mvaFall17V2 > 0.2) {
                 phoPass = true;
+            }
+        }
+        else if (cutLevel.cutName == "tight") {
+            if (fabs(ph->scEta) <= 1.479) { // barrel
+                if (ph->mvaFall17V2> 0.68) {
+                    phoPass = true;
+                }
+            }
+            else { //endcap
+                if (ph->mvaFall17V2 > 0.60) {
+                    phoPass = true;
+                }
+            }
         }
     }
-    
+ 
     return phoPass;
 }
 
@@ -822,3 +916,13 @@ pair<float, float> ParticleSelector::JetResolutionAndSF(const baconhep::TJet* je
 
     return make_pair(jres, jsf);
 }
+//void ParticleSelector::ApplyMuonMomentumCorrection(baconhep::TMuon* mu, bool isData) const
+//{
+//    double muonSF = 1.;
+//    if (isData)
+//        muonSF = muonCorr->kScaleDT(mu->q, mu->pt, mu->eta, mu->phi, 0, 0);
+//    else
+//        muonSF = muonCorr->kSmearMC(mu->q, mu->pt, mu->eta, mu->phi, mu->nTkLayers, _rng->Rndm(), 0, 0);
+//    mu->pt = muonSF*mu->pt;
+//}
+

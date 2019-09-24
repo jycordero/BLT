@@ -391,9 +391,3 @@ double RoccoR::kScaleFromGenMC(int Q, double pt, double eta, double phi, int n, 
 
 #endif
 
-
-
-
-
-
-

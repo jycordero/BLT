@@ -77,7 +77,13 @@ void zgAnalyzer::Begin(TTree *tree)
 
     // Set up object to handle good run-lumi filtering if necessary
     lumiMask = RunLumiRangeMap();
-    string jsonFileName = cmssw_base + "/src/BLT/BLTAnalysis/data/Cert_271036-284044_13TeV_23Sep2016ReReco_Collisions16_JSON.txt";
+    if( params->period == "2016Legacy")
+	string jsonFileName = cmssw_base + "/src/BLT/BLTAnalysis/data/Cert_271036-284044_13TeV_ReReco_07Aug2017_Collisions16_JSON.txt";
+    else if(params->period == "2016" )
+	string jsonFileName = cmssw_base + "/src/BLT/BLTAnalysis/data/Cert_271036-284044_13TeV_23Sep2016ReReco_Collisions16_JSON.txt"; 
+    else if(params->period = "2017")
+	string jsonFileName = cmssw_base + "/src/BLT/BLTAnalysis/data/Cert_294927-306462_13TeV_EOY2017ReReco_Collisions17_JSON_v1.txt  ";
+
     lumiMask.AddJSONFile(jsonFileName);
 
     // muon momentum corrections
@@ -530,8 +536,8 @@ Bool_t zgAnalyzer::Process(Long64_t entry)
         bool triggered = false;
         triggered = trigger->pass(triggerNames[i], fInfo->triggerBits);
         passTrigger |= triggered;
-
         if (triggered) {
+	    
             passTriggerNames.push_back(triggerNames[i]);
         }
     }
@@ -540,6 +546,8 @@ Bool_t zgAnalyzer::Process(Long64_t entry)
         return kTRUE;
     hTotalEvents->Fill(3);
 
+    if(debug)
+	cout << "HLT Trigger passed\n" << endl;
     /////////////////////
     // Fill event info //
     /////////////////////
@@ -577,6 +585,9 @@ Bool_t zgAnalyzer::Process(Long64_t entry)
         return kTRUE;
     }
     hTotalEvents->Fill(4);
+
+    if(debug)
+	cout << "PV passed\n" << endl;
     particleSelector->SetNPV(fInfo->nPU + 1);
     particleSelector->SetRho(fInfo->rhoJet);
     Rho = fInfo->rhoJet;
@@ -792,6 +803,15 @@ Bool_t zgAnalyzer::Process(Long64_t entry)
     /* PHOTONS */
     vector <TPhoton*> photons;
     vector<TLorentzVector> veto_photons;
+    float EAPho[7][3] = {
+			{0.0112, 	0.0668, 	0.1113},
+			{0.0108, 	0.1054, 	0.0953},
+			{0.0106, 	0.0786, 	0.0619},
+			{0.01002, 	0.0233, 	0.0837},
+			{0.0098, 	0.0078, 	0.1070},
+			{0.0089, 	0.0028, 	0.1212},
+			{0.0087, 	0.0137, 	0.1466} 
+			};
 
     for (int i=0; i<fPhotonArr->GetEntries(); i++) {
         TPhoton* photon = (TPhoton*) fPhotonArr->At(i);
@@ -822,6 +842,7 @@ Bool_t zgAnalyzer::Process(Long64_t entry)
                 //&& particleSelector->PassPhotonMVA(photon, cuts->looseMVAPhID)
                 //&& particleSelector->PassPhotonID(photon, cuts->mediumPhID)
                 && particleSelector->PassPhotonID(photon, cuts->preSelPhID)
+                && particleSelector->PassPhotonIso(photon, cuts->preSelPhIso,EAPho)	
                 && photon->passElectronVeto
             ) {
             photons.push_back(photon);
@@ -1020,11 +1041,11 @@ Bool_t zgAnalyzer::Process(Long64_t entry)
         hTotalEvents->Fill(7);
 
         //if (leptonOneP4.Pt() <= 20.0) 
-        if (leptonOneP4.Pt() <= 25.0) 
+        if (leptonOneP4.Pt() < 25.0) 
             return kTRUE;
 
         //if (leptonTwoP4.Pt() <= 10.0)
-        if (leptonTwoP4.Pt() <= 20.0)
+        if (leptonTwoP4.Pt() < 20.0)
             return kTRUE;
 
         if (sync_print_precut) {
@@ -1085,7 +1106,7 @@ Bool_t zgAnalyzer::Process(Long64_t entry)
             }
 	    //std::cout << " Photon Pt" << tempPhoton.Pt() << std::endl;
             if (
-                tempPhoton.Pt() > 15.0 
+                tempPhoton.Pt() >= 15.0 
                 //&& tempPhoton.Et()/tempLLG.M() > (15.0/110.0) 
                 //&& dileptonP4.M() + tempLLG.M() > 185.0 
                 //&& tempLLG.M() > 100. && tempLLG.M() < 180. 
@@ -1348,7 +1369,12 @@ Bool_t zgAnalyzer::Process(Long64_t entry)
         photonOnePt     = photonOneP4.Pt();
         photonOneEta    = photonOneP4.Eta();
         photonOnePhi    = photonOneP4.Phi();
-        photonOneMVA    = photons[photonIndex]->mvaFall17V2;
+        if(params->period == "2016")
+		photonOneMVA    = photons[photonIndex]->mvaSpring16;
+        else if( params->period == "2016Legacy")
+		photonOneMVA    = photons[photonIndex]->mvaFall17V2;
+	else
+		photonOneMVA    = photons[photonIndex]->mvaFall17V2;
         photonOneERes   = photons[photonIndex]->eRes;
         photonOneSieie  = photons[photonIndex]->sieie;
         photonOneHoverE = photons[photonIndex]->hovere;
@@ -1734,10 +1760,10 @@ Bool_t zgAnalyzer::Process(Long64_t entry)
             return kTRUE;
         hTotalEvents->Fill(7);
 
-        if (leptonOneP4.Pt() <= 25.0)
+        if (leptonOneP4.Pt() < 25.0)
             return kTRUE;
 
-        if (leptonTwoP4.Pt() <= 20.0)
+        if (leptonTwoP4.Pt() < 20.0)
             return kTRUE;
         
 	if(debugSelect)
@@ -1767,7 +1793,7 @@ Bool_t zgAnalyzer::Process(Long64_t entry)
                      << this_dr1 << ", " << this_dr2 << endl;
             }
             if (
-                tempPhoton.Pt() > 15.0 
+                tempPhoton.Pt() >= 15.0 
                 //&& tempPhoton.Et()/tempLLG.M() > (15.0/110.0) 
                 //&& dileptonP4.M() + tempLLG.M() > 185.0 
                 //&& tempLLG.M() > 100. && tempLLG.M() < 180. 
@@ -2038,7 +2064,12 @@ Bool_t zgAnalyzer::Process(Long64_t entry)
         photonOnePt    = photonOneP4.Pt();
         photonOneEta   = photonOneP4.Eta();
         photonOnePhi   = photonOneP4.Phi();
-        photonOneMVA   = photons[photonIndex]->mvaFall17V2;
+	if(params->period == "2016")
+	        photonOneMVA   = photons[photonIndex]->mvaSpring16;
+	else if(params->period == "2016Legacy")
+	        photonOneMVA   = photons[photonIndex]->mvaFall17V2;
+	else
+	        photonOneMVA   = photons[photonIndex]->mvaFall17V2;
         photonOneERes  = photons[photonIndex]->eRes;
         photonOneSieie = photons[photonIndex]->sieie;
         photonOneIph   = photons[photonIndex]->gammaIso;

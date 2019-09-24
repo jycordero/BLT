@@ -182,6 +182,10 @@ public:
     Float_t zepp;
 
     //ClassDef(hzgAnalyzer,0);
+    float GetMuonIsolation(const baconhep::TMuon*);
+    float GetElectronIsolation(const baconhep::TElectron*, float);
+    float GetPhotonIsolation(const baconhep::TPhoton*, float);
+
 };
 
 #endif  // HZGANALYZER_HH

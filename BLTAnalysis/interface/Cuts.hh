@@ -34,7 +34,7 @@ public:
         float dxy;
         float dz;
         std::string cutName;
-    } looseMuID, tightMuID, vetoMuID;
+    } looseMuID, tightMuID, vetoMuID,TightMuID, muHZZID;
 
     struct muIsoCuts {
         float chIso04;
@@ -52,9 +52,6 @@ public:
         std::string cutName;
     } looseMuDetIso, tightMuDetIso, amumuMuDetIso;
     /////////////////////////////////////////////////////
-
-
-
 
 
 
@@ -93,9 +90,15 @@ public:
         std::string cutName;
     } looseElIso, mediumElIso, tightElIso;
 
-
-
-
+    struct elMVACuts {
+        float mvaVal[6];
+        float pt[2];
+        float eta[3];
+        int missHits[6];
+        float sip[6];
+        int conversionVeto[6];
+        std::string cutName;
+    } hzgMVAID, hzzMVAID, hwwMVAID, looseMVAElID, tightMVAElID, looseFallMVAElID;
 
     ////////////////////////////////////////////////////
     // Photon Cuts
@@ -125,16 +128,9 @@ public:
         float mvaValCat4;
         std::string cutName;
     } catPhMVAID, looseMVAPhID, tightMVAPhID;
+
+
     ////////////////////////////////////////////////////
-    struct elMVACuts {
-        float mvaVal[6];
-        float pt[2];
-        float eta[3];
-        int missHits[6];
-        float sip[6];
-        int conversionVeto[6];
-        std::string cutName;
-    } hzgMVAID, hzzMVAID, hwwMVAID, looseMVAElID, tightMVAElID;
 
     struct vbfJetIDCuts {
         float betaStarC[2];

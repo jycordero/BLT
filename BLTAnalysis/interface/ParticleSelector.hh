@@ -9,6 +9,7 @@
 #include "BaconAna/DataFormats/interface/TJet.hh"
 #include "BaconAna/DataFormats/interface/TGenParticle.hh"
 
+//#include "BLT/BLTAnalysis/interface/RoccoR.h"
 #include "BLT/BLTAnalysis/interface/BLTHelper.hh"
 #include "BLT/BLTAnalysis/interface/Parameters.hh"
 #include "BLT/BLTAnalysis/interface/Cuts.hh"
@@ -46,6 +47,7 @@ public:
     bool PassMuonID(const baconhep::TMuon* mu, const Cuts::muIDCuts& cutLevel) const;
     bool PassMuonIso(const baconhep::TMuon* mu, const Cuts::muIsoCuts& cutLevel) const;
     bool PassMuonIso(const baconhep::TMuon* mu, const Cuts::muDetIsoCuts& cutLevel) const;
+    void ApplyMuonMomentumCorrection(baconhep::TMuon* mu, bool isData) const;
 
     // Electrons
     bool PassElectronID(const baconhep::TElectron* el, const Cuts::elIDCuts& cutLevel) const;
@@ -81,6 +83,9 @@ private:
     JetCorrectionUncertainty* _jecUncertainty;
     JME::JetResolution jetResolution;
     JME::JetResolutionScaleFactor jetResolutionSF;
+
+    //RoccoR *muonCorr;
+
 };
 
 #endif  // PARTICLESELECTOR_HH

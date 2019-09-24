@@ -172,6 +172,7 @@ Cuts::Cuts() {
     mvaPreElID.dr03HcalTowerSumEt[1]      = 0.2;
     mvaPreElID.numberOfLostHits[1]        = 0;
     
+    looseFallMVAElID.cutName              = "looseFall17V2";
     looseMVAElID.cutName                  = "looseMVAElID";
     tightMVAElID.cutName                  = "tightMVAElID";
 
@@ -219,8 +220,11 @@ Cuts::Cuts() {
 	vetoMuID.dz				= 0.2;
 	vetoMuID.dxy				= 0.5;
 /*
-                && GetMuonIsolation(muon)/muonP4.Pt() < 0.15
-*/         
+                && GetMuonIsolation(muon)/muonP4.Pt() < 0.15*/        
+ 
+    muHZZID.cutName                  = "HZZ";
+    TightMuID.cutName                  = "tight";
+
     looseMuID.cutName			= "looseMuID";
     looseMuID.IsPF			= 1;
     looseMuID.IsGLB			= 1;
@@ -308,14 +312,14 @@ Cuts::Cuts() {
     mediumPhID.sigmaIetaIeta[1]           = 0.03001;
     */
 
-    preSelPhIso.cutName                   = "preSelPhIso";
-    //preSelPhIso.chIso[0]                = 0.441;
-    //preSelPhIso.nhIso[0]                = 2.725;
-    preSelPhIso.phIso[0]                  = 15;
+    preSelPhIso.cutName                  = "preSelPhIso";
+    preSelPhIso.chIso[0]                 = 0;
+    preSelPhIso.nhIso[0]                 = 0;
+    preSelPhIso.phIso[0]                 = 15;
 
-    //preSelPhIso.chIso[1]                = 0.442;
-    //preSelPhIso.nhIso[1]                = 1.715;
-    preSelPhIso.phIso[1]                  = 15;
+    preSelPhIso.chIso[1]                 = 0;
+    preSelPhIso.nhIso[1]                 = 0;
+    preSelPhIso.phIso[1]                 = 15;
 
     mediumPhIso.cutName                   = "mediumPhIso";
     mediumPhIso.chIso[0]                = 0.441;
@@ -362,7 +366,8 @@ Cuts::Cuts() {
     catPhMVAID.mvaValCat3                 = 0.126;
     catPhMVAID.mvaValCat4                 = 0.135;
 
-    looseMVAPhID.cutName                  = "looseMVAPhID";
+    //looseMVAPhID.cutName                  = "looseMVAPhID";
+    looseMVAPhID.cutName                  = "loose";
     tightMVAPhID.cutName                  = "tightMVAPhID";
 
     hzgMVAID.cutName                        = "hzgMVAID";

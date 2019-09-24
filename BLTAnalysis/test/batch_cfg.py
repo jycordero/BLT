@@ -8,6 +8,7 @@ path       = 'root://cmseos.fnal.gov//store/user/corderom/sync_mc'
 executable = 'execBatch.sh'
 
 legacy = True
+#legacy = False
 
 #selection  = 'jetjetgmjetjet'
 selection  = 'mumug'
@@ -27,6 +28,14 @@ if legacy:
 		data_samples = ['double_el_legacy']
 	elif selection == 'elelg':	
 		data_samples = ['double_el_legacy']
+	################
+	mc_samples = []
+
+	mc_samples += ['JC_DYJets_Legacy']
+	mc_samples += ['JC_WW_Legacy','JC_WZ_Legacy','JC_ZZ_Legacy']
+	mc_samples += ['JC_TTTo2L2Nu_Legacy']
+	mc_samples += ['JC_WJets_Legacy']
+	mc_samples += ['JC_ZGToLLG_Legacy']
 
 else:
 	if selection == 'mumug':
@@ -37,24 +46,17 @@ else:
 		data_samples = ['double_el']
 	elif selection == 'elelg':	
 		data_samples = ['double_el']
+	##################
+	mc_samples = []
+	#mc_samples += ['JB_TT']
+	#mc_samples += ['JB_ZG_ZToLL']
+	#mc_samples += ['JB_WJets']
+	#mc_samples += ['JB_DYJets']
+	#c_samples += ['JB_WZ','JB_ZZ']
 
-
-mc_samples = []
-################################################
-#mc_samples += ['JB_TT']
-#mc_samples += ['JB_ZG_ZToLL']
-#mc_samples += ['JB_WJets']
-#mc_samples += ['JB_DYJets']
-#mc_samples += ['JB_WZ','JB_ZZ']
-
-
+	mc_samples += ['JB_DYJets_Madgraph']
 
 ################################################
-#mc_samples += ['JC_DYJets_Legacy']
-#mc_samples += ['JC_WW_Legacy','JC_WZ_Legacy','JC_ZZ_Legacy']
-mc_samples += ['JC_TTTo2L2Nu_Legacy']
-mc_samples += ['JC_WJets_Legacy']
-mc_samples += ['JC_ZGToLLG_Legacy']
 
 
 ''' 
@@ -430,6 +432,13 @@ mc_dict['JB_TT'] = [
 mc_dict['JB_DYJets'] = [
 		    cfg(data_name = 'DYJets',
 			path     = '{0}/DYJetsToLL_M-50_amcatnlo_all_gen_tmp'.format(path),
+			nJobs    = 30,
+			suffix   = 'dyjets'
+		       ),
+			]
+mc_dict['JB_DYJets_Madgraph'] = [
+		    cfg(data_name = 'DYJets',
+			path     = '/eos/uscms/store/group/lpcbacon/15/DYJetsToLL_M_50_TuneCP5_13TeV_10X/DYJetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8/CRAB3/190213_170924',
 			nJobs    = 30,
 			suffix   = 'dyjets'
 		       ),
