@@ -47,12 +47,6 @@ void zgAnalyzer::Begin(TTree *tree)
     // Set the parameters
     params.reset(new Parameters());
     params->setup(options);
-    // Param Formating
-    if(params->period == "2016")
-	params->period = "2016Legacy";
-    else if (params->period == "2017")
-	params->period = "2017ReReco";
-
 
     // Set the cuts
     cuts.reset(new Cuts());
@@ -83,14 +77,8 @@ void zgAnalyzer::Begin(TTree *tree)
 
     // Set up object to handle good run-lumi filtering if necessary
     lumiMask = RunLumiRangeMap();
-    string jsonFileName;
-    if( params->period == "2016Legacy")
-	jsonFileName = cmssw_base + "/src/BLT/BLTAnalysis/data/Cert_271036-284044_13TeV_ReReco_07Aug2017_Collisions16_JSON.txt";
-    else if(params->period == "2016ReReco")
-	jsonFileName = cmssw_base + "/src/BLT/BLTAnalysis/data/Cert_271036-284044_13TeV_23Sep2016ReReco_Collisions16_JSON.txt"; 
-    else if(params->period == "2017ReReco")
-	jsonFileName = cmssw_base + "/src/BLT/BLTAnalysis/data/Cert_294927-306462_13TeV_EOY2017ReReco_Collisions17_JSON_v1.txt";
-
+    //string jsonFileName = cmssw_base + "/src/BLT/BLTAnalysis/data/Cert_271036-284044_13TeV_23Sep2016ReReco_Collisions16_JSON.txt";
+    string jsonFileName = cmssw_base + "/src/BLT/BLTAnalysis/data/Cert_271036-284044_13TeV_ReReco_07Aug2017_Collisions16_JSON.txt";
     lumiMask.AddJSONFile(jsonFileName);
 
     // muon momentum corrections
@@ -1047,13 +1035,15 @@ Bool_t zgAnalyzer::Process(Long64_t entry)
             return kTRUE;
         hTotalEvents->Fill(7);
 
-        //if (leptonOneP4.Pt() <= 20.0) 
-        if (leptonOneP4.Pt() < 25.0) 
+        if (leptonOneP4.Pt() <= 20.0) {
+        //if (leptonOneP4.Pt() <= 25.0) 
             return kTRUE;
+	}
 
-        //if (leptonTwoP4.Pt() <= 10.0)
-        if (leptonTwoP4.Pt() < 20.0)
+        if (leptonTwoP4.Pt() <= 15.0){
+        //if (leptonTwoP4.Pt() <= 20.0)
             return kTRUE;
+	}
 
         if (sync_print_precut) {
             cout << "selected lepton1_pt, lepton1_eta, lepton1_phi, lepton2_pt, lepton2_eta, lepton2_phi" << endl;
@@ -1113,11 +1103,11 @@ Bool_t zgAnalyzer::Process(Long64_t entry)
             }
 	    //std::cout << " Photon Pt" << tempPhoton.Pt() << std::endl;
             if (
-                tempPhoton.Pt() >= 15.0 
-                //&& tempPhoton.Et()/tempLLG.M() > (15.0/110.0) 
-                //&& dileptonP4.M() + tempLLG.M() > 185.0 
-                //&& tempLLG.M() > 100. && tempLLG.M() < 180. 
-                //&& this_dr1 > 0.4 && this_dr2 > 0.4
+                tempPhoton.Pt() > 15.0 
+                && tempPhoton.Et()/tempLLG.M() > (15.0/110.0) 
+                && dileptonP4.M() + tempLLG.M() > 185.0 
+                && tempLLG.M() > 100. && tempLLG.M() < 180. 
+                && this_dr1 > 0.4 && this_dr2 > 0.4
                 ) {
                 hasValidPhoton = true;
                 photonIndex = i;
@@ -1767,10 +1757,10 @@ Bool_t zgAnalyzer::Process(Long64_t entry)
             return kTRUE;
         hTotalEvents->Fill(7);
 
-        if (leptonOneP4.Pt() < 25.0)
+        if (leptonOneP4.Pt() <= 25.0)
             return kTRUE;
 
-        if (leptonTwoP4.Pt() < 20.0)
+        if (leptonTwoP4.Pt() <= 20.0)
             return kTRUE;
         
 	if(debugSelect)
@@ -1800,7 +1790,7 @@ Bool_t zgAnalyzer::Process(Long64_t entry)
                      << this_dr1 << ", " << this_dr2 << endl;
             }
             if (
-                tempPhoton.Pt() >= 15.0 
+                tempPhoton.Pt() > 15.0 
                 //&& tempPhoton.Et()/tempLLG.M() > (15.0/110.0) 
                 //&& dileptonP4.M() + tempLLG.M() > 185.0 
                 //&& tempLLG.M() > 100. && tempLLG.M() < 180. 

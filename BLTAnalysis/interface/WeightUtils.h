@@ -44,6 +44,10 @@ class WeightUtils: public TObject {
         void    SetDataPeriod(string);
         void    SetSelection(string);
 
+	void    SetIDWeights(string);
+	void    SetISOWeights(string);
+	void    SetTriggerWeights(string);
+
         float   GetPUWeight(float);
         pair<float, float>   GetTriggerEffWeight(string, TLorentzVector&) const;
         //pair<float, float>   GetDoubleEGTriggerEffWeight(string, TElectron&) const;
@@ -70,11 +74,17 @@ class WeightUtils: public TObject {
         ClassDef(WeightUtils, 0);
 
     private:
+	string _cmssw_base;
+	string _fileName;
+	string _filePath;
+
         //input parameters
         string _dataPeriod;
         string _sampleName;
         string _selection;
         bool   _isRealData;
+
+	string PeriodFolder;
 
         // rng
         TRandom3 *rng;
@@ -96,6 +106,19 @@ class WeightUtils: public TObject {
 
         TGraphErrors *_eleSF_RECO, *_eleSF_ID[5], *_hzz_eleSF_ID[13];
         TH2F *_eleSF_RECO_2D, *_hzz_eleSF_ID_2D;
+
+	// ADDED BY JOSEPH CORDERO
+        TH2F *_muSF_tight_ID_BCDEF, *_muSF_tight_ID_GH;
+	TH2F *_muSF_loose_ID_BCDEF, *_muSF_loose_ID_GH;
+        TH2F *_eleSF_tight_ID_BCDEF, *_eleSF_tight_ID_GH;
+	TH2F *_eleSF_loose_ID_BCDEF, *_eleSF_loose_ID_GH;
+
+        TH2F *_muSF_tight_ISO_BCDEF, *_muSF_tight_ISO_GH;
+	TH2F *_muSF_loose_ISO_BCDEF, *_muSF_loose_ISO_GH;
+        TH2F *_eleSF_tight_ISO_BCDEF, *_eleSF_tight_ISO_GH;
+	TH2F *_eleSF_loose_ISO_BCDEF, *_eleSF_loose_ISO_GH;
+
+
 
         TGraphErrors *_mva_gammaSF_ID[5];
         TH2F *_mva_gammaSF;
@@ -130,6 +153,9 @@ class WeightUtils: public TObject {
         //TH2D    *h2_EleMVASF;
 };
 
+void SetTriggerWeights(std::string PeriodFolder);
+void SetIDWeights(std::string PeriodFolder);
+void SetISOWeights(std::string PeriodFolder);
 #endif
 
 #if !defined(__CINT__)
