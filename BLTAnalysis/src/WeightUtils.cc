@@ -19,7 +19,7 @@ WeightUtils::WeightUtils(string dataPeriod, string selection, bool isRealData)
 	else if (dataPeriod == "2017Rereco")
 		PeriodFolder = "ReReco2017";
 	
-	
+	PeriodFolder = "ReReco2016";	
 
 	// PU weights
 	_fileName = _cmssw_base + "/src/BLT/BLTAnalysis/" + PeriodFolder + "/pileup_sf_2016_full.root";

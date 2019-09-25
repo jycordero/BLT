@@ -23,6 +23,19 @@ bool test_bits(unsigned int bits, unsigned int test) {
 ParticleSelector::ParticleSelector(const Parameters& parameters, const Cuts& cuts) {
     this->_parameters = parameters;
     this->_cuts = cuts;
+    string PeriodFolder;
+
+    if(_dataPeriod == "2016ReReco")
+	PeriodFolder = "ReRecoFolder";
+    else if (dataPeriod == "2016Legacy")
+        PeriodFolder = "2016Legacy";
+    else if (dataPeriod == "2017Rereco")
+        PeriodFolder = "ReReco2017";
+	
+    PeriodFolder = "ReReco2016"
+    cout << "!!--------------------------!!\n"
+	 << "!! Taking 2016 Rereco JEC   !!\n" 
+         << "!!--------------------------!!\n";
 
     _rng = new TRandom3(1337);
 
@@ -44,7 +57,8 @@ ParticleSelector::ParticleSelector(const Parameters& parameters, const Cuts& cut
             runPeriod = "H";
         } 
 
-        std::string jecPath = cmssw_base + "/src/BLT/BLTAnalysis/data/Summer16_23Sep2016" + runPeriod + "V4_DATA/Summer16_23Sep2016" + runPeriod + "V4_DATA";
+        //std::string jecPath = cmssw_base + "/src/BLT/BLTAnalysis/data/Summer16_23Sep2016" + runPeriod + "V4_DATA/Summer16_23Sep2016" + runPeriod + "V4_DATA";
+        std::string jecPath = cmssw_base + "/src/BLT/BLTAnalysis/" + PeriodFolder + "/Summer16_23Sep2016" + runPeriod + "V4_DATA/Summer16_23Sep2016" + runPeriod + "V4_DATA";
         std::cout << jecPath << std::endl;
         JetCorrectorParameters *ResJetPar = new JetCorrectorParameters(jecPath + "_L2L3Residual_AK4PFchs.txt"); 
         JetCorrectorParameters *L3JetPar  = new JetCorrectorParameters(jecPath + "_L3Absolute_AK4PFchs.txt");
@@ -65,7 +79,8 @@ ParticleSelector::ParticleSelector(const Parameters& parameters, const Cuts& cut
 
     } else { // MC 
         // jet energy corrections
-        std::string jecPath = cmssw_base + "/src/BLT/BLTAnalysis/data/Summer16_23Sep2016V4_MC/Summer16_23Sep2016V4_MC";
+        //std::string jecPath = cmssw_base + "/src/BLT/BLTAnalysis/data/Summer16_23Sep2016V4_MC/Summer16_23Sep2016V4_MC";
+        std::string jecPath = cmssw_base + "/src/BLT/BLTAnalysis/" + PeriodFolder + "/Summer16_23Sep2016V4_MC/Summer16_23Sep2016V4_MC";
         std::cout << jecPath << std::endl;
         JetCorrectorParameters *ResJetPar = new JetCorrectorParameters(jecPath + "_L2L3Residual_AK4PFchs.txt"); 
         JetCorrectorParameters *L3JetPar  = new JetCorrectorParameters(jecPath + "_L3Absolute_AK4PFchs.txt");
@@ -85,8 +100,10 @@ ParticleSelector::ParticleSelector(const Parameters& parameters, const Cuts& cut
         _jecUncertainty = new JetCorrectionUncertainty(*jecUnc);
 
         // jet energy resolution
-        jetResolution   = JME::JetResolution(cmssw_base + "/src/BLT/BLTAnalysis/data/jet_pt_resolution.dat");
-        jetResolutionSF = JME::JetResolutionScaleFactor(cmssw_base + "/src/BLT/BLTAnalysis/data/jet_resolution_scale_factors.dat");
+        jetResolution   = JME::JetResolution(cmssw_base + "/src/BLT/BLTAnalysis/" + PeriodoOlder + "/jet_pt_resolution.dat");
+        jetResolutionSF = JME::JetResolutionScaleFactor(cmssw_base + "/src/BLT/BLTAnalysis/" + PeriodFolder + "/jet_resolution_scale_factors.dat");
+        //jetResolution   = JME::JetResolution(cmssw_base + "/src/BLT/BLTAnalysis/data/jet_pt_resolution.dat");
+        //jetResolutionSF = JME::JetResolutionScaleFactor(cmssw_base + "/src/BLT/BLTAnalysis/data/jet_resolution_scale_factors.dat");
     }
 }
 

@@ -47,17 +47,26 @@ void zgAnalyzer::Begin(TTree *tree)
     // Set the parameters
     params.reset(new Parameters());
     params->setup(options);
-    // Param Formating
+
+    cout << options.at(0) << endl
+	 << options.at(1) << endl
+	 << options.at(2) << endl
+	 << options.at(3) << endl
+	 << options.at(4) << endl;
+
+
+ // Param Formating
     if(params->period == "2016")
 	params->period = "2016Legacy";
     else if (params->period == "2017")
 	params->period = "2017ReReco";
-
-
+    
+    cout << "--- Cuts and Particle Selector \n";
     // Set the cuts
     cuts.reset(new Cuts());
     particleSelector.reset(new ParticleSelector(*params, *cuts));
 
+    cout << "--- Trigger \n";
     // Trigger bits mapping file
     const std::string cmssw_base = getenv("CMSSW_BASE");
     std::string trigfilename = cmssw_base + "/src/BaconAna/DataFormats/data/HLTFile_25ns";
@@ -78,9 +87,12 @@ void zgAnalyzer::Begin(TTree *tree)
         triggerNames.push_back("HLT_IsoTkMu24_v*");
     }
         
+    cout << "--- Weights \n";
     // Weight utility class
     weights.reset(new WeightUtils(params->period, params->selection, false)); // Lumi mask
 
+
+    cout << "--- LumiMask \n";
     // Set up object to handle good run-lumi filtering if necessary
     lumiMask = RunLumiRangeMap();
     string jsonFileName;
@@ -93,6 +105,7 @@ void zgAnalyzer::Begin(TTree *tree)
 
     lumiMask.AddJSONFile(jsonFileName);
 
+    cout << "--- Declarations \n";
     // muon momentum corrections
     muonCorr = new RoccoR(cmssw_base + "/src/BLT/BLTAnalysis/data/rcdata.2016.v3");
     rng = new TRandom3();
@@ -140,6 +153,8 @@ void zgAnalyzer::Begin(TTree *tree)
     outTree->Branch("elTrigWeightTwo"  , &elTrigWeightTwo);
     outTree->Branch("muonIDWeightOne"  , &muonIDWeightOne);
     outTree->Branch("muonIDWeightTwo"  , &muonIDWeightTwo);
+    outTree->Branch("muonISOWeightOne" , &muonISOWeightOne);
+    outTree->Branch("muonISOWeightTwo" , &muonISOWeightTwo);
     outTree->Branch("muonTrigWeightOne", &muonTrigWeightOne);
     outTree->Branch("muonTrigWeightTwo", &muonTrigWeightTwo);
     outTree->Branch("photonIDWeight"   , &photonIDWeight);
@@ -1594,12 +1609,21 @@ Bool_t zgAnalyzer::Process(Long64_t entry)
         zgPhi = l_minus.Phi();
             
         if (!isData) {
-
-            muonIDWeightOne = weights->GetHZZMuonIDEff(*muons[muonOneIndex]); 
-            muonIDWeightTwo = weights->GetHZZMuonIDEff(*muons[muonTwoIndex]);
+	    ///      ID EFFICIENTCY
+	    //
+            //muonIDWeightOne = weights->GetHZZMuonIDEff(*muons[muonOneIndex]); 
+            //muonIDWeightTwo = weights->GetHZZMuonIDEff(*muons[muonTwoIndex]);
+            muonIDWeightOne = weights->GetMuonIDEff(leptonOneP4); 
+            muonIDWeightTwo = weights->GetMuonIDEff(leptonTwoP4);
             eventWeight *= muonIDWeightOne;
             eventWeight *= muonIDWeightTwo;
 
+	    ///      ISO EFFICIENTCY
+	    muonISOWeightOne = weights->GetMuonISOEff(leptonOneP4); 
+	    muonISOWeightTwo = weights->GetMuonISOEff(leptonTwoP4); 
+            eventWeight *= muonISOWeightOne;
+            eventWeight *= muonISOWeightTwo;
+	    //////////////////////////// 
             float sf11 = weights->GetDoubleMuonTriggerEffWeight("HLT_DoubleMuon_leg1", *muons[muonOneIndex]);
             float sf12 = weights->GetDoubleMuonTriggerEffWeight("HLT_DoubleMuon_leg1", *muons[muonTwoIndex]);
             float sf21 = weights->GetDoubleMuonTriggerEffWeight("HLT_DoubleMuon_leg2", *muons[muonOneIndex]);

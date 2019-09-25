@@ -101,6 +101,7 @@ public:
     Float_t elIDWeightOne, elIDWeightTwo;
     Float_t elTrigWeightOne, elTrigWeightTwo;
     Float_t muonIDWeightOne, muonIDWeightTwo;
+    Float_t muonISOWeightOne, muonISOWeightTwo;
     Float_t muonTrigWeightOne, muonTrigWeightTwo;
     Float_t photonIDWeight;
     Int_t Sgen,SgenAccep;
