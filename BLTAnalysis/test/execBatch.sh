@@ -56,12 +56,8 @@ echo $SELECTION
 echo $PERIOD 
 echo $COUNT
 
-#zgAnalyzer input.txt 250000 $DATANAME $SUFFIX $SELECTION $PERIOD $COUNT
-#zgAnalyzer_MuEff input.txt -1 $DATANAME $SUFFIX $SELECTION $PERIOD $COUNT
 
-zgAnalyzer input.txt -1 $DATANAME $SUFFIX $SELECTION $PERIOD $COUNT
-#hzgAnalyzer input.txt -1 $DATANAME $SUFFIX $SELECTION $PERIOD $COUNT
-#zgAnalyzer input.txt 1000 $DATANAME $SUFFIX $SELECTION $PERIOD $COUNT
-#zgAnalyzer input.txt 250000 $DATANAME $SUFFIX $SELECTION $PERIOD $COUNT
+#zgAnalyzer input.txt -1 $DATANAME $SUFFIX $SELECTION $PERIOD $COUNT
+zAnalyzer input.txt -1 $DATANAME $SUFFIX $SELECTION $PERIOD $COUNT
 ### Copy output and cleanup ###
 cp output_${DATANAME}_${COUNT}.root ${_CONDOR_SCRATCH_DIR}

@@ -1,26 +1,9 @@
 <use name="BLT/BLTAnalysis"/>
 <use name="root"/>
 <flags CXXFLAGS="-g -Wall"/>
-<!--bin file="MultileptonAnalyzer.cc" name="MultileptonAnalyzer"></bin>
-<bin file="zjpsiAnalyzer.cc" name="zjpsiAnalyzer"></bin>
-<bin file="zjpsiAnalyzerV2.cc" name="zjpsiAnalyzerV2"></bin>
-<bin file="zjpsiGenAnalyzer.cc" name="zjpsiGenAnalyzer"></bin-->
-<!--<bin file="zAnalyzer.cc" name="zAnalyzer"></bin>-->
-<!--<bin file="upsilonGammaAnalyzer.cc" name="upsilonGammaAnalyzer"></bin>
-<bin file="gbrTrainAnalyzer.cc" name="gbrTrainAnalyzer"></bin>
-<bin file="train_muons.cc" name="train_muons"></bin>
-<bin file="train_electrons.cc" name="train_electrons"></bin>-->
 
 <bin file="zgAnalyzer.cc" name="zgAnalyzer"></bin>
 <!--bin file="hzgAnalyzer_Mod.cc" name="hzgAnalyzer"></bin-->
-<!--bin file="zAnalyzer_Mod.cc" name="zAnalyzer"></bin-->
+<bin file="zAnalyzer.cc" name="zAnalyzer"></bin>
 
 
-<!--bin file="zgAnalyzer_Mod.cc" name="zgAnalyzer"></bin-->
-<!--bin file="hzgAnalyzer.cc" name="hzgAnalyzer"></bin-->
-
-<!--
-<bin file="hzgAnalyzerVBF.cc" name="hzgAnalyzerVBF"></bin>
-<bin file="hzgAnalyzer.cc" name="hzgAnalyzer"></bin>
-<bin file="zgAnalyzer_MuEff.cc" name="zgAnalyzer_MuEff"></bin>
--->

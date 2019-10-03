@@ -37,6 +37,8 @@ zgAnalyzer::~zgAnalyzer()
 
 void zgAnalyzer::Begin(TTree *tree)
 {
+    bool confDebug = true;
+    //bool confDebug = false;
     // Parse command line option
     std::string tmp_option = GetOption();
     std::vector<std::string> options;
@@ -48,11 +50,15 @@ void zgAnalyzer::Begin(TTree *tree)
     params.reset(new Parameters());
     params->setup(options);
 
-    cout << options.at(0) << endl
-	 << options.at(1) << endl
-	 << options.at(2) << endl
-	 << options.at(3) << endl
-	 << options.at(4) << endl;
+    string PeriodFolder; 
+
+    if(confDebug){
+	    cout << options.at(0) << endl
+		 << options.at(1) << endl
+		 << options.at(2) << endl
+		 << options.at(3) << endl
+    		 << options.at(4) << endl;
+    }
 
 
  // Param Formating
@@ -60,13 +66,25 @@ void zgAnalyzer::Begin(TTree *tree)
 	params->period = "2016Legacy";
     else if (params->period == "2017")
 	params->period = "2017ReReco";
+
+    if(params->period == "2016Legacy")
+	PeriodFolder= "Legacy2016";
+    else if (params->period == "2017Rereco")
+	PeriodFolder = "ReReco2017";
+    else if (params->period == "2016Rereco")
+	PeriodFolder = "ReReco2016";
+
     
-    cout << "--- Cuts and Particle Selector \n";
+    if(confDebug)
+	    cout << "--- Cuts and Particle Selector \n";
+
     // Set the cuts
     cuts.reset(new Cuts());
     particleSelector.reset(new ParticleSelector(*params, *cuts));
 
-    cout << "--- Trigger \n";
+    if(confDebug)
+    	cout << "--- Trigger \n";
+
     // Trigger bits mapping file
     const std::string cmssw_base = getenv("CMSSW_BASE");
     std::string trigfilename = cmssw_base + "/src/BaconAna/DataFormats/data/HLTFile_25ns";
@@ -87,27 +105,40 @@ void zgAnalyzer::Begin(TTree *tree)
         triggerNames.push_back("HLT_IsoTkMu24_v*");
     }
         
-    cout << "--- Weights \n";
+    if(confDebug)
+	cout << "--- Weights \n";
     // Weight utility class
     weights.reset(new WeightUtils(params->period, params->selection, false)); // Lumi mask
 
 
-    cout << "--- LumiMask \n";
+    if(confDebug)
+    	cout << "--- LumiMask \n";
     // Set up object to handle good run-lumi filtering if necessary
     lumiMask = RunLumiRangeMap();
     string jsonFileName;
-    if( params->period == "2016Legacy")
-	jsonFileName = cmssw_base + "/src/BLT/BLTAnalysis/data/Cert_271036-284044_13TeV_ReReco_07Aug2017_Collisions16_JSON.txt";
-    else if(params->period == "2016ReReco")
-	jsonFileName = cmssw_base + "/src/BLT/BLTAnalysis/data/Cert_271036-284044_13TeV_23Sep2016ReReco_Collisions16_JSON.txt"; 
-    else if(params->period == "2017ReReco")
-	jsonFileName = cmssw_base + "/src/BLT/BLTAnalysis/data/Cert_294927-306462_13TeV_EOY2017ReReco_Collisions17_JSON_v1.txt";
+    if( params->period == "2016Legacy"){
+	jsonFileName = cmssw_base + "/src/BLT/BLTAnalysis/data/" + PeriodFolder + "/Cert_271036-284044_13TeV_ReReco_07Aug2017_Collisions16_JSON.txt";
+    	//muonCorr = new RoccoR(cmssw_base + "/src/BLT/BLTAnalysis/data/" + PeriodFolder + "/rcdata.2016.v3");
+    	muonCorr = new RoccoR(cmssw_base + "/src/BLT/BLTAnalysis/data/ReReco2016/roccor.Run2.v3/RoccoR2016.txt");
+    }	
+    else if(params->period == "2016ReReco"){
+        jsonFileName = cmssw_base + "/src/BLT/BLTAnalysis/data/" + PeriodFolder + "/Cert_271036-284044_13TeV_23Sep2016ReReco_Collisions16_JSON.txt"; 
+    	//muonCorr = new RoccoR(cmssw_base + "/src/BLT/BLTAnalysis/data/" + PeriodFolder + "/rcdata.2016.v3");
+    	//muonCorr = new RoccoR_2016ReReco(cmssw_base + "/src/BLT/BLTAnalysis/data/ReReco2016/rcdata.2016.v3");
+    	muonCorr = new RoccoR(cmssw_base + "/src/BLT/BLTAnalysis/data/ReReco2016/roccor.Run2.v3/RoccoR2017.txt");
+    }
+    else if(params->period == "2017ReReco"){
+	jsonFileName = cmssw_base + "/src/BLT/BLTAnalysis/data/" + PeriodFolder + "/Cert_294927-306462_13TeV_EOY2017ReReco_Collisions17_JSON_v1.txt";
+    	//muonCorr = new RoccoR(cmssw_base + "/src/BLT/BLTAnalysis/data/" + PeriodFolder + "/rcdata.2016.v3");
+    	muonCorr = new RoccoR(cmssw_base + "/src/BLT/BLTAnalysis/data/ReReco2016/roccor.2017.v0/RoccoR2017v0.txt");
+    }
 
     lumiMask.AddJSONFile(jsonFileName);
 
-    cout << "--- Declarations \n";
+    if(confDebug)
+    	cout << "--- Declarations \n";
     // muon momentum corrections
-    muonCorr = new RoccoR(cmssw_base + "/src/BLT/BLTAnalysis/data/rcdata.2016.v3");
+    //muonCorr = new RoccoR(cmssw_base + "/src/BLT/BLTAnalysis/data/ReReco2016/rcdata.2016.v3");
     rng = new TRandom3();
 
     // Prepare the output tree
@@ -367,6 +398,8 @@ Bool_t zgAnalyzer::Process(Long64_t entry)
     bool debug = false;
     //bool debugSelect = true;
     bool debugSelect = false;
+    
+    bool debugSF = true;
     if(debug){
 	cout << "=========================";
 	cout << "Start ..........\n";
@@ -619,6 +652,8 @@ Bool_t zgAnalyzer::Process(Long64_t entry)
         cout << thePV->x << ", " << thePV->y << ", " << thePV->z << ", " << thePV->ndof << endl;
     }
 
+    if(debug)
+	cout << "Start Object Filtering\n";
     /* MUONS */
     vector<TMuon*> muons;
     vector<TLorentzVector> veto_muons;
@@ -638,12 +673,13 @@ Bool_t zgAnalyzer::Process(Long64_t entry)
                     muon->nTkLayers, rng->Rndm(), rng->Rndm(), 
                     0, 0);
         }
-
+	if(debug)
+		cout << "Muons correction\n";
         if (sync_print_precut) {
             cout << "pt_before_roccor, pt_after_roccor" << endl;
             cout << muon->pt << ", ";
         }
-
+	
         muon->pt = muonSF*muon->pt; 
         if (sync_print_precut)
             cout << muon->pt << endl;
@@ -999,7 +1035,8 @@ Bool_t zgAnalyzer::Process(Long64_t entry)
     nTaus      = taus.size();
     nPhotons   = photons.size();
 
-
+    if(debug)
+	cout << "---- Start Selection" << endl;
     if (params->selection == "mumug") {
         if (muons.size() < 2) 
             return kTRUE;
@@ -1370,6 +1407,8 @@ Bool_t zgAnalyzer::Process(Long64_t entry)
 
 	if(debugSelect)
 		cout << "------- Fill -------------\n";
+	if(debugSelect)
+		cout << "--- Lepton Fill" << endl;
         leptonOnePt     = leptonOneP4.Pt();
         leptonOneEta    = leptonOneP4.Eta();
         leptonOnePhi    = leptonOneP4.Phi();
@@ -1388,10 +1427,12 @@ Bool_t zgAnalyzer::Process(Long64_t entry)
         leptonTwoD0     = muons[muonTwoIndex]->d0;
         leptonTwoCharge = muons[muonTwoIndex]->q;
 
+	if(debugSelect)
+		cout << "--- Photon Fill" << endl;
         photonOnePt     = photonOneP4.Pt();
         photonOneEta    = photonOneP4.Eta();
         photonOnePhi    = photonOneP4.Phi();
-        if(params->period == "2016")
+        if(params->period == "2016ReReco")
 		photonOneMVA    = photons[photonIndex]->mvaSpring16;
         else if( params->period == "2016Legacy")
 		photonOneMVA    = photons[photonIndex]->mvaFall17V2;
@@ -1449,7 +1490,8 @@ Bool_t zgAnalyzer::Process(Long64_t entry)
             cout << "event is still alive" << endl;
         }
         
-
+	if(debugSelect)
+		cout << "--- Dilep Fill" << endl;
         dileptonPt = dileptonP4.Pt();
         dileptonEta = dileptonP4.Eta();
         dileptonPhi = dileptonP4.Phi();
@@ -1607,18 +1649,24 @@ Bool_t zgAnalyzer::Process(Long64_t entry)
         dileptonP4.Transform(rot);
         l_minus.Transform(rot);
         zgPhi = l_minus.Phi();
-            
+           
+	if(debugSelect) 
+		cout << "--- Weights Implemented" << endl;
         if (!isData) {
 	    ///      ID EFFICIENTCY
 	    //
             //muonIDWeightOne = weights->GetHZZMuonIDEff(*muons[muonOneIndex]); 
             //muonIDWeightTwo = weights->GetHZZMuonIDEff(*muons[muonTwoIndex]);
+            if(debugSelect)
+		cout << "------ Muon ID Weights" << endl;
             muonIDWeightOne = weights->GetMuonIDEff(leptonOneP4); 
             muonIDWeightTwo = weights->GetMuonIDEff(leptonTwoP4);
             eventWeight *= muonIDWeightOne;
             eventWeight *= muonIDWeightTwo;
 
 	    ///      ISO EFFICIENTCY
+            if(debugSelect)
+		cout << "------ Muon ISO Weights" << endl;
 	    muonISOWeightOne = weights->GetMuonISOEff(leptonOneP4); 
 	    muonISOWeightTwo = weights->GetMuonISOEff(leptonTwoP4); 
             eventWeight *= muonISOWeightOne;
@@ -1646,8 +1694,13 @@ Bool_t zgAnalyzer::Process(Long64_t entry)
                 }
             }
 
+            if(debugSelect)
+		cout << "------ Muon Trigger Weights" << endl;
             triggerWeight = muonTrigWeightOne*muonTrigWeightTwo;
             eventWeight *= triggerWeight;
+
+            if(debugSelect)
+		cout << "------ Photon ID Weights" << endl;
            
             photonIDWeight = weights->GetPhotonMVAIdEff(*photons[photonIndex]); 
             //eventWeight *= photonIDWeight;
@@ -1665,6 +1718,8 @@ Bool_t zgAnalyzer::Process(Long64_t entry)
             cout << "event still alive after event weights" << endl;
         }
 
+	if(debugSelect) 
+		cout << "--- Finish Selection" << endl;
     } // end mumug selection
     
     /*else if (params->selection == "ee") {

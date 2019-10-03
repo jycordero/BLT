@@ -26,6 +26,7 @@
 #include "BLT/BLTAnalysis/interface/WeightUtils.h"
 
 #include "BLT/BLTAnalysis/interface/RoccoR.h"
+//#include "BLT/BLTAnalysis/interface/RoccoR_2016ReReco.h"
 
 // BaconAna class definitions (might need to add more)
 #include "BaconAna/Utils/interface/TTrigger.hh"
@@ -72,6 +73,7 @@ public:
 
     // rochester muon corrections
     RoccoR *muonCorr;
+    //RoccoR_2016ReReco *muonCorr;
     TRandom3 *rng;
 
     // Params and cuts

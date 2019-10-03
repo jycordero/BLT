@@ -7,13 +7,13 @@ cfg        = bm.JobConfig
 path       = 'root://cmseos.fnal.gov//store/user/corderom/sync_mc'
 executable = 'execBatch.sh'
 
-legacy = True
-#legacy = False
+#legacy = True
+legacy = False
 
 #selection  = 'jetjetgmjetjet'
-selection  = 'mumug'
+#selection  = 'mumug'
 #selection  = 'elelg'
-#selection  = 'ee'
+selection  = 'ee'
 
 period     = '2016'
 
@@ -25,36 +25,40 @@ if legacy:
 	elif selection == 'mumu':
 		data_samples = ['double_mu_legacy']
 	elif selection == 'ee':	
-		data_samples = ['double_el_legacy']
+		data_samples = ['single_el_legacy']
 	elif selection == 'elelg':	
 		data_samples = ['double_el_legacy']
 	################
 	mc_samples = []
-
-	mc_samples += ['JC_DYJets_Legacy']
-	mc_samples += ['JC_WW_Legacy','JC_WZ_Legacy','JC_ZZ_Legacy']
-	mc_samples += ['JC_TTTo2L2Nu_Legacy']
-	mc_samples += ['JC_WJets_Legacy']
-	mc_samples += ['JC_ZGToLLG_Legacy']
-
+	if selection == "mumug":
+		mc_samples += ['JC_DYJets_Legacy']
+		mc_samples += ['JC_WW_Legacy','JC_WZ_Legacy','JC_ZZ_Legacy']
+		mc_samples += ['JC_TTTo2L2Nu_Legacy']
+		mc_samples += ['JC_WJets_Legacy']
+		mc_samples += ['JC_ZGToLLG_Legacy']
+	elif selection == "ee":
+		mc_samples += ['JC_DYJets_Legacy']
 else:
 	if selection == 'mumug':
 		data_samples = ['double_mu']
 	elif selection == 'mumu':
 		data_samples = ['double_mu']
 	elif selection == 'ee':	
-		data_samples = ['double_el']
+		data_samples = ['single_el']
 	elif selection == 'elelg':	
 		data_samples = ['double_el']
 	##################
 	mc_samples = []
-	#mc_samples += ['JB_TT']
-	#mc_samples += ['JB_ZG_ZToLL']
-	#mc_samples += ['JB_WJets']
-	#mc_samples += ['JB_DYJets']
-	#c_samples += ['JB_WZ','JB_ZZ']
 
-	mc_samples += ['JB_DYJets_Madgraph']
+	if selection == "mumug":
+		mc_samples += ['JB_TT']
+		mc_samples += ['JB_ZG_ZToLL']
+		mc_samples += ['JB_WJets']
+		mc_samples += ['JB_DYJets']
+		mc_samples += ['JB_WZ','JB_ZZ']
+	elif selection == "ee":
+		mc_samples += ['JB_DYJets']
+	#mc_samples += ['JB_DYJets_Madgraph']
 
 ################################################
 
@@ -159,36 +163,36 @@ data_dict['double_el'] = [
 
 path = '/eos/uscms/store/group/lpcbacon/12a'
 data_dict['single_mu'] = [
-			#cfg(data_name = 'muon_2016B_v1',
-			#    path      = '{0}/SingleMuon_Run2016B-03Feb2017_ver1-v1'.format(path),
-			#    nJobs     = 30,
-			#    suffix    = 'muon_2016B'
-			#   ),
-			#cfg(data_name = 'muon_2016B_v2',
-			#    path      = '{0}/SingleMuon_Run2016B-03Feb2017_ver2-v2'.format(path),
-			#    nJobs     = 30,
-			#    suffix    = 'muon_2016B'
-			#   ),
-			#cfg(data_name = 'muon_2016C_v1',
-			#    path      = '{0}/SingleMuon_Run2016C-03Feb2017-v1'.format(path),
-			#    nJobs     = 30,
-			#    suffix    = 'muon_2016C'
-			#   ),
-			#cfg(data_name = 'muon_2016D_v1',
-			#    path      = '{0}/SingleMuon_Run2016D-03Feb2017-v1'.format(path),
-			#    nJobs     = 30,
-			#    suffix    = 'muon_2016D'
-			#   ),
-			#cfg(data_name = 'muon_2016E_v1',
-			#    path      = '{0}/SingleMuon_Run2016E-03Feb2017-v1'.format(path),
-			#    nJobs     = 30,
-			#    suffix    = 'muon_2016E'
-			#   ),
-			#cfg(data_name = 'muon_2016F_v1',
-			#    path      = '{0}/SingleMuon_Run2016F-03Feb2017-v1'.format(path),
-			#    nJobs     = 30,
-			#    suffix    = 'muon_2016F'
-			#   ),
+			cfg(data_name = 'muon_2016B_v1',
+			    path      = '{0}/SingleMuon_Run2016B-03Feb2017_ver1-v1'.format(path),
+			    nJobs     = 30,
+			    suffix    = 'muon_2016B'
+			   ),
+			cfg(data_name = 'muon_2016B_v2',
+			    path      = '{0}/SingleMuon_Run2016B-03Feb2017_ver2-v2'.format(path),
+			    nJobs     = 30,
+			    suffix    = 'muon_2016B'
+			   ),
+			cfg(data_name = 'muon_2016C_v1',
+			    path      = '{0}/SingleMuon_Run2016C-03Feb2017-v1'.format(path),
+			    nJobs     = 30,
+			    suffix    = 'muon_2016C'
+			   ),
+			cfg(data_name = 'muon_2016D_v1',
+			    path      = '{0}/SingleMuon_Run2016D-03Feb2017-v1'.format(path),
+			    nJobs     = 30,
+			    suffix    = 'muon_2016D'
+			   ),
+			cfg(data_name = 'muon_2016E_v1',
+			    path      = '{0}/SingleMuon_Run2016E-03Feb2017-v1'.format(path),
+			    nJobs     = 30,
+			    suffix    = 'muon_2016E'
+			   ),
+			cfg(data_name = 'muon_2016F_v1',
+			    path      = '{0}/SingleMuon_Run2016F-03Feb2017-v1'.format(path),
+			    nJobs     = 30,
+			    suffix    = 'muon_2016F'
+			   ),
 			cfg(data_name = 'muon_2016G',
 			    path      = '{0}/SingleMuon_Run2016G-03Feb2017-v1'.format(path),
 			    nJobs     = 30,
@@ -544,7 +548,7 @@ mc_dict['JC_ZGToLLG_Legacy']=[
 mc_dict['JC_DYJets_Legacy']=[	
 		 	cfg(data_name = 'DYJets',
 		 	    path     = '{0}/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/2016_mc_legacy_gen_DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8_RunIISummer16MiniAODv3-PUMoriond17_94X_mcRu/190824_062451'.format(path),
-			    nJobs    = 20,
+			    nJobs    = 50,
 			    suffix   = 'dyjets'
 			),
 		]
@@ -639,6 +643,83 @@ data_dict['double_mu_legacy'] = [
 			     path      = '{0}/DoubleMuon/2016_data_legacy_DoubleMuon_Run2016H-17Jul2018-v1/190812_185517'.format(path),
 			     nJobs     = 30,
 			     suffix    = 'DoubleMuon_2016H'
+			    ),
+			]
+
+
+data_dict['double_el_legacy'] = [
+			 cfg(data_name = 'DoubleEG_2016B_v1',
+			     path      = '{0}/DoubleEG/2016_data_legacy_DoubleEG_Run2016B-17Jul2018_ver2-v1/190820_133958'.format(path),
+			     nJobs     = 30,
+			     suffix    = 'DoubleEG_2016B'
+			    ),
+			 cfg(data_name = 'DoubleEG_2016C_v1',
+			     path      = '{0}/DoubleEG/2016_data_legacy_DoubleEG_Run2016C-17Jul2018-v1/190819_180618'.format(path),
+			     nJobs     = 30,
+			     suffix    = 'DoubleEG_2016C'
+			    ),
+			 cfg(data_name = 'DoubleEG_2016D_v1',
+			     path      = '{0}/DoubleEG/2016_data_legacy_DoubleEG_Run2016D-17Jul2018-v1/190819_180836'.format(path),
+			     nJobs     = 30,
+			     suffix    = 'DoubleEG_2016D'
+			    ),
+			 cfg(data_name = 'DoubleEG_2016E_v1',
+			    path      = '{0}/DoubleEG/2016_data_legacy_DoubleEG_Run2016E-17Jul2018-v1/190819_181102'.format(path),
+			    nJobs     = 30,
+			    suffix    = 'DoubleEG_2016E'
+			   ),
+			 cfg(data_name = 'DoubleEG_2016F_v1',
+			     path      = '{0}/DoubleEG/2016_data_legacy_DoubleEG_Run2016F-17Jul2018-v1/190819_181357'.format(path),
+			     nJobs     = 30,
+			     suffix    = 'DoubleEG_2016F'
+			    ),
+			 cfg(data_name = 'DoubleEG_2016G_v1',
+			     path      = '{0}/DoubleEG/2016_data_legacy_DoubleEG_Run2016G-17Jul2018-v1/190819_181601'.format(path),
+			     nJobs     = 30,
+			     suffix    = 'DoubleEG_2016G'
+			    ),
+			 cfg(data_name = 'DoubleEG_2016H_v1',
+			     path      = '{0}/DoubleEG/2016_data_legacy_DoubleEG_Run2016H-17Jul2018-v1/190819_181830'.format(path),
+			     nJobs     = 30,
+			     suffix    = 'DoubleEG_2016H'
+			    ),
+			]
+
+data_dict['single_el_legacy'] = [
+			 cfg(data_name = 'DoubleEG_2016B_v1',
+			     path      = '{0}/DoubleEG/2016_data_legacy_DoubleEG_Run2016B-17Jul2018_ver2-v1/190820_133958'.format(path),
+			     nJobs     = 30,
+			     suffix    = 'DoubleEG_2016B'
+			    ),
+			 cfg(data_name = 'DoubleEG_2016C_v1',
+			     path      = '{0}/DoubleEG/2016_data_legacy_DoubleEG_Run2016C-17Jul2018-v1/190819_180618'.format(path),
+			     nJobs     = 30,
+			     suffix    = 'DoubleEG_2016C'
+			    ),
+			 cfg(data_name = 'DoubleEG_2016D_v1',
+			     path      = '{0}/DoubleEG/2016_data_legacy_DoubleEG_Run2016D-17Jul2018-v1/190819_180836'.format(path),
+			     nJobs     = 30,
+			     suffix    = 'DoubleEG_2016D'
+			    ),
+			 cfg(data_name = 'DoubleEG_2016E_v1',
+			    path      = '{0}/DoubleEG/2016_data_legacy_DoubleEG_Run2016E-17Jul2018-v1/190819_181102'.format(path),
+			    nJobs     = 30,
+			    suffix    = 'DoubleEG_2016E'
+			   ),
+			 cfg(data_name = 'DoubleEG_2016F_v1',
+			     path      = '{0}/DoubleEG/2016_data_legacy_DoubleEG_Run2016F-17Jul2018-v1/190819_181357'.format(path),
+			     nJobs     = 30,
+			     suffix    = 'DoubleEG_2016F'
+			    ),
+			 cfg(data_name = 'DoubleEG_2016G_v1',
+			     path      = '{0}/DoubleEG/2016_data_legacy_DoubleEG_Run2016G-17Jul2018-v1/190819_181601'.format(path),
+			     nJobs     = 30,
+			     suffix    = 'DoubleEG_2016G'
+			    ),
+			 cfg(data_name = 'DoubleEG_2016H_v1',
+			     path      = '{0}/DoubleEG/2016_data_legacy_DoubleEG_Run2016H-17Jul2018-v1/190819_181830'.format(path),
+			     nJobs     = 30,
+			     suffix    = 'DoubleEG_2016H'
 			    ),
 			]
 

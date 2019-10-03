@@ -44,9 +44,17 @@ class WeightUtils: public TObject {
         void    SetDataPeriod(string);
         void    SetSelection(string);
 
-	void    SetIDWeights(string);
-	void    SetISOWeights(string);
-	void    SetTriggerWeights(string);
+	void    SetMuonIDWeights(string);
+	void    SetMuonISOWeights(string);
+	void    SetMuonTriggerWeights(string);
+
+	void    SetElectronRECOWeights(string);
+	void    SetElectronIDWeights(string);
+	void    SetElectronISOWeights(string);
+	void    SetElectronTriggerWeights(string);
+
+	void    SetPhotonIDWeights(string);
+	void    SetPhotonISOWeights(string);
 
         float   GetPUWeight(float);
         pair<float, float>   GetTriggerEffWeight(string, TLorentzVector&) const;

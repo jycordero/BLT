@@ -25,14 +25,14 @@ ParticleSelector::ParticleSelector(const Parameters& parameters, const Cuts& cut
     this->_cuts = cuts;
     string PeriodFolder;
 
-    if(_dataPeriod == "2016ReReco")
+    if(_parameters.period == "2016ReReco")
 	PeriodFolder = "ReRecoFolder";
-    else if (dataPeriod == "2016Legacy")
+    else if (_parameters.period == "2016Legacy")
         PeriodFolder = "2016Legacy";
-    else if (dataPeriod == "2017Rereco")
+    else if (_parameters.period == "2017Rereco")
         PeriodFolder = "ReReco2017";
 	
-    PeriodFolder = "ReReco2016"
+    PeriodFolder = "ReReco2016";
     cout << "!!--------------------------!!\n"
 	 << "!! Taking 2016 Rereco JEC   !!\n" 
          << "!!--------------------------!!\n";
@@ -57,8 +57,8 @@ ParticleSelector::ParticleSelector(const Parameters& parameters, const Cuts& cut
             runPeriod = "H";
         } 
 
-        //std::string jecPath = cmssw_base + "/src/BLT/BLTAnalysis/data/Summer16_23Sep2016" + runPeriod + "V4_DATA/Summer16_23Sep2016" + runPeriod + "V4_DATA";
-        std::string jecPath = cmssw_base + "/src/BLT/BLTAnalysis/" + PeriodFolder + "/Summer16_23Sep2016" + runPeriod + "V4_DATA/Summer16_23Sep2016" + runPeriod + "V4_DATA";
+        //std::string jecPath = cmssw_base + "/src/BLT/BLTAnalysis/data/data/Summer16_23Sep2016" + runPeriod + "V4_DATA/Summer16_23Sep2016" + runPeriod + "V4_DATA";
+        std::string jecPath = cmssw_base + "/src/BLT/BLTAnalysis/data/" + PeriodFolder + "/Summer16_23Sep2016" + runPeriod + "V4_DATA/Summer16_23Sep2016" + runPeriod + "V4_DATA";
         std::cout << jecPath << std::endl;
         JetCorrectorParameters *ResJetPar = new JetCorrectorParameters(jecPath + "_L2L3Residual_AK4PFchs.txt"); 
         JetCorrectorParameters *L3JetPar  = new JetCorrectorParameters(jecPath + "_L3Absolute_AK4PFchs.txt");
@@ -79,8 +79,8 @@ ParticleSelector::ParticleSelector(const Parameters& parameters, const Cuts& cut
 
     } else { // MC 
         // jet energy corrections
-        //std::string jecPath = cmssw_base + "/src/BLT/BLTAnalysis/data/Summer16_23Sep2016V4_MC/Summer16_23Sep2016V4_MC";
-        std::string jecPath = cmssw_base + "/src/BLT/BLTAnalysis/" + PeriodFolder + "/Summer16_23Sep2016V4_MC/Summer16_23Sep2016V4_MC";
+        //std::string jecPath = cmssw_base + "/src/BLT/BLTAnalysis/data/data/Summer16_23Sep2016V4_MC/Summer16_23Sep2016V4_MC";
+        std::string jecPath = cmssw_base + "/src/BLT/BLTAnalysis/data/" + PeriodFolder + "/Summer16_23Sep2016V4_MC/Summer16_23Sep2016V4_MC";
         std::cout << jecPath << std::endl;
         JetCorrectorParameters *ResJetPar = new JetCorrectorParameters(jecPath + "_L2L3Residual_AK4PFchs.txt"); 
         JetCorrectorParameters *L3JetPar  = new JetCorrectorParameters(jecPath + "_L3Absolute_AK4PFchs.txt");
@@ -100,10 +100,10 @@ ParticleSelector::ParticleSelector(const Parameters& parameters, const Cuts& cut
         _jecUncertainty = new JetCorrectionUncertainty(*jecUnc);
 
         // jet energy resolution
-        jetResolution   = JME::JetResolution(cmssw_base + "/src/BLT/BLTAnalysis/" + PeriodoOlder + "/jet_pt_resolution.dat");
-        jetResolutionSF = JME::JetResolutionScaleFactor(cmssw_base + "/src/BLT/BLTAnalysis/" + PeriodFolder + "/jet_resolution_scale_factors.dat");
-        //jetResolution   = JME::JetResolution(cmssw_base + "/src/BLT/BLTAnalysis/data/jet_pt_resolution.dat");
-        //jetResolutionSF = JME::JetResolutionScaleFactor(cmssw_base + "/src/BLT/BLTAnalysis/data/jet_resolution_scale_factors.dat");
+        jetResolution   = JME::JetResolution(cmssw_base + "/src/BLT/BLTAnalysis/data/" + PeriodFolder + "/jet_pt_resolution.dat");
+        jetResolutionSF = JME::JetResolutionScaleFactor(cmssw_base + "/src/BLT/BLTAnalysis/data/" + PeriodFolder + "/jet_resolution_scale_factors.dat");
+        //jetResolution   = JME::JetResolution(cmssw_base + "/src/BLT/BLTAnalysis/data/data/jet_pt_resolution.dat");
+        //jetResolutionSF = JME::JetResolutionScaleFactor(cmssw_base + "/src/BLT/BLTAnalysis/data/data/jet_resolution_scale_factors.dat");
     }
 }
 
@@ -217,7 +217,7 @@ bool ParticleSelector::PassElectronID(const baconhep::TElectron* el, const Cuts:
 	                && el->nMissingHits <= cutLevel.numberOfLostHits[0]
 	                && fabs(el->d0)     <  cutLevel.dxy[0]
 	                && fabs(el->dz)     <  cutLevel.dz[0]
-	                && el->isConv == cutLevel.ConversionMissHits[0]
+	                //&& el->isConv == cutLevel.ConversionMissHits[0]
 	           ) elPass = true;
 	} else if (fabs(el->scEta) > 1.4446 && fabs(el->scEta) < 1.566) { // transition
 		elPass = false;
@@ -231,7 +231,7 @@ bool ParticleSelector::PassElectronID(const baconhep::TElectron* el, const Cuts:
 	                && el->nMissingHits <= cutLevel.numberOfLostHits[1]
 	                && fabs(el->d0)     <  cutLevel.dxy[1]
 	                && fabs(el->dz)     <  cutLevel.dz[1]
-	                && el->isConv == cutLevel.ConversionMissHits[1]
+	                //&& el->isConv == cutLevel.ConversionMissHits[1]
 	           ) elPass = true;
 	    }   	 
     /*

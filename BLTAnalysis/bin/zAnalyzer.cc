@@ -37,6 +37,8 @@ zAnalyzer::~zAnalyzer()
 
 void zAnalyzer::Begin(TTree *tree)
 {
+    bool confDebug = true;
+    //bool confDebug = false;
     // Parse command line option
     std::string tmp_option = GetOption();
     std::vector<std::string> options;
@@ -48,9 +50,40 @@ void zAnalyzer::Begin(TTree *tree)
     params.reset(new Parameters());
     params->setup(options);
 
+    string PeriodFolder; 
+
+    if(confDebug){
+	    cout << options.at(0) << endl
+		 << options.at(1) << endl
+		 << options.at(2) << endl
+		 << options.at(3) << endl
+    		 << options.at(4) << endl;
+    }
+
+
+ // Param Formating
+    if(params->period == "2016")
+	params->period = "2016Legacy";
+    else if (params->period == "2017")
+	params->period = "2017ReReco";
+
+    if(params->period == "2016Legacy")
+	PeriodFolder= "Legacy2016";
+    else if (params->period == "2017Rereco")
+	PeriodFolder = "ReReco2017";
+    else if (params->period == "2016Rereco")
+	PeriodFolder = "ReReco2016";
+
+    
+    if(confDebug)
+	    cout << "--- Cuts and Particle Selector \n";
+
     // Set the cuts
     cuts.reset(new Cuts());
     particleSelector.reset(new ParticleSelector(*params, *cuts));
+
+    if(confDebug)
+    	cout << "--- Trigger \n";
 
     // Trigger bits mapping file
     const std::string cmssw_base = getenv("CMSSW_BASE");
@@ -63,7 +96,12 @@ void zAnalyzer::Begin(TTree *tree)
         triggerNames.push_back("HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_v*");
         triggerNames.push_back("HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v*");
     }
-    else if (params->selection == "ee" || params->selection == "elelg") {
+    else if( params->selection == "elelg") {
+        triggerNames.push_back("HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v*");
+        triggerNames.push_back("HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_v*");
+    }
+    else if(params->selection == "ee") {
+	triggerNames.push_back("HLT_Ele27_WPTight_Gsf_v*");
         triggerNames.push_back("HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v*");
         triggerNames.push_back("HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_v*");
     }
@@ -72,16 +110,40 @@ void zAnalyzer::Begin(TTree *tree)
         triggerNames.push_back("HLT_IsoTkMu24_v*");
     }
         
+    if(confDebug)
+	cout << "--- Weights \n";
     // Weight utility class
     weights.reset(new WeightUtils(params->period, params->selection, false)); // Lumi mask
 
+
+    if(confDebug)
+    	cout << "--- LumiMask \n";
     // Set up object to handle good run-lumi filtering if necessary
     lumiMask = RunLumiRangeMap();
-    string jsonFileName = cmssw_base + "/src/BLT/BLTAnalysis/data/Cert_271036-284044_13TeV_23Sep2016ReReco_Collisions16_JSON.txt";
+    string jsonFileName;
+    if( params->period == "2016Legacy"){
+	jsonFileName = cmssw_base + "/src/BLT/BLTAnalysis/data/" + PeriodFolder + "/Cert_271036-284044_13TeV_ReReco_07Aug2017_Collisions16_JSON.txt";
+    	//muonCorr = new RoccoR(cmssw_base + "/src/BLT/BLTAnalysis/data/" + PeriodFolder + "/rcdata.2016.v3");
+    	muonCorr = new RoccoR(cmssw_base + "/src/BLT/BLTAnalysis/data/ReReco2016/roccor.Run2.v3/RoccoR2016.txt");
+    }	
+    else if(params->period == "2016ReReco"){
+        jsonFileName = cmssw_base + "/src/BLT/BLTAnalysis/data/" + PeriodFolder + "/Cert_271036-284044_13TeV_23Sep2016ReReco_Collisions16_JSON.txt"; 
+    	//muonCorr = new RoccoR(cmssw_base + "/src/BLT/BLTAnalysis/data/" + PeriodFolder + "/rcdata.2016.v3");
+    	//muonCorr = new RoccoR_2016ReReco(cmssw_base + "/src/BLT/BLTAnalysis/data/ReReco2016/rcdata.2016.v3");
+    	muonCorr = new RoccoR(cmssw_base + "/src/BLT/BLTAnalysis/data/ReReco2016/roccor.Run2.v3/RoccoR2017.txt");
+    }
+    else if(params->period == "2017ReReco"){
+	jsonFileName = cmssw_base + "/src/BLT/BLTAnalysis/data/" + PeriodFolder + "/Cert_294927-306462_13TeV_EOY2017ReReco_Collisions17_JSON_v1.txt";
+    	//muonCorr = new RoccoR(cmssw_base + "/src/BLT/BLTAnalysis/data/" + PeriodFolder + "/rcdata.2016.v3");
+    	muonCorr = new RoccoR(cmssw_base + "/src/BLT/BLTAnalysis/data/ReReco2016/roccor.2017.v0/RoccoR2017v0.txt");
+    }
+
     lumiMask.AddJSONFile(jsonFileName);
 
+    if(confDebug)
+    	cout << "--- Declarations \n";
     // muon momentum corrections
-    muonCorr = new RoccoR(cmssw_base + "/src/BLT/BLTAnalysis/data/rcdata.2016.v3");
+    //muonCorr = new RoccoR(cmssw_base + "/src/BLT/BLTAnalysis/data/ReReco2016/rcdata.2016.v3");
     rng = new TRandom3();
 
     // Prepare the output tree
@@ -92,92 +154,157 @@ void zAnalyzer::Begin(TTree *tree)
     outFile->cd();
     outTree = new TTree(outTreeName.c_str(), "bltTree");
 
+
     Sgen = 0;
     SgenAccep = 0;
 
     // event data
-    outTree->Branch("runNumber", &runNumber);
-    outTree->Branch("evtNumber", &evtNumber, "eventNumber/l");
-    outTree->Branch("lumiSection", &lumiSection);
+    outTree->Branch("runNumber"    , &runNumber);
+    outTree->Branch("evtNumber"    , &evtNumber, "eventNumber/l");
+    outTree->Branch("lumiSection"  , &lumiSection);
     outTree->Branch("triggerStatus", &triggerStatus);
-    outTree->Branch("nPV", &nPV);
-    outTree->Branch("nPU", &nPU);
-    outTree->Branch("nPartons", &nPartons);
+    outTree->Branch("nPV"          , &nPV);
+    outTree->Branch("nPU"          , &nPU);
+    outTree->Branch("nPartons"     , &nPartons);
+    outTree->Branch("xPV"          , &xPV);
+    outTree->Branch("yPV"          , &yPV);
+    outTree->Branch("zPV"          , &zPV);
+    outTree->Branch("Rho"          , &Rho);
+
+    outTree->Branch("met"     , &met);
+    outTree->Branch("metPhi"  , &metPhi);
+    outTree->Branch("metNC"   , &metNC);
+    outTree->Branch("metPhiNC", &metPhiNC);
+    outTree->Branch("ht"      , &ht);
+    outTree->Branch("htPhi"   , &htPhi);
+    outTree->Branch("htSum"   , &htSum);
 
     // weights
-    outTree->Branch("genWeight", &genWeight);
-    outTree->Branch("eventWeight", &eventWeight);
-    outTree->Branch("puWeight", &puWeight);
-    outTree->Branch("triggerWeight", &triggerWeight);
-    outTree->Branch("elIDWeightOne", &elIDWeightOne);
-    outTree->Branch("elIDWeightTwo", &elIDWeightTwo);
-    outTree->Branch("elTrigWeightOne", &elTrigWeightOne);
-    outTree->Branch("elTrigWeightTwo", &elTrigWeightTwo);
-    outTree->Branch("muonIDWeightOne", &muonIDWeightOne);
-    outTree->Branch("muonIDWeightTwo", &muonIDWeightTwo);
+    outTree->Branch("genWeight"        , &genWeight);
+    outTree->Branch("eventWeight"      , &eventWeight);
+    outTree->Branch("puWeight"         , &puWeight);
+    outTree->Branch("triggerWeight"    , &triggerWeight);
+    outTree->Branch("elIDWeightOne"    , &elIDWeightOne);
+    outTree->Branch("elIDWeightTwo"    , &elIDWeightTwo);
+    outTree->Branch("elTrigWeightOne"  , &elTrigWeightOne);
+    outTree->Branch("elTrigWeightTwo"  , &elTrigWeightTwo);
+    outTree->Branch("muonIDWeightOne"  , &muonIDWeightOne);
+    outTree->Branch("muonIDWeightTwo"  , &muonIDWeightTwo);
+    outTree->Branch("muonISOWeightOne" , &muonISOWeightOne);
+    outTree->Branch("muonISOWeightTwo" , &muonISOWeightTwo);
     outTree->Branch("muonTrigWeightOne", &muonTrigWeightOne);
     outTree->Branch("muonTrigWeightTwo", &muonTrigWeightTwo);
-    outTree->Branch("photonIDWeight", &photonIDWeight);
+    outTree->Branch("photonIDWeight"   , &photonIDWeight);
     
     outTree->Branch("Sgen", &Sgen);
     outTree->Branch("SgenAccep", &SgenAccep);
 
     // leptons
-    outTree->Branch("leptonOnePt", &leptonOnePt);
-    outTree->Branch("leptonOneEta", &leptonOneEta);
-    outTree->Branch("leptonOnePhi", &leptonOnePhi);
-    outTree->Branch("leptonOnePtKin", &leptonOnePtKin);
+    outTree->Branch("leptonOnePt"        , &leptonOnePt);
+    outTree->Branch("leptonOneEta"       , &leptonOneEta);
+    outTree->Branch("leptonOnePhi"       , &leptonOnePhi);
+    outTree->Branch("leptonOnePtKin"     , &leptonOnePtKin);
     outTree->Branch("leptonOnePtKinJames", &leptonOnePtKinJames);
-    outTree->Branch("leptonOneIso", &leptonOneIso);
-    outTree->Branch("leptonOneFlavor", &leptonOneFlavor);
-    outTree->Branch("leptonOneMother", &leptonOneMother);
-    outTree->Branch("leptonOneD0", &leptonOneD0);
-    outTree->Branch("leptonOneDZ", &leptonOneDZ);
+    outTree->Branch("leptonOneIso"       , &leptonOneIso);
+    outTree->Branch("leptonOneFlavor"    , &leptonOneFlavor);
+    outTree->Branch("leptonOneMother"    , &leptonOneMother);
+    outTree->Branch("leptonOneD0"        , &leptonOneD0);
+    outTree->Branch("leptonOneDZ"        , &leptonOneDZ);
     outTree->Branch("leptonOneRecoWeight", &leptonOneRecoWeight);
     outTree->Branch("leptonOneECALDriven", &leptonOneECALDriven);
-    outTree->Branch("leptonOneCharge", &leptonOneCharge);
-    outTree->Branch("leptonOneTag", &leptonOneTag);
+    outTree->Branch("leptonOneCharge"    , &leptonOneCharge);
+    outTree->Branch("leptonOneTag"       , &leptonOneTag);
 
-    outTree->Branch("leptonTwoPt", &leptonTwoPt);
-    outTree->Branch("leptonTwoEta", &leptonTwoEta);
-    outTree->Branch("leptonTwoPhi", &leptonTwoPhi);
-    outTree->Branch("leptonTwoPtKin", &leptonTwoPtKin);
-    outTree->Branch("leptonTwoPtKinJames", &leptonTwoPtKinJames);
-    outTree->Branch("leptonTwoIso", &leptonTwoIso);
-    outTree->Branch("leptonTwoFlavor", &leptonTwoFlavor);
-    outTree->Branch("leptonTwoMother", &leptonTwoMother);
-    outTree->Branch("leptonTwoD0", &leptonTwoD0);
-    outTree->Branch("leptonTwoDZ", &leptonTwoDZ);
-    outTree->Branch("leptonTwoRecoWeight", &leptonTwoRecoWeight);
-    outTree->Branch("leptonTwoECALDriven", &leptonTwoECALDriven);
-    outTree->Branch("leptonTwoCharge", &leptonTwoCharge);
-    outTree->Branch("leptonTwoTag", &leptonTwoTag);
+    // leptons
+    outTree->Branch("leptonProbeFailPt"        , &leptonProbeFailPt);
+    outTree->Branch("leptonProbeFailEta"       , &leptonProbeFailEta);
+    outTree->Branch("leptonProbeFailPhi"       , &leptonProbeFailPhi);
+    outTree->Branch("leptonProbeFailPtKin"     , &leptonProbeFailPtKin);
+    outTree->Branch("leptonProbeFailPtKinJames", &leptonProbeFailPtKinJames);
+    outTree->Branch("leptonProbeFailIso"       , &leptonProbeFailIso);
+    outTree->Branch("leptonProbeFailFlavor"    , &leptonProbeFailFlavor);
+    outTree->Branch("leptonProbeFailMother"    , &leptonProbeFailMother);
+    outTree->Branch("leptonProbeFailD0"        , &leptonProbeFailD0);
+    outTree->Branch("leptonProbeFailDZ"        , &leptonProbeFailDZ);
+    outTree->Branch("leptonProbeFailRecoWeight", &leptonProbeFailRecoWeight);
+    outTree->Branch("leptonProbeFailECALDriven", &leptonProbeFailECALDriven);
+    outTree->Branch("leptonProbeFailCharge"    , &leptonProbeFailCharge);
+    outTree->Branch("leptonProbeFailTag"       , &leptonProbeFailTag);
 
-
-    outTree->Branch("lepTagR9"    , &lepTagR9);
-    //outTree->Branch("lepTagS4"    , &lepTagS4);
-    outTree->Branch("lepTagSieie" , &lepTagSieie); 
-    outTree->Branch("lepTagHoverE", &lepTagHoverE);
-    outTree->Branch("lepTagIneu"  , &lepTagIneu);
-    outTree->Branch("lepTagIph"   , &lepTagIph);
-    outTree->Branch("lepTagIch"   , &lepTagIch);
-
-    outTree->Branch("lepProbeR9"    , &lepProbeR9);
-    //outTree->Branch("lepProbeS4"    , &lepProbeS4);
-    outTree->Branch("lepProbeSieie" , &lepProbeSieie); 
-    outTree->Branch("lepProbeHoverE", &lepProbeHoverE);
-    outTree->Branch("lepProbeIneu"  , &lepProbeIneu);
-    outTree->Branch("lepProbeIph"   , &lepProbeIph);
-    outTree->Branch("lepProbeIch"   , &lepProbeIch);
+    outTree->Branch("leptonProbePassPt"        , &leptonProbePassPt);
+    outTree->Branch("leptonProbePassEta"       , &leptonProbePassEta);
+    outTree->Branch("leptonProbePassPhi"       , &leptonProbePassPhi);
+    outTree->Branch("leptonProbePassPtKin"     , &leptonProbePassPtKin);
+    outTree->Branch("leptonProbePassPtKinJames", &leptonProbePassPtKinJames);
+    outTree->Branch("leptonProbePassIso"       , &leptonProbePassIso);
+    outTree->Branch("leptonProbePassFlavor"    , &leptonProbePassFlavor);
+    outTree->Branch("leptonProbePassMother"    , &leptonProbePassMother);
+    outTree->Branch("leptonProbePassD0"        , &leptonProbePassD0);
+    outTree->Branch("leptonProbePassDZ"        , &leptonProbePassDZ);
+    outTree->Branch("leptonProbePassRecoWeight", &leptonProbePassRecoWeight);
+    outTree->Branch("leptonProbePassECALDriven", &leptonProbePassECALDriven);
+    outTree->Branch("leptonProbePassCharge"    , &leptonProbePassCharge);
+    outTree->Branch("leptonProbePassTag"       , &leptonProbePassTag);
  
     outTree->Branch("tauDecayMode", &tauDecayMode);
-    outTree->Branch("tauMVA", &tauMVA);
+    outTree->Branch("tauMVA"      , &tauMVA);
 
-    outTree->Branch("isLeptonTag", &isLeptonTag);
-    outTree->Branch("isDijetTag", &isDijetTag);
+    outTree->Branch("isLeptonTag"    , &isLeptonTag);
+    outTree->Branch("isDijetTag"     , &isDijetTag);
     outTree->Branch("isTightDijetTag", &isTightDijetTag);
 
-    outTree->Branch("vetoDY", &vetoDY);
+    // photons
+    outTree->Branch("photonOnePt"     , &photonOnePt);
+    outTree->Branch("photonOneEta"    , &photonOneEta);
+    outTree->Branch("photonOnePhi"    , &photonOnePhi);
+    outTree->Branch("photonOneR9"     , &photonOneR9);
+    outTree->Branch("photonOneMVA"    , &photonOneMVA);
+    outTree->Branch("photonOneERes"   , &photonOneERes);
+    outTree->Branch("passElectronVeto", &passElectronVeto);
+
+    outTree->Branch("photonOneSieie" , &photonOneSieie); 
+    outTree->Branch("photonOneHoverE", &photonOneHoverE);
+    outTree->Branch("photonOneIneu"  , &photonOneIneu);
+    outTree->Branch("photonOneIph"   , &photonOneIph);
+    outTree->Branch("photonOneIch"   , &photonOneIch);
+
+    outTree->Branch("photonOneSieip"     , &photonOneSieip);      
+    outTree->Branch("photonOneSipip"     , &photonOneSipip);     
+    outTree->Branch("photonOneSrr"       , &photonOneSrr);       
+    outTree->Branch("photonOneE2x2"      , &photonOneE2x2);      
+    outTree->Branch("photonOneE5x5"      , &photonOneE5x5);      
+    outTree->Branch("photonOneScEtaWidth", &photonOneScEtaWidth); 
+    outTree->Branch("photonOneScPhiWidth", &photonOneScPhiWidth); 
+    outTree->Branch("photonOneScRawE"    , &photonOneScRawE); 
+    outTree->Branch("photonOnePreShowerE", &photonOnePreShowerE); 
+    outTree->Branch("photonOneScBrem"    , &photonOneScBrem); 
+
+    // jets
+    outTree->Branch("jetOnePt" , &jetOnePt);
+    outTree->Branch("jetOneEta", &jetOneEta);
+    outTree->Branch("jetOnePhi", &jetOnePhi);
+    outTree->Branch("jetOneTag", &jetOneTag);
+    outTree->Branch("jetTwoPt" , &jetTwoPt);
+    outTree->Branch("jetTwoEta", &jetTwoEta);
+    outTree->Branch("jetTwoPhi", &jetTwoPhi);
+    outTree->Branch("jetTwoTag", &jetTwoTag);
+
+    // gen level objects 
+    outTree->Branch("genLeptonOnePt" , &genLeptonOnePt);
+    outTree->Branch("genLeptonOneEta", &genLeptonOneEta);
+    outTree->Branch("genLeptonOnePhi", &genLeptonOnePhi);
+    outTree->Branch("genLeptonOneId" , &genLeptonOneId);
+    outTree->Branch("genLeptonTwoPt" , &genLeptonTwoPt);
+    outTree->Branch("genLeptonTwoEta", &genLeptonTwoEta);
+    outTree->Branch("genLeptonTwoPhi", &genLeptonTwoPhi);
+    outTree->Branch("genLeptonTwoId" , &genLeptonTwoId);
+    outTree->Branch("genPhotonPt"    , &genPhotonPt);
+    outTree->Branch("genPhotonEta"   , &genPhotonEta);
+    outTree->Branch("genPhotonPhi"   , &genPhotonPhi);
+    outTree->Branch("genPhotonFHPFS" , &genPhotonFHPFS);
+    outTree->Branch("genPhotonIPFS"  , &genPhotonIPFS);
+    outTree->Branch("vetoDY"         , &vetoDY);
+    outTree->Branch("genIsoPass"     , &genIsoPass);
 
     // object counters
     outTree->Branch("nMuons", &nMuons);
@@ -190,21 +317,113 @@ void zAnalyzer::Begin(TTree *tree)
     outTree->Branch("nBJets", &nBJets);
     
     // dilepton
-    outTree->Branch("dileptonPt", &dileptonPt);
-    outTree->Branch("dileptonEta", &dileptonEta);
-    outTree->Branch("dileptonPhi", &dileptonPhi);
-    outTree->Branch("dileptonM", &dileptonM);
-    outTree->Branch("dileptonDEta", &dileptonDEta);
-    outTree->Branch("dileptonDPhi", &dileptonDPhi);
-    outTree->Branch("dileptonDR", &dileptonDR);
-    outTree->Branch("dileptonMKin", &dileptonMKin);
+    outTree->Branch("dileptonPt"       , &dileptonPt);
+    outTree->Branch("dileptonEta"      , &dileptonEta);
+    outTree->Branch("dileptonPhi"      , &dileptonPhi);
+    outTree->Branch("dileptonM"        , &dileptonM);
+    outTree->Branch("dileptonDEta"     , &dileptonDEta);
+    outTree->Branch("dileptonDPhi"     , &dileptonDPhi);
+    outTree->Branch("dileptonDR"       , &dileptonDR);
+    outTree->Branch("dileptonMKin"     , &dileptonMKin);
     outTree->Branch("dileptonMKinJames", &dileptonMKinJames);
 
+    // dileptonProbeFail
+    outTree->Branch("dileptonProbeFailPt"       , &dileptonProbeFailPt);
+    outTree->Branch("dileptonProbeFailEta"      , &dileptonProbeFailEta);
+    outTree->Branch("dileptonProbeFailPhi"      , &dileptonProbeFailPhi);
+    outTree->Branch("dileptonProbeFailM"        , &dileptonProbeFailM);
+    outTree->Branch("dileptonProbeFailDEta"     , &dileptonProbeFailDEta);
+    outTree->Branch("dileptonProbeFailDPhi"     , &dileptonProbeFailDPhi);
+    outTree->Branch("dileptonProbeFailDR"       , &dileptonProbeFailDR);
+    outTree->Branch("dileptonProbeFailMKin"     , &dileptonProbeFailMKin);
+    outTree->Branch("dileptonProbeFailMKinJames", &dileptonProbeFailMKinJames);
+
+    // dileptonProbePass
+    outTree->Branch("dileptonProbePassPt"       , &dileptonProbePassPt);
+    outTree->Branch("dileptonProbePassEta"      , &dileptonProbePassEta);
+    outTree->Branch("dileptonProbePassPhi"      , &dileptonProbePassPhi);
+    outTree->Branch("dileptonProbePassM"        , &dileptonProbePassM);
+    outTree->Branch("dileptonProbePassDEta"     , &dileptonProbePassDEta);
+    outTree->Branch("dileptonProbePassDPhi"     , &dileptonProbePassDPhi);
+    outTree->Branch("dileptonProbePassDR"       , &dileptonProbePassDR);
+    outTree->Branch("dileptonProbePassMKin"     , &dileptonProbePassMKin);
+    outTree->Branch("dileptonProbePassMKinJames", &dileptonProbePassMKinJames);
     // dilepton vertices
     //outTree->Branch("dileptonVertexOne", &dileptonVertexOne);
     //outTree->Branch("dileptonVertexErrOne", &dileptonVertexErrOne);
     //outTree->Branch("dileptonVertexChi2One", &dileptonVertexChi2One);
-    //outTree->Branch("dileptonVertexDOFOne", &dileptonVertexDOFOne);   
+    //outTree->Branch("dileptonVertexDOFOne", &dileptonVertexDOFOne);
+    
+    // dijet
+    outTree->Branch("dijetPt"  , &dijetPt);
+    outTree->Branch("dijetEta" , &dijetEta);
+    outTree->Branch("dijetPhi" , &dijetPhi);
+    outTree->Branch("dijetM"   , &dijetM);
+    outTree->Branch("dijetDEta", &dijetDEta);
+    outTree->Branch("dijetDPhi", &dijetDPhi);
+    outTree->Branch("dijetDR"  , &dijetDR);
+
+    // jet, lepton
+    outTree->Branch("l1j1DEta", &l1j1DEta);
+    outTree->Branch("l1j1DPhi", &l1j1DPhi);
+    outTree->Branch("l1j1DR"  , &l1j1DR);
+    outTree->Branch("l1j2DEta", &l1j2DEta);
+    outTree->Branch("l1j2DPhi", &l1j2DPhi);
+    outTree->Branch("l1j2DR"  , &l1j2DR);
+    outTree->Branch("l2j1DEta", &l2j1DEta);
+    outTree->Branch("l2j1DPhi", &l2j1DPhi);
+    outTree->Branch("l2j1DR"  , &l2j1DR);
+    outTree->Branch("l2j2DEta", &l2j2DEta);
+    outTree->Branch("l2j2DPhi", &l2j2DPhi);
+    outTree->Branch("l2j2DR"  , &l2j2DR);
+
+    // jet, photon
+    outTree->Branch("j1PhotonDEta", &j1PhotonDEta);
+    outTree->Branch("j1PhotonDPhi", &j1PhotonDPhi);
+    outTree->Branch("j1PhotonDR", &j1PhotonDR);
+    outTree->Branch("j2PhotonDEta", &j2PhotonDEta);
+    outTree->Branch("j2PhotonDPhi", &j2PhotonDPhi);
+    outTree->Branch("j2PhotonDR", &j2PhotonDR);
+    outTree->Branch("jPhotonDRMax", &jPhotonDRMax);
+    outTree->Branch("jPhotonDRMin", &jPhotonDRMin);
+
+    // three body
+    outTree->Branch("llgPt"       , &llgPt);
+    outTree->Branch("llgEta"      , &llgEta);
+    outTree->Branch("llgPhi"      , &llgPhi);
+    outTree->Branch("llgM"        , &llgM);
+    outTree->Branch("llgPtOverM"  , &llgPtOverM);
+    outTree->Branch("llgMKin"     , &llgMKin);
+    outTree->Branch("llgMKinJames", &llgMKinJames);
+    outTree->Branch("l1PhotonDEta", &l1PhotonDEta);
+    outTree->Branch("l1PhotonDPhi", &l1PhotonDPhi);
+    outTree->Branch("l1PhotonDR"  , &l1PhotonDR);
+    outTree->Branch("l2PhotonDEta", &l2PhotonDEta);
+    outTree->Branch("l2PhotonDPhi", &l2PhotonDPhi);
+    outTree->Branch("l2PhotonDR"  , &l2PhotonDR);
+
+    outTree->Branch("lPhotonDRMax"      , &lPhotonDRMax);
+    outTree->Branch("lPhotonDRMin"      , &lPhotonDRMin);
+    outTree->Branch("dileptonPhotonDEta", &dileptonPhotonDEta);
+    outTree->Branch("dileptonPhotonDPhi", &dileptonPhotonDPhi);
+    outTree->Branch("dileptonPhotonDR"  , &dileptonPhotonDR);
+    outTree->Branch("ptt", &ptt);
+    outTree->Branch("zgBigTheta", &zgBigTheta);
+    outTree->Branch("zgLittleTheta", &zgLittleTheta);
+    outTree->Branch("zgLittleThetaMY", &zgLittleThetaMY);
+    outTree->Branch("zgPhi", &zgPhi);
+    outTree->Branch("zgBigThetaJames", &zgBigThetaJames);
+    outTree->Branch("zgLittleThetaJames", &zgLittleThetaJames);
+    outTree->Branch("zgPhiJames"    , &zgPhiJames);
+    outTree->Branch("genBigTheta"   , &genBigTheta);
+    outTree->Branch("genLittleTheta", &genLittleTheta);
+    outTree->Branch("genPhi"        , &genPhi);
+
+    // other 
+    outTree->Branch("llgJJDEta", &llgJJDEta);
+    outTree->Branch("llgJJDPhi", &llgJJDPhi);
+    outTree->Branch("llgJJDR"  , &llgJJDR);
+    outTree->Branch("zepp"     , &zepp);
 
     // event counter
     string outHistName = params->get_output_treename("TotalEvents");
@@ -213,26 +432,64 @@ void zAnalyzer::Begin(TTree *tree)
     string outHistNameGen = params->get_output_treename("TotalEventsGen");
     hTotalEventsGen = new TH1D(outHistNameGen.c_str(),"TotalEventsGen",5,0.5,5.5);
 
+    int ptNBins  = 6;
+    int etaNBins = 10;
+
+    double ptBins [ptNBins + 1] = {0,20,40,50,90,150,500};
+    double etaBins[etaNBins + 1] = {-2.5,-2,-1.566,-1.4442,-1.0,0,1.0,1.4442,1.566,2,2.5};
+
+    PhotonProbe     = new TH2F("EGammaProbe"     , "EGammaProbe"     , ptNBins, ptBins, etaNBins, etaBins);
+    PhotonProbePass = new TH2F("EGammaProbePass" , "EGammaProbePass" , ptNBins, ptBins, etaNBins, etaBins);
+    PhotonProbeFail = new TH2F("EGammaProbeFail" , "EGammaProbeFail" , ptNBins, ptBins, etaNBins, etaBins);
+
+
     ReportPostBegin();
 }
 
 Bool_t zAnalyzer::Process(Long64_t entry)
 {
+    //bool debug = true;
+    bool debug = false;
+    bool debugSelect = true;
+    //bool debugSelect = false;
+    
+    //bool debugSF = true;
+    bool debugSF = false;
+    if(debug){
+	cout << "=========================";
+	cout << "Start ..........\n";
+    }
+
+
     GetEntry(entry, 1);  // load all branches
     this->totalEvents++;
     hTotalEvents->Fill(1);
-   
+	
+    if(debug)   
+	    cout << "GetEntry.....\n";
     const bool isData = (fInfo->runNum != 1);
-    particleSelector->SetRealData(isData);
-    
+    particleSelector->SetRealData(isData); 
+    if (debug)
+	cout << "SetRealData.....\n";
+
     genWeight = 1;
     if (!isData) {
-        if (fGenEvtInfo->weight < 0) {
+        
+	if(debug)
+		cout << "... If Gen...\n";
+	if (fGenEvtInfo->weight < 0) {
+	    if(debug)
+		cout << "... .... If negWeight...\n";
             genWeight = -1;
             int maxBin = hTotalEvents->GetSize() - 2;
             hTotalEvents->Fill(maxBin);
+	    if(debug)
+		cout << "... .... Fill hist...\n";
         }
     }
+    
+    if(debug)
+	cout << "Weights....\n";
 
     if (entry%10000==0)  
         std::cout << "... Processing event " << entry 
@@ -272,7 +529,9 @@ Bool_t zAnalyzer::Process(Long64_t entry)
                 (fInfo->runNum == 1 && fInfo->lumiSec == 380   && fInfo->evtNum == 75912) ||
                 (fInfo->runNum == 1 && fInfo->lumiSec == 408   && fInfo->evtNum == 81429) 
                 )
-            ) return kTRUE;
+            ) 
+		return kTRUE;
+	   
 
         cout << "run, lumi, event" << endl;
         cout << fInfo->runNum << ", " << fInfo->lumiSec << ", " << fInfo->evtNum << endl;
@@ -319,7 +578,57 @@ Bool_t zAnalyzer::Process(Long64_t entry)
         nPartons = 0;
     }
 
+    if(!isData){
+	if(genPhotons.size() > 0 && genLeptons.size() == 2){
+		hTotalEventsGen->Fill(1);
+		Sgen++;
+		if(params->selection == "mumug"){
+			//if(genPhotons[0]->pt > 15 && genLeptons[0]->pt > 20 && genLeptons[1]->pt > 10){
+			//	if((fabs(genPhotons[0]->eta) < 1.4442 || fabs(genPhotons[0]->eta) > 1.566) 
+			//	&& fabs(genPhotons[0]->eta) < 2.4 
+			//	&& fabs(genLeptons[0]->eta) < 2.4 
+			//	&& fabs(genLeptons[1]->eta) < 2.4
+			//	)
+			hTotalEventsGen->Fill(2);
+			SgenAccep++;
 
+			genLeptonOnePt  = genLeptons[0]->pt;
+			genLeptonOneEta = genLeptons[0]->eta;
+			genLeptonOnePhi = genLeptons[0]->phi;
+			genLeptonTwoPt  = genLeptons[1]->pt;
+			genLeptonTwoEta = genLeptons[1]->eta;
+			genLeptonTwoPhi = genLeptons[1]->phi;
+			genPhotonPt  = genPhotons[0]->pt;
+			genPhotonEta = genPhotons[0]->eta;
+			genPhotonPhi = genPhotons[0]->phi;
+			//}
+		}
+		else if(params->selection == "elelg"){
+			if(genPhotons[0]->pt > 15 && genLeptons[0]->pt > 25 && genLeptons[1]->pt > 15){
+				if((fabs(genPhotons[0]->eta) < 1.4442 || fabs(genPhotons[0]->eta) > 1.566) 
+				&& fabs(genPhotons[0]->eta) < 2.4 
+				&& fabs(genLeptons[0]->eta) < 2.4 
+				&& fabs(genLeptons[1]->eta) < 2.4
+				)
+				hTotalEventsGen->Fill(2);
+				SgenAccep++;
+
+				genLeptonOnePt  = genLeptons[0]->pt;
+				genLeptonOneEta = genLeptons[0]->eta;
+				genLeptonOnePhi = genLeptons[0]->phi;
+				genLeptonTwoPt  = genLeptons[1]->pt;
+				genLeptonTwoEta = genLeptons[1]->eta;
+				genLeptonTwoPhi = genLeptons[1]->phi;
+				genPhotonPt  = genPhotons[0]->pt;
+				genPhotonEta = genPhotons[0]->eta;
+				genPhotonPhi = genPhotons[0]->phi;
+			}
+		}
+	}
+    }
+
+    if (debug)
+	cout<< "Before Lumi mask passed\n";
     /* Apply lumi mask */
     if (isData) {
         RunLumiRangeMap::RunLumiPairType rl(fInfo->runNum, fInfo->lumiSec);
@@ -328,6 +637,9 @@ Bool_t zAnalyzer::Process(Long64_t entry)
     }
     hTotalEvents->Fill(2);
 
+    if (debug)
+	cout<< "Lumi mask passed\n";
+
     /* Trigger selection */
     bool passTrigger = false;
     vector<string> passTriggerNames;
@@ -335,8 +647,8 @@ Bool_t zAnalyzer::Process(Long64_t entry)
         bool triggered = false;
         triggered = trigger->pass(triggerNames[i], fInfo->triggerBits);
         passTrigger |= triggered;
-
         if (triggered) {
+	    
             passTriggerNames.push_back(triggerNames[i]);
         }
     }
@@ -345,6 +657,8 @@ Bool_t zAnalyzer::Process(Long64_t entry)
         return kTRUE;
     hTotalEvents->Fill(3);
 
+    if(debug)
+	cout << "HLT Trigger passed\n" << endl;
     /////////////////////
     // Fill event info //
     /////////////////////
@@ -382,14 +696,20 @@ Bool_t zAnalyzer::Process(Long64_t entry)
         return kTRUE;
     }
     hTotalEvents->Fill(4);
+
+    if(debug)
+	cout << "PV passed\n" << endl;
     particleSelector->SetNPV(fInfo->nPU + 1);
     particleSelector->SetRho(fInfo->rhoJet);
+    Rho = fInfo->rhoJet;
 
     if (sync_print_precut) {
         cout << "pvx, pvy, pvz, ndof" << endl;
         cout << thePV->x << ", " << thePV->y << ", " << thePV->z << ", " << thePV->ndof << endl;
     }
 
+    if(debug)
+	cout << "Start Object Filtering\n";
     /* MUONS */
     vector<TMuon*> muons;
     vector<TLorentzVector> veto_muons;
@@ -409,12 +729,13 @@ Bool_t zAnalyzer::Process(Long64_t entry)
                     muon->nTkLayers, rng->Rndm(), rng->Rndm(), 
                     0, 0);
         }
-
+	if(debug)
+		cout << "Muons correction\n";
         if (sync_print_precut) {
             cout << "pt_before_roccor, pt_after_roccor" << endl;
             cout << muon->pt << ", ";
         }
-
+	
         muon->pt = muonSF*muon->pt; 
         if (sync_print_precut)
             cout << muon->pt << endl;
@@ -459,6 +780,8 @@ Bool_t zAnalyzer::Process(Long64_t entry)
                && muon->nValidHits > 0
                && GetMuonIsolation(muon)/muonP4.Pt() < 0.15
            ){
+	    if(muons.size() >= 2)
+		    cout << "Muons Selected\n";
             muons.push_back(muon);
         } 
                     
@@ -482,8 +805,10 @@ Bool_t zAnalyzer::Process(Long64_t entry)
             veto_muons.push_back(muonP4);
         }
     }
-    
     sort(muons.begin(), muons.end(), sort_by_higher_pt<TMuon>);
+
+    if(debug)
+	cout << "----Muon collection";
 
     /* ELECTRONS */
     vector<TElectron*> electrons;
@@ -494,26 +819,39 @@ Bool_t zAnalyzer::Process(Long64_t entry)
 
         TLorentzVector electronP4;
         electronP4.SetPtEtaPhiM(electron->calibPt, electron->eta, electron->phi, ELE_MASS);
-        
-        if (sync_print_precut) {
-           cout << "electron pt, calibpt, eta, sc_eta, phi, d0, dz, sip3d, iso, mva, pass_mva" << endl;
+        //if(debugSelect){
+	//	cout    << "Electron info " << endl 
+	//		<< "-ID:: " << particleSelector->PassElectronID(electron, cuts->tightElID) << endl 
+	//		<< "-ISO:: " << particleSelector->PassElectronIso(electron,cuts->tightElIso) << endl; 
+	//}
+ 
+        if(sync_print_precut) {
+           cout << "electron pt, calibpt, eta, sc_eta, phi, d0, dz, sip3d, iso, mva, pass_mva, pass_id, pass_iso" << endl;
            //cout << electronP4.Pt() << "," << electronP4.Eta() << "," << 
            cout << electron->pt << "," << electron->calibPt << "," <<  electron->eta << ", " << 
                    electron->scEta << ", " << electron->phi << "," << electron->d0 << "," << 
                    electron->dz << "," << electron->sip3d << "," << 
-                   GetElectronIsolation(electron, fInfo->rhoJet) << ", " << electron->mva << ", " << 
-                   particleSelector->PassElectronMVA(electron, cuts->hzzMVAID) <<endl;
+                   GetElectronIsolation(electron, fInfo->rhoJet) << ", " << electron->mvaFall17V2Iso << ", " << 
+                   particleSelector->PassElectronMVA(electron, cuts->hzzMVAID) << 
+		   particleSelector->PassElectronID(electron, cuts->tightElID) << 
+		   particleSelector->PassElectronIso(electron,cuts->tightElIso) << 
+		   endl;
         } 
-
+	//cout << "     Electron pt:: " << electron->pt << " calib:: " << electron->calibPt << endl;
+	//if(particleSelector->PassElectronID(electron, cuts->tightElID))
+	//	cout << "Electron ID Pass\n";
+	//if(particleSelector->PassElectronIso(electron,cuts->tightElIso))
+	//	cout << "Electron ISO Pass\n";
         if (
-                electron->calibPt > 7
+                electron->calibPt > 11
                 && fabs(electron->scEta) < 2.5
                 //&& particleSelector->PassElectronMVA(electron, cuts->hzzMVAID)
                 && particleSelector->PassElectronID(electron, cuts->tightElID)
-                && GetElectronIsolation(electron, fInfo->rhoJet)/electronP4.Pt() < 0.35
-                && fabs(electron->d0) < 0.5
-                && fabs(electron->dz) < 1.0
-                && fabs(electron->sip3d) < 4.0 
+		&& particleSelector->PassElectronIso(electron,cuts->tightElIso)
+                //&& GetElectronIsolation(electron, fInfo->rhoJet)/electronP4.Pt() < 0.35
+                //&& fabs(electron->d0) < 0.5
+                //&& fabs(electron->dz) < 1.0
+                //&& fabs(electron->sip3d) < 4.0 
            ) {
             electrons.push_back(electron);
             veto_electrons.push_back(electronP4);
@@ -521,6 +859,8 @@ Bool_t zAnalyzer::Process(Long64_t entry)
     }
     sort(electrons.begin(), electrons.end(), sort_by_higher_pt<TElectron>);
 
+    if(debug)
+	cout << "----Electron collection" << endl;
     /* TAUS */
     vector<TTau*> taus;
     vector<TLorentzVector> veto_taus;
@@ -574,16 +914,37 @@ Bool_t zAnalyzer::Process(Long64_t entry)
     }
     sort(taus.begin(), taus.end(), sort_by_higher_pt<TTau>);
 
+    if(debug)
+	cout << "----Tau collection" << endl;
+
     /* PHOTONS */
     vector <TPhoton*> photons;
     vector<TLorentzVector> veto_photons;
+    float EAPho[7][3] = {
+			{0.0112, 	0.0668, 	0.1113},
+			{0.0108, 	0.1054, 	0.0953},
+			{0.0106, 	0.0786, 	0.0619},
+			{0.01002, 	0.0233, 	0.0837},
+			{0.0098, 	0.0078, 	0.1070},
+			{0.0089, 	0.0028, 	0.1212},
+			{0.0087, 	0.0137, 	0.1466} 
+			};
+
     for (int i=0; i<fPhotonArr->GetEntries(); i++) {
         TPhoton* photon = (TPhoton*) fPhotonArr->At(i);
         assert(photon);
         
         TLorentzVector photonP4;
         photonP4.SetPtEtaPhiM(photon->calibPt, photon->eta, photon->phi, 0.);
-    	cout << " ---------Photon PT :: " << photonP4.Pt() << endl;
+    	//cout << " ---------PhotonP4 PT :: " << photonP4.Pt() << endl;
+    	if(debug){
+		cout << " ---------Photon PT   :: " << photon->pt << " cal: " << photon->calibPt << endl;
+		cout << "----------Photon Eta  :: " << photon->eta << " scEta: " << photon->scEta << endl;
+		//cout << "----------Photon ID   :: " << particleSelector->PassPhotonID(photon, cuts->loosePhID) << endl;
+		cout << "----------Photon ID   :: " << particleSelector->PassPhotonID(photon, cuts->preSelPhID) << endl;
+		cout << "----------Photon Veto :: " << photon->passElectronVeto << endl;
+	}
+
         if (sync_print_precut) {
             cout << "photon_pt, photon_calibpt, photon_eta, photon_sc_eta, photon_phi, photon_mva, pass_electron_veto" << endl;
             cout << photon->pt << ", " << photon->calibPt << ", " << photon->eta << ", " << photon->scEta << ", " << photon->phi << ", " << photon->mvaFall17V2 
@@ -596,7 +957,9 @@ Bool_t zAnalyzer::Process(Long64_t entry)
                 && fabs(photon->scEta) < 2.5 
                 && (fabs(photon->scEta) <= 1.4442 || fabs(photon->scEta) >= 1.566)
                 //&& particleSelector->PassPhotonMVA(photon, cuts->looseMVAPhID)
-                && particleSelector->PassPhotonID(photon, cuts->mediumPhID)
+                //&& particleSelector->PassPhotonID(photon, cuts->mediumPhID)
+                && particleSelector->PassPhotonID(photon, cuts->preSelPhID)
+                && particleSelector->PassPhotonIso(photon, cuts->preSelPhIso,EAPho)	
                 && photon->passElectronVeto
             ) {
             photons.push_back(photon);
@@ -604,6 +967,140 @@ Bool_t zAnalyzer::Process(Long64_t entry)
         }
     } 
     sort(photons.begin(), photons.end(), sort_by_higher_pt<TPhoton>);
+
+    if(debug)
+	cout << "----Photon collection" << endl;
+
+
+    //////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////
+    bool ZpeakPass = false;
+    
+    if(debugSelect)
+    	cout << "---- Start Electron Tag" <<endl;
+    //for (unsigned int j = 0; j < electrons.size(); ++j) {
+    for (int i=0; i<fElectronArr->GetEntries(); i++) {
+        TElectron* electron = (TElectron*) fElectronArr->At(i);
+        //assert(electron);
+
+        TLorentzVector tempElec;
+        tempElec.SetPtEtaPhiM(electron->calibPt, electron->eta, electron->phi, ELE_MASS);
+    	//if(debugSelect){
+    	//	cout 	<< "----`--- Loop" << endl 
+    	//		<< "30 pt? " << electrons[j]->calibPt << endl
+    	//		<< "2.1 Eta? " << fabs(electrons[j]->eta) << endl
+    	//		//<< "trigger? "<< trigger->passObj("HLT_Ele27_WPTight_Gsf_v*", 1, electrons[j]->hltMatchBits) << endl
+    	//		//<< "bits? " << electrons[j]->hltMatchBits << endl;
+    	//		<< "trigger? " << trigger->pass("HLT_Ele27_WPTight_Gsf_v*", fInfo->triggerBits) << endl;
+    	//}
+    
+    
+    	if( 	tempElec.Pt() > 30 && 
+    		fabs(tempElec.Eta()) < 2.1 && 
+    		(fabs(tempElec.Eta()) <= 1.4442 || fabs(tempElec.Eta()) >= 1.566) && 
+    		//&& trigger->passObj("HLT_Ele27_WPTight_Gsf_v*", 1, electrons[j]->hltMatchBits)
+    		trigger->pass("HLT_Ele27_WPTight_Gsf_v*", fInfo->triggerBits)
+    
+    	){
+    
+    		if(debugSelect)
+    			cout << "---- Start Electron Probe" <<endl;
+    		//for (unsigned int i = 0; i < photons.size(); ++i) {
+    		for (int i=0; i<fPhotonArr->GetEntries(); i++) {
+			TPhoton* photon = (TPhoton*) fPhotonArr->At(i);
+			assert(photon);
+			
+			TLorentzVector tempPhoton;
+			tempPhoton.SetPtEtaPhiM(photon->calibPt, photon->eta, photon->phi, ELE_MASS);
+
+    			//tempPhoton.SetPtEtaPhiM(photons[i]->calibPt, photons[i]->eta, photons[i]->phi, ELE_MASS);
+    			TLorentzVector tempDilep;	
+    			tempDilep = tempElec + tempPhoton;
+
+
+			cout 	<< "----`--- Loop" << endl 
+				<< "30 pt? " << electron->calibPt << endl
+				<< "2.1 Eta? " << fabs(electron->eta) << endl
+				<< "trigger? " << trigger->pass("HLT_Ele27_WPTight_Gsf_v*", fInfo->triggerBits) << endl
+				<< "30 pt? " << photon->calibPt << endl
+				<< "2.1 Eta? " << fabs(photon->eta) << endl;
+			cout << "Elect Pt :: " << tempElec.Pt()  << "Photon Pt ::" << tempPhoton.Pt()  << "Dilep:: " << tempDilep.Pt() << endl
+ 			     << "Elect Eta:: " << tempElec.Eta() << "Photon Eta::" << tempPhoton.Eta() << "Dilep:: " << tempDilep.Eta() << endl 
+ 			     << "Elect Phi:: " << tempElec.Phi() << "Photon Phi::" << tempPhoton.Phi() << "Dilep:: " << tempDilep.Phi() << endl; 
+
+    			if(	tempDilep.M() > 80  && 
+    				tempDilep.M() < 100 &&
+			        
+				tempPhoton.Pt() > 15 && 
+				fabs(tempPhoton.Eta()) < 2.5 && 
+				(fabs(tempPhoton.Eta()) <= 1.4442 || fabs(tempPhoton.Eta()) >= 1.566) &&
+				SignalRegionPass(photon) // need access to variables in the TPhoton object
+			){
+    					PhotonProbe->Fill(tempPhoton.Pt(),tempPhoton.Eta(),1);
+    					if(
+						particleSelector->PassPhotonID(photon, cuts->preSelPhID) &&
+						particleSelector->PassPhotonIso(photon, cuts->preSelPhIso,EAPho)
+
+					){
+						if(debugSelect)
+							cout << "---- PASS Electron Probe" <<endl;
+	    					PhotonProbePass->Fill(tempPhoton.Pt(),tempPhoton.Eta(),1);
+
+						leptonOnePt  = tempElec.Pt();
+						leptonOneEta = tempElec.Eta();
+						leptonOnePhi = tempElec.Phi();
+					    
+						leptonProbePassPt  = tempPhoton.Pt();
+						leptonProbePassEta = tempPhoton.Eta();
+						leptonProbePassPhi = tempPhoton.Phi();
+					    
+						dileptonProbePassPt  = tempDilep.Pt();
+						dileptonProbePassEta = tempDilep.Eta();
+						dileptonProbePassPhi = tempDilep.Phi();
+						dileptonProbePassM   = tempDilep.M();
+					} else{
+	    					PhotonProbeFail->Fill(tempPhoton.Pt(),tempPhoton.Eta(),1);
+
+						leptonOnePt  = tempElec.Pt();
+						leptonOneEta = tempElec.Eta();
+						leptonOnePhi = tempElec.Phi();
+					    
+						leptonProbeFailPt  = tempPhoton.Pt();
+						leptonProbeFailEta = tempPhoton.Eta();
+						leptonProbeFailPhi = tempPhoton.Phi();
+					    
+						dileptonProbeFailPt  = tempDilep.Pt();
+						dileptonProbeFailEta = tempDilep.Eta();
+						dileptonProbeFailPhi = tempDilep.Phi();
+						dileptonProbeFailM   = tempDilep.M();
+
+					}
+    				
+    			}
+    		}
+    	}
+    }
+    if(debugSelect)
+    	cout << "---- Start Fill" <<endl;
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     /* JETS */
     TClonesArray* jetCollection;
@@ -661,7 +1158,8 @@ Bool_t zAnalyzer::Process(Long64_t entry)
 
         if (
                 jet->pt > 30 
-                && fabs(jet->eta) < 4.7
+                //&& fabs(jet->eta) < 4.7
+                && fabs(jet->eta) < 2.5
                 && particleSelector->PassJetID(jet, cuts->looseJetID)
                 && !muOverlap 
                 && !elOverlap
@@ -701,6 +1199,8 @@ Bool_t zAnalyzer::Process(Long64_t entry)
     //std::sort(jets.begin(), jets.end(), sort_by_btag);
     std::sort(jets.begin(), jets.end(), sort_by_higher_pt<TJet>);
 
+    if(debug)
+	cout << "----Jet collection" << endl;
     /* MET */
     met    = fInfo->pfMETC;
     metPhi = fInfo->pfMETCphi;
@@ -726,12 +1226,790 @@ Bool_t zAnalyzer::Process(Long64_t entry)
     nTaus      = taus.size();
     nPhotons   = photons.size();
 
-    
-   if (params->selection == "ee") {
-        if (electrons.size() < 2)
+    if(debug)
+	cout << "---- Start Selection" << endl;
+    if (params->selection == "mumug") {
+        if (muons.size() < 2) 
             return kTRUE;
         hTotalEvents->Fill(5);
+        if (photons.size() < 1)
+            return kTRUE;
+        hTotalEvents->Fill(6);
 
+        if(debugSelect){
+		cout << "---------------------------" << params->selection << endl;
+		cout << "--------------------------- MU:: " << nMuons << endl;
+		cout << "--------------------------- EL:: " << nElectrons << endl;
+		cout << "--------------------------- PH:: " << nPhotons << endl;
+        }
+	if(debugSelect)
+		cout << "------------ Multiplicity cut" << endl;
+ 
+        TLorentzVector leptonOneP4, leptonTwoP4;
+        unsigned int muonOneIndex = 0;
+        unsigned int muonTwoIndex = 1;
+        bool hasValidPair = false;
+        float zMassDiff = 100.;
+        for (unsigned int i = 0; i < muons.size(); ++i) {
+            for (unsigned int j = i+1; j < muons.size(); ++j) {
+                TLorentzVector tempMuonOne, tempMuonTwo;
+                tempMuonOne.SetPtEtaPhiM(muons[i]->pt, muons[i]->eta, muons[i]->phi, MUON_MASS);
+                tempMuonTwo.SetPtEtaPhiM(muons[j]->pt, muons[j]->eta, muons[j]->phi, MUON_MASS);
+                float thisMass = (tempMuonOne + tempMuonTwo).M();
+                //if (
+                //        //muons[i]->q != muons[j]->q
+                //        //muons[i]->q == muons[j]->q // fake selection
+                //        /*&&*/ muons[i]->pt > 20.0 
+                //        && muons[j]->pt > 10.0
+                //        && thisMass > 50.0
+                //   ) {
+                if (thisMass > 50.0) {
+                    if (hasValidPair) {
+                        if (fabs(thisMass - ZMASS) < zMassDiff) {
+                            zMassDiff = fabs(thisMass - ZMASS);
+                            leptonOneP4 = tempMuonOne;
+                            leptonTwoP4 = tempMuonTwo;
+                            muonOneIndex = i;
+                            muonTwoIndex = j;
+                        }
+                    }
+                    else {
+                        zMassDiff = fabs(thisMass - ZMASS);
+                        leptonOneP4 = tempMuonOne;
+                        leptonTwoP4 = tempMuonTwo;
+                        muonOneIndex = i;
+                        muonTwoIndex = j;
+                        hasValidPair = true;
+                    }
+                }
+            }
+        }
+
+
+        if (!hasValidPair)
+            return kTRUE;
+        hTotalEvents->Fill(7);
+
+        //if (leptonOneP4.Pt() <= 20.0) 
+        if (leptonOneP4.Pt() < 25.0) 
+            return kTRUE;
+
+        //if (leptonTwoP4.Pt() <= 10.0)
+        if (leptonTwoP4.Pt() < 20.0)
+            return kTRUE;
+
+        if (sync_print_precut) {
+            cout << "selected lepton1_pt, lepton1_eta, lepton1_phi, lepton2_pt, lepton2_eta, lepton2_phi" << endl;
+            cout << leptonOneP4.Pt() << ", " << leptonOneP4.Eta() << ", " << leptonOneP4.Phi() << ", " 
+                 << leptonTwoP4.Pt() << ", " << leptonTwoP4.Eta() << ", " << leptonTwoP4.Phi() << endl;
+        }
+
+        TLorentzVector dileptonP4 = leptonOneP4 + leptonTwoP4;
+
+        // trigger matching:
+        bool mu1_fired_leg1 = false;
+        bool mu1_fired_leg2 = false;
+        bool mu2_fired_leg1 = false;
+        bool mu2_fired_leg2 = false;
+        for (unsigned int iT = 0; iT < triggerNames.size(); ++iT) {
+            mu1_fired_leg1 |= trigger->passObj(triggerNames.at(iT), 1, muons[muonOneIndex]->hltMatchBits);
+            mu1_fired_leg2 |= trigger->passObj(triggerNames.at(iT), 2, muons[muonOneIndex]->hltMatchBits);
+            mu2_fired_leg1 |= trigger->passObj(triggerNames.at(iT), 1, muons[muonTwoIndex]->hltMatchBits);
+            mu2_fired_leg2 |= trigger->passObj(triggerNames.at(iT), 2, muons[muonTwoIndex]->hltMatchBits);
+        }
+        /*if (sync_print_precut) {
+            cout << "mu1_fired_leg1, mu1_fired_leg2, mu2_fired_leg1, mu2_fired_leg2" << endl;
+            cout << mu1_fired_leg1 << ", " << mu1_fired_leg2 << ", " << mu2_fired_leg1 << ", " << mu2_fired_leg2 << endl;
+        }*/
+
+        // L1EMTF cut 
+        if (
+            fabs(leptonOneP4.DeltaPhi(leptonTwoP4)) < 70.0*(M_PI/180.0)
+            && fabs(leptonOneP4.Eta()) > 1.2 
+            && fabs(leptonTwoP4.Eta()) > 1.2
+            && leptonOneP4.Eta()*leptonTwoP4.Eta() > 0
+           )
+            return kTRUE;
+        hTotalEvents->Fill(8); 
+
+        if (sync_print_precut) 
+            cout << "passed the L1EMTF cut" << endl;
+
+        bool hasValidPhoton = false;
+        unsigned int photonIndex = 0;
+
+        for (unsigned int i = 0; i < photons.size(); ++i) {
+            TLorentzVector tempPhoton;
+            //TLorentzVector tempDilepton;
+            TLorentzVector tempLLG;
+            tempPhoton.SetPtEtaPhiM(photons[i]->calibPt, photons[i]->eta, photons[i]->phi, 0.);
+            //tempDilepton = leptonOneP4 + leptonTwoP4;
+            //tempLLG = leptonOneP4 + leptonTwoP4 + tempPhoton;
+            tempLLG = dileptonP4 + tempPhoton;
+            float this_dr1 = leptonOneP4.DeltaR(tempPhoton);
+            float this_dr2 = leptonTwoP4.DeltaR(tempPhoton);
+            if (sync_print_precut) {
+                cout << "photon pt, et/m, z_mass, h_mass, dr1, dr2" << endl;
+                cout << tempPhoton.Pt() << ", " << tempPhoton.Et()/tempLLG.M() << ", " 
+                     << dileptonP4.M() << ", " << tempLLG.M() << ", " 
+                     << this_dr1 << ", " << this_dr2 << endl;
+            }
+	    //std::cout << " Photon Pt" << tempPhoton.Pt() << std::endl;
+            if (
+                tempPhoton.Pt() >= 15.0 
+                //&& tempPhoton.Et()/tempLLG.M() > (15.0/110.0) 
+                //&& dileptonP4.M() + tempLLG.M() > 185.0 
+                //&& tempLLG.M() > 100. && tempLLG.M() < 180. 
+                //&& this_dr1 > 0.4 && this_dr2 > 0.4
+                ) {
+                hasValidPhoton = true;
+                photonIndex = i;
+                break;
+            }
+        }
+	
+
+        if (!hasValidPhoton)
+            return kTRUE;
+        hTotalEvents->Fill(9);
+
+        if (sync_print_precut)
+            cout << "passed the photon selection" << endl;
+
+        TLorentzVector photonOneP4;
+        photonOneP4.SetPtEtaPhiM(photons[photonIndex]->calibPt, photons[photonIndex]->eta, photons[photonIndex]->phi, 0.);
+        if (photonOneP4.Pt() < 15.0)
+            return kTRUE;
+        hTotalEvents->Fill(10);
+
+        TLorentzVector llgP4 = dileptonP4 + photonOneP4;
+
+        // DY photon overlap removal
+        vetoDY = false;
+        for (unsigned int i = 0; i < genPhotons.size(); ++i) {
+            TGenParticle *pho = genPhotons.at(i);
+            if (pho->fromHardProcessFinalState || pho->isPromptFinalState) {
+		if(pho->pdgId == 22){
+			TLorentzVector thisGenPhotonP4;
+			thisGenPhotonP4.SetPtEtaPhiM(pho->pt, pho->eta, pho->phi, 0.);
+			if (thisGenPhotonP4.DeltaR(photonOneP4) < 0.1) {
+			    vetoDY = true;
+			    break;
+			}
+		}
+            }
+	    // gen Iso
+	    float genIso = GetGenIsolation(pho);
+	    if(genIso < 5) 
+		genIsoPass = true;
+        }
+
+ 
+        // checking for lepton tag
+        isLeptonTag = false;
+        for (unsigned int i = 0; i < muons.size(); ++i) {
+            TLorentzVector tempMuon;
+            tempMuon.SetPtEtaPhiM(muons[i]->pt, muons[i]->eta, muons[i]->phi, MUON_MASS);
+            if (leptonOneP4.DeltaR(tempMuon) < 0.4 ||
+                leptonTwoP4.DeltaR(tempMuon) < 0.4 || 
+                photonOneP4.DeltaR(tempMuon) < 0.4)
+                continue;
+            else
+                isLeptonTag = true;
+        }
+
+        if (!isLeptonTag) {
+            for (unsigned int i = 0; i < electrons.size(); ++i) {
+                TLorentzVector tempElectron;
+                tempElectron.SetPtEtaPhiM(electrons[i]->calibPt, electrons[i]->eta, electrons[i]->phi, ELE_MASS);
+                if (leptonOneP4.DeltaR(tempElectron) < 0.4 ||
+                    leptonTwoP4.DeltaR(tempElectron) < 0.4 || 
+                    photonOneP4.DeltaR(tempElectron) < 0.4)
+                    continue;
+                else
+                    isLeptonTag = true;
+            }
+        }
+
+	//////////////////////////////////////////////
+        for (unsigned int i = 0; i < muons.size(); ++i) {
+		TLorentzVector tempMuon;
+		tempMuon.SetPtEtaPhiM(muons[i]->pt, muons[i]->eta, muons[i]->phi, MUON_MASS);
+		if (leptonOneP4.DeltaR(tempMuon) < 0.1)
+		    	leptonOneTag = true;
+		if (leptonTwoP4.DeltaR(tempMuon) < 0.1)
+		    	leptonTwoTag = true;
+	}
+	///////////////////////////////////
+        
+        // checking for dijet tag
+        isDijetTag = false;
+        isTightDijetTag = false;
+        unsigned int jetOneIndex = 0;
+        unsigned int jetTwoIndex = 0;
+        unsigned int purityLevel = 0;
+        TLorentzVector jetOneP4, jetTwoP4;
+        //TLorentzVector llg = leptonOneP4 + leptonTwoP4 + photonOneP4;
+        if (!isLeptonTag) {
+            /*if (sync_print_precut) 
+                cout << "event is not lepton tagged; checking dijet tag" << endl;*/
+            if (jets.size() > 1)  {
+                /*if (sync_print_precut)
+                    cout << "event has at least two jets" << endl;*/
+                for (unsigned int i = 0; i < jets.size(); ++i) {
+                    for (unsigned int j = i+1; j < jets.size(); ++j) {
+                        TLorentzVector tempJetOne;
+                        TLorentzVector tempJetTwo;
+                        tempJetOne.SetPtEtaPhiM(jets[i]->pt, jets[i]->eta, jets[i]->phi, jets[i]->mass);
+                        tempJetTwo.SetPtEtaPhiM(jets[j]->pt, jets[j]->eta, jets[j]->phi, jets[j]->mass);
+                        TLorentzVector tempDijet = tempJetOne + tempJetTwo;
+                        float zeppen = llgP4.Eta() - (tempJetOne.Eta() + tempJetTwo.Eta())/2.;
+                        if (    purityLevel < 5  
+                            &&  tempJetOne.DeltaR(leptonOneP4) >= 0.4 && tempJetOne.DeltaR(leptonTwoP4) >= 0.4 
+                            &&  tempJetTwo.DeltaR(leptonOneP4) >= 0.4 && tempJetTwo.DeltaR(leptonTwoP4) >= 0.4 
+                            &&  tempJetOne.DeltaR(photonOneP4) >= 0.4 && tempJetTwo.DeltaR(photonOneP4) >= 0.4
+                            &&  fabs(tempJetOne.Eta() - tempJetTwo.Eta()) >= 3.5 
+                            &&  fabs(zeppen) <= 2.5 && tempDijet.M() >= 500.
+                            &&  fabs(tempDijet.DeltaPhi(llgP4)) >= 2.4
+                           ) {
+                            isDijetTag = true;
+                            isTightDijetTag = true;
+                            jetOneIndex = i;
+                            jetTwoIndex = j;
+                            purityLevel = 5;
+                            break;
+                        }
+                        else if (   purityLevel < 4 
+                                &&  tempJetOne.DeltaR(leptonOneP4) >= 0.4 && tempJetOne.DeltaR(leptonTwoP4) >= 0.4 
+                                &&  tempJetTwo.DeltaR(leptonOneP4) >= 0.4 && tempJetTwo.DeltaR(leptonTwoP4) >= 0.4 
+                                &&  tempJetOne.DeltaR(photonOneP4) >= 0.4 && tempJetTwo.DeltaR(photonOneP4) >= 0.4
+                                &&  fabs(tempJetOne.Eta() - tempJetTwo.Eta()) >= 3.5 
+                                &&  fabs(zeppen) <= 2.5
+                                &&  fabs(tempDijet.DeltaPhi(llgP4)) >= 2.4
+                                ) {
+                            isDijetTag = true;
+                            jetOneIndex = i;
+                            jetTwoIndex = j;
+                            purityLevel = 4;
+                        }
+                        else if (   purityLevel < 3 
+                                &&  tempJetOne.DeltaR(leptonOneP4) >= 0.4 && tempJetOne.DeltaR(leptonTwoP4) >= 0.4 
+                                &&  tempJetTwo.DeltaR(leptonOneP4) >= 0.4 && tempJetTwo.DeltaR(leptonTwoP4) >= 0.4 
+                                &&  tempJetOne.DeltaR(photonOneP4) >= 0.4 && tempJetTwo.DeltaR(photonOneP4) >= 0.4
+                                &&  fabs(tempJetOne.Eta() - tempJetTwo.Eta()) >= 3.5 
+                                &&  fabs(tempDijet.DeltaPhi(llgP4)) >= 2.4
+                                ) {
+                            isDijetTag = true;
+                            jetOneIndex = i;
+                            jetTwoIndex = j;
+                            purityLevel = 3;
+                        }
+                        else if (   purityLevel < 2
+                                &&  tempJetOne.DeltaR(leptonOneP4) >= 0.4 && tempJetOne.DeltaR(leptonTwoP4) >= 0.4 
+                                &&  tempJetTwo.DeltaR(leptonOneP4) >= 0.4 && tempJetTwo.DeltaR(leptonTwoP4) >= 0.4 
+                                &&  tempJetOne.DeltaR(photonOneP4) >= 0.4 && tempJetTwo.DeltaR(photonOneP4) >= 0.4
+                                &&  fabs(tempDijet.DeltaPhi(llgP4)) >= 2.4
+                                ) {
+                            isDijetTag = true;
+                            jetOneIndex = i;
+                            jetTwoIndex = j;
+                            purityLevel = 2;
+                        }
+                        else if (   purityLevel < 1
+                                &&  tempJetOne.DeltaR(leptonOneP4) >= 0.4 && tempJetOne.DeltaR(leptonTwoP4) >= 0.4 
+                                &&  tempJetTwo.DeltaR(leptonOneP4) >= 0.4 && tempJetTwo.DeltaR(leptonTwoP4) >= 0.4 
+                                &&  tempJetOne.DeltaR(photonOneP4) >= 0.4 && tempJetTwo.DeltaR(photonOneP4) >= 0.4
+                                ) {
+                            isDijetTag = true;
+                            jetOneIndex = i;
+                            jetTwoIndex = j;
+                            purityLevel = 1;
+                        }
+                                
+                    }
+                }
+            }
+        }
+
+        if (isDijetTag) {
+            jetOneP4.SetPtEtaPhiM(jets[jetOneIndex]->pt, jets[jetOneIndex]->eta, jets[jetOneIndex]->phi, jets[jetOneIndex]->mass);
+            jetTwoP4.SetPtEtaPhiM(jets[jetTwoIndex]->pt, jets[jetTwoIndex]->eta, jets[jetTwoIndex]->phi, jets[jetTwoIndex]->mass);
+            jetOnePt = jetOneP4.Pt();
+            jetOneEta = jetOneP4.Eta();
+            jetOnePhi = jetOneP4.Phi();
+            jetOneM   = jetOneP4.M();
+
+            jetTwoPt = jetTwoP4.Pt();
+            jetTwoEta = jetTwoP4.Eta();
+            jetTwoPhi = jetTwoP4.Phi();
+            jetTwoM   = jetTwoP4.M();
+
+            TLorentzVector dijet = jetOneP4 + jetTwoP4;
+            dijetPt = dijet.Pt();
+            dijetEta = dijet.Eta();
+            dijetPhi = dijet.Phi();
+            dijetM = dijet.M();
+            dijetDEta = fabs(jetOneP4.Eta() - jetTwoP4.Eta());
+            dijetDPhi = fabs(jetOneP4.DeltaPhi(jetTwoP4));
+            dijetDR = jetOneP4.DeltaR(jetTwoP4);
+
+            l1j1DEta = fabs(leptonOneP4.Eta() - jetOneP4.Eta());
+            l1j1DPhi = fabs(leptonOneP4.DeltaPhi(jetOneP4));
+            l1j1DR = leptonOneP4.DeltaR(jetOneP4);
+            l1j2DEta = fabs(leptonOneP4.Eta() - jetTwoP4.Eta());
+            l1j2DPhi = fabs(leptonOneP4.DeltaPhi(jetTwoP4));
+            l1j2DR = leptonOneP4.DeltaR(jetTwoP4);
+            l2j1DEta = fabs(leptonTwoP4.Eta() - jetOneP4.Eta());
+            l2j1DPhi = fabs(leptonTwoP4.DeltaPhi(jetOneP4));
+            l2j1DR = leptonTwoP4.DeltaR(jetOneP4);
+            l2j2DEta = fabs(leptonTwoP4.Eta() - jetTwoP4.Eta());
+            l2j2DPhi = fabs(leptonTwoP4.DeltaPhi(jetTwoP4));
+            l2j2DR = leptonTwoP4.DeltaR(jetTwoP4);
+
+            j1PhotonDEta = fabs(jetOneP4.Eta() - photonOneP4.Eta());
+            j1PhotonDPhi = fabs(jetOneP4.DeltaPhi(photonOneP4));
+            j1PhotonDR = jetOneP4.DeltaR(photonOneP4);
+            j2PhotonDEta = fabs(jetTwoP4.Eta() - photonOneP4.Eta());
+            j2PhotonDPhi = fabs(jetTwoP4.DeltaPhi(photonOneP4));
+            j2PhotonDR = jetTwoP4.DeltaR(photonOneP4);
+        
+            if (j1PhotonDR > j2PhotonDR) {
+                jPhotonDRMax = j1PhotonDR;
+                jPhotonDRMin = j2PhotonDR; 
+            }
+            else {
+                jPhotonDRMax = j2PhotonDR;
+                jPhotonDRMin = j1PhotonDR;
+            }
+            
+            zepp = llgP4.Eta() - (jetOneP4.Eta() + jetTwoP4.Eta())/2.;
+            llgJJDEta = fabs(llgP4.Eta() - dijet.Eta());
+            llgJJDPhi = fabs(llgP4.DeltaPhi(dijet));
+            llgJJDR = llgP4.DeltaR(dijet);
+
+        }
+ 
+        if (sync_print_precut) {
+            cout << "lepton1_pt, lepton1_eta, lepton1_phi, lepton2_pt, lepton2_eta, lepton2_phi, dilepton_mass, dr1, dr2" << endl;
+            cout << leptonOneP4.Pt() << ", " << leptonOneP4.Eta() << ", " << leptonOneP4.Phi() << ", " 
+                 << leptonTwoP4.Pt() << ", " << leptonTwoP4.Eta() << ", " << leptonTwoP4.Phi() << ", "
+                 << (leptonOneP4 + leptonTwoP4).M() << ", " << leptonOneP4.DeltaR(photonOneP4) << ", " << leptonTwoP4.DeltaR(photonOneP4) << endl;
+        } 
+
+	if(debugSelect)
+		cout << "------- Fill -------------\n";
+	if(debugSelect)
+		cout << "--- Lepton Fill" << endl;
+        leptonOnePt     = leptonOneP4.Pt();
+        leptonOneEta    = leptonOneP4.Eta();
+        leptonOnePhi    = leptonOneP4.Phi();
+        leptonOneIso    = GetMuonIsolation(muons[muonOneIndex]);
+        leptonOneFlavor = muons[muonOneIndex]->q*13;
+        leptonOneDZ     = muons[muonOneIndex]->dz;
+        leptonOneD0     = muons[muonOneIndex]->d0;
+        leptonOneCharge = muons[muonOneIndex]->q;
+            
+        leptonTwoPt     = leptonTwoP4.Pt();
+        leptonTwoEta    = leptonTwoP4.Eta();
+        leptonTwoPhi    = leptonTwoP4.Phi();
+        leptonTwoIso    = GetMuonIsolation(muons[muonTwoIndex]);
+        leptonTwoFlavor = muons[muonTwoIndex]->q*13;
+        leptonTwoDZ     = muons[muonTwoIndex]->dz;
+        leptonTwoD0     = muons[muonTwoIndex]->d0;
+        leptonTwoCharge = muons[muonTwoIndex]->q;
+
+	if(debugSelect)
+		cout << "--- Photon Fill" << endl;
+        photonOnePt     = photonOneP4.Pt();
+        photonOneEta    = photonOneP4.Eta();
+        photonOnePhi    = photonOneP4.Phi();
+        if(params->period == "2016ReReco")
+		photonOneMVA    = photons[photonIndex]->mvaSpring16;
+        else if( params->period == "2016Legacy")
+		photonOneMVA    = photons[photonIndex]->mvaFall17V2;
+	else
+		photonOneMVA    = photons[photonIndex]->mvaFall17V2;
+        photonOneERes   = photons[photonIndex]->eRes;
+        photonOneSieie  = photons[photonIndex]->sieie;
+        photonOneHoverE = photons[photonIndex]->hovere;
+        photonOneIph    = photons[photonIndex]->gammaIso;
+        photonOneIneu   = photons[photonIndex]->neuHadIso;
+        photonOneIch    = photons[photonIndex]->chHadIso;
+
+	photonOneSieip       = photons[photonIndex]->sieip;
+	photonOneSipip      = photons[photonIndex]->sipip;
+	photonOneSrr        = photons[photonIndex]->srr;
+	photonOneE2x2       = photons[photonIndex]->e2x2;
+	photonOneE5x5       = photons[photonIndex]->e5x5;
+	photonOneScEtaWidth = photons[photonIndex]->scEtaWidth;
+	photonOneScPhiWidth = photons[photonIndex]->scPhiWidth;
+	photonOneScRawE     = photons[photonIndex]->scRawE;
+	photonOnePreShowerE = photons[photonIndex]->scESEn;
+	photonOneScBrem     = photons[photonIndex]->scBrem;
+	
+	/*                    photons[photonIndex]->
+	leptonOnePhotonOneDEta = fabs(leptonOneP4.Eta() - photonOneP4.Eta());
+	leptonOnePhotonOneDPhi = fabs(leptonOneP4.DeltaPhi(photonOneP4));
+	leptonOnePhotonOneDR   =      leptonOneP4.DeltaR(photonOneP4);
+
+	leptonTwoPhotonOneDEta = fabs(leptonTwoP4.Eta() - photonOneP4.Eta());
+	leptonTwoPhotonOneDPhi = fabs(leptonTwoP4.DeltaPhi(photonOneP4));
+	leptonTwoPhotonOneDR   =      leptonTwoP4.DeltaR(photonOneP4);
+	*/
+
+
+	/*
+	cout << "------- Fill Gen -------------\n";
+	genLeptonOnePt  = genLeptons[0]->pt;
+	genLeptonOneEta = genLeptons[0]->eta;
+	genLeptonOnePhi = genLeptons[0]->phi;
+	genLeptonTwoPt  = genLeptons[1]->pt;
+	genLeptonTwoEta = genLeptons[1]->eta;
+	genLeptonTwoPhi = genLeptons[1]->phi;
+	genPhotonPt  = genPhotons[0]->pt;
+	genPhotonEta = genPhotons[0]->eta;
+	genPhotonPhi = genPhotons[0]->phi;
+	*/	
+
+        passElectronVeto = photons[photonIndex]->passElectronVeto;  
+        if (!isData)
+            photonOneR9 = weights->GetCorrectedPhotonR9(*photons[photonIndex]);
+        else 
+            photonOneR9 = photons[photonIndex]->r9;
+
+        if (sync_print_precut) {
+            cout << "event is still alive" << endl;
+        }
+        
+	if(debugSelect)
+		cout << "--- Dilep Fill" << endl;
+        dileptonPt = dileptonP4.Pt();
+        dileptonEta = dileptonP4.Eta();
+        dileptonPhi = dileptonP4.Phi();
+        dileptonM = dileptonP4.M();
+        //dileptonMKin = (muonOneP4KinFit + muonTwoP4KinFit).M();
+        //dileptonMKinJames = (muonOneP4KinFitJames + muonTwoP4KinFitJames).M();
+        dileptonDEta = fabs(leptonOneP4.Eta() - leptonTwoP4.Eta());
+        dileptonDPhi = fabs(leptonOneP4.DeltaPhi(leptonTwoP4));
+        dileptonDR = leptonOneP4.DeltaR(leptonTwoP4);
+
+        llgPt = llgP4.Pt();
+        llgEta = llgP4.Eta();
+        llgPhi = llgP4.Phi();
+        llgM = llgP4.M();
+        llgPtOverM = llgP4.Pt()/llgP4.M();
+        //llgMKin = (muonOneP4KinFit + muonTwoP4KinFit + photonOneP4).M();
+        //llgMKinJames = (muonOneP4KinFitJames + muonTwoP4KinFitJames + photonOneP4).M();
+        
+        l1PhotonDEta = fabs(leptonOneP4.Eta() - photonOneP4.Eta());
+        l1PhotonDPhi = fabs(leptonOneP4.DeltaPhi(photonOneP4));
+        l1PhotonDR = leptonOneP4.DeltaR(photonOneP4);
+        l2PhotonDEta = fabs(leptonTwoP4.Eta() - photonOneP4.Eta());
+        l2PhotonDPhi = fabs(leptonTwoP4.DeltaPhi(photonOneP4));
+        l2PhotonDR = leptonTwoP4.DeltaR(photonOneP4);
+        
+        if (l1PhotonDR > l2PhotonDR) {
+            lPhotonDRMax = l1PhotonDR;
+            lPhotonDRMin = l2PhotonDR; 
+        }
+        else {
+            lPhotonDRMax = l2PhotonDR;
+            lPhotonDRMin = l1PhotonDR;
+        }
+
+        dileptonPhotonDEta = fabs(dileptonP4.Eta() - photonOneP4.Eta());
+        dileptonPhotonDPhi = fabs(dileptonP4.DeltaPhi(photonOneP4));
+        dileptonPhotonDR = dileptonP4.DeltaR(photonOneP4);
+        ptt = 2*fabs(dileptonP4.Px()*photonOneP4.Py() - photonOneP4.Px()*dileptonP4.Py())/llgP4.Pt();
+
+        /*std::cout << "kinematics before Brian angles" << std::endl;
+        leptonOneP4.Print();
+        leptonTwoP4.Print();
+        dileptonP4.Print();
+        llgP4.Print();*/
+        // calculate angles like Brian
+        TVector3 Xframe = llgP4.BoostVector();
+        TVector3 Z1frame = dileptonP4.BoostVector();
+
+        // "partons"
+        TLorentzVector kq, kqbar, veckq_in_Xframe, veckqbar_in_Xframe;
+        kq.SetPxPyPzE(0., 0., (llgP4.E() + llgP4.Pz())/2., (llgP4.E() + llgP4.Pz())/2.);
+        kqbar.SetPxPyPzE(0., 0., (llgP4.Pz() - llgP4.E())/2., (llgP4.E() - llgP4.Pz())/2.);
+        veckq_in_Xframe = kq;
+        veckqbar_in_Xframe = kqbar;
+        veckq_in_Xframe.Boost(-1*Xframe);
+        veckqbar_in_Xframe.Boost(-1*Xframe);
+   
+        // Z vectors
+        TLorentzVector vecz_in_Xframe = dileptonP4;
+        TLorentzVector vecg_in_Xframe = photonOneP4;
+        TLorentzVector vecz_in_Z1frame = dileptonP4;
+        vecz_in_Xframe.Boost(-1*Xframe);
+        vecg_in_Xframe.Boost(-1*Xframe);
+        vecz_in_Z1frame.Boost(-1*Z1frame);
+
+        // coord system in the CM frame
+        TVector3 uz_in_Xframe = vecz_in_Xframe.Vect().Unit();
+        TVector3 uy_in_Xframe = (veckq_in_Xframe.Vect().Unit().Cross(uz_in_Xframe.Unit())).Unit();
+        TVector3 ux_in_Xframe = (uy_in_Xframe.Unit().Cross(uz_in_Xframe.Unit())).Unit();
+        TRotation rotation;
+        rotation = rotation.RotateAxes(ux_in_Xframe, uy_in_Xframe, uz_in_Xframe).Inverse();
+
+        // for going to the Z frames from the CM frame, boost after transform
+        TLorentzVector vecz_in_Xframe_newcoords = vecz_in_Xframe;
+        vecz_in_Xframe_newcoords.Transform(rotation);
+        TVector3 Z1frame_from_Xframe_newcoords = vecz_in_Xframe_newcoords.BoostVector();
+
+        // define the positive and negative leptons
+        TLorentzVector l_minus_james, l_plus_james; 
+        if (leptonOneFlavor > 0) {
+            l_minus_james = leptonOneP4;
+            l_plus_james = leptonTwoP4;
+        }
+        else {
+            l_minus_james = leptonTwoP4;
+            l_plus_james = leptonOneP4;
+        }
+       
+        // little theta, phi in Z1 frame; first boost to CM, then redefine coords
+        TLorentzVector veclm_in_Z1frame = l_minus_james;
+        TLorentzVector veclp_in_Z1frame = l_plus_james;
+        veclm_in_Z1frame.Boost(-1*Xframe);
+        veclm_in_Z1frame.Transform(rotation);
+        veclp_in_Z1frame.Boost(-1*Xframe);
+        veclp_in_Z1frame.Transform(rotation);
+
+        // then boost to Z1
+        veclm_in_Z1frame.Boost(-1*Z1frame_from_Xframe_newcoords);
+        veclp_in_Z1frame.Boost(-1*Z1frame_from_Xframe_newcoords);
+
+        // now get angles
+        zgPhiJames = veclm_in_Z1frame.Phi();
+        zgLittleThetaJames = veclm_in_Z1frame.CosTheta();
+
+        if (zgPhiJames < 0) 
+            zgPhiJames += 2*M_PI;
+
+        // Big Theta in X frame
+        TLorentzVector veczg_in_Xframe = llgP4;
+        veczg_in_Xframe.Transform(rotation);
+
+        TLorentzVector veczg_in_Xframe_newcoords = llgP4;
+        veczg_in_Xframe_newcoords.Transform(rotation);
+        zgBigThetaJames = (-1*veczg_in_Xframe_newcoords.Vect()).CosTheta();
+
+        /////////////////////////////
+        //std::cout << "kinematics after Brian angles" << std::endl;
+        //leptonOneP4.Print();
+        //leptonTwoP4.Print();
+        //dileptonP4.Print();
+        //llgP4.Print();
+
+        // calculate angles like Ming-Yan
+        TLorentzVector l_minus, l_plus; 
+        if (leptonOneFlavor > 0) {
+            l_minus = leptonOneP4;
+            l_plus = leptonTwoP4;
+        }
+        else {
+            l_minus = leptonTwoP4;
+            l_plus = leptonOneP4;
+        }
+        
+        TVector3 llgFrame = -1*llgP4.BoostVector();
+        dileptonP4.Boost(llgFrame);
+        l_minus.Boost(llgFrame);
+        l_minus.Boost(dileptonP4.BoostVector());
+        zgLittleTheta = cos(dileptonP4.Angle(l_minus.Vect()));
+        zgBigTheta = cos(dileptonP4.Angle(llgP4.Vect()));
+       
+        // the way MY does it (I think wrong)
+        TLorentzVector lep0 = leptonOneP4;
+        lep0.Boost(llgFrame);
+        lep0.Boost(dileptonP4.BoostVector());
+        zgLittleThetaMY = cos(dileptonP4.Angle(lep0.Vect()));
+        
+        TVector3 ppAxis(0, 0, 1);
+        TVector3 zAxis = dileptonP4.Vect().Unit();
+        TVector3 yAxis = ppAxis.Cross(zAxis.Unit()).Unit();
+        TVector3 xAxis = (yAxis.Unit().Cross(zAxis.Unit())).Unit();
+
+        TRotation rot;
+        rot = rot.RotateAxes(xAxis, yAxis, zAxis).Inverse();
+
+        dileptonP4.Transform(rot);
+        l_minus.Transform(rot);
+        zgPhi = l_minus.Phi();
+           
+	if(debugSelect) 
+		cout << "--- Weights Implemented" << endl;
+        if (!isData) {
+	    ///      ID EFFICIENTCY
+	    //
+            //muonIDWeightOne = weights->GetHZZMuonIDEff(*muons[muonOneIndex]); 
+            //muonIDWeightTwo = weights->GetHZZMuonIDEff(*muons[muonTwoIndex]);
+            if(debugSelect)
+		cout << "------ Muon ID Weights" << endl;
+            muonIDWeightOne = weights->GetMuonIDEff(leptonOneP4); 
+            muonIDWeightTwo = weights->GetMuonIDEff(leptonTwoP4);
+            eventWeight *= muonIDWeightOne;
+            eventWeight *= muonIDWeightTwo;
+
+	    ///      ISO EFFICIENTCY
+            if(debugSelect)
+		cout << "------ Muon ISO Weights" << endl;
+	    muonISOWeightOne = weights->GetMuonISOEff(leptonOneP4); 
+	    muonISOWeightTwo = weights->GetMuonISOEff(leptonTwoP4); 
+            eventWeight *= muonISOWeightOne;
+            eventWeight *= muonISOWeightTwo;
+	    //////////////////////////// 
+            float sf11 = weights->GetDoubleMuonTriggerEffWeight("HLT_DoubleMuon_leg1", *muons[muonOneIndex]);
+            float sf12 = weights->GetDoubleMuonTriggerEffWeight("HLT_DoubleMuon_leg1", *muons[muonTwoIndex]);
+            float sf21 = weights->GetDoubleMuonTriggerEffWeight("HLT_DoubleMuon_leg2", *muons[muonOneIndex]);
+            float sf22 = weights->GetDoubleMuonTriggerEffWeight("HLT_DoubleMuon_leg2", *muons[muonTwoIndex]);
+            
+            if (leptonTwoPt < 20.) {
+                muonTrigWeightOne = sf11;
+                muonTrigWeightTwo = sf22;
+            }
+            else {
+                float prod1 = sf11*sf22;
+                float prod2 = sf21*sf12;
+                if (prod1 > prod2) {
+                    muonTrigWeightOne = sf11;
+                    muonTrigWeightTwo = sf22;
+                }
+                else {
+                    muonTrigWeightOne = sf21;
+                    muonTrigWeightTwo = sf12;
+                }
+            }
+
+            if(debugSelect)
+		cout << "------ Muon Trigger Weights" << endl;
+            triggerWeight = muonTrigWeightOne*muonTrigWeightTwo;
+            eventWeight *= triggerWeight;
+
+            if(debugSelect)
+		cout << "------ Photon ID Weights" << endl;
+           
+            photonIDWeight = weights->GetPhotonMVAIdEff(*photons[photonIndex]); 
+            //eventWeight *= photonIDWeight;
+            if (sync_print_precut) {
+                cout << "run,lumi,evt,puwei,totSF,trg0,trg1,id0,id1,gammaID,pt0,pt1,eta0,et1" << endl;
+                cout << fInfo->runNum << ", " << fInfo->lumiSec << ", " << fInfo->evtNum << ", "
+                     << puWeight << ", " << eventWeight << ", " << muonTrigWeightOne << ", "
+                     << muonTrigWeightTwo << ", " << muonIDWeightOne << ", " << muonIDWeightTwo << ", "
+                     << photonIDWeight << ", " << muons[muonOneIndex]->pt << ", " << muons[muonTwoIndex]->pt << ", " 
+                     << muons[muonOneIndex]->eta << ", " << muons[muonTwoIndex]->eta << endl;
+            }
+        }
+
+        if (sync_print_precut) {
+            cout << "event still alive after event weights" << endl;
+        }
+
+	if(debugSelect) 
+		cout << "--- Finish Selection" << endl;
+    } // end mumug selection
+    
+    else if (params->selection == "ee") {
+	
+        //if (electrons.size() < 2)
+	//	return kTRUE;
+	//if (photons.size() < 1)
+	//	return kTRUE;
+        //hTotalEvents->Fill(5);
+
+	//
+	//bool ZpeakPass = false;
+
+	//TLorentzVector tempPhoton, tempElec,tempDilep;
+
+	//if(debugSelect)
+	//	cout << "---- Start Electron Tag" <<endl;
+	//for (unsigned int j = 0; j < electrons.size(); ++j) {
+	//	//if(debugSelect){
+	//	//	cout 	<< "----`--- Loop" << endl 
+	//	//		<< "30 pt? " << electrons[j]->calibPt << endl
+	//	//		<< "2.1 Eta? " << fabs(electrons[j]->eta) << endl
+	//	//		//<< "trigger? "<< trigger->passObj("HLT_Ele27_WPTight_Gsf_v*", 1, electrons[j]->hltMatchBits) << endl
+	//	//		//<< "bits? " << electrons[j]->hltMatchBits << endl;
+	//	//		<< "trigger? " << trigger->pass("HLT_Ele27_WPTight_Gsf_v*", fInfo->triggerBits) << endl;
+	//	//}
+
+	//	tempElec.SetPtEtaPhiM(electrons[j]->calibPt, electrons[j]->eta, electrons[j]->phi, ELE_MASS);
+
+	//	if( 	electrons[j]->calibPt > 30
+	//		&& fabs(electrons[j]->eta) < 2.1
+	//		&& !(fabs(electrons[j]->eta) < 1.566 && fabs(electrons[j]->eta) > 1.4442)
+	//		//&& trigger->passObj("HLT_Ele27_WPTight_Gsf_v*", 1, electrons[j]->hltMatchBits)
+	//		&& trigger->pass("HLT_Ele27_WPTight_Gsf_v*", fInfo->triggerBits)
+
+	//	){
+
+	//		if(debugSelect)
+	//			cout << "---- Start Electron Probe" <<endl;
+	//		for (unsigned int i = 0; i < photons.size(); ++i) {
+	//			tempPhoton.SetPtEtaPhiM(photons[i]->calibPt, photons[i]->eta, photons[i]->phi, ELE_MASS);
+	//			tempDilep = tempElec + tempPhoton;
+	//			if(	tempDilep.M() > 80 
+	//				&& tempDilep.M() < 100 
+	//			){
+	//				if(     photons[i]->calibPt > 15
+	//					&& fabs(photons[i]->eta) < 2.5
+	//					&& !(fabs(photons[i]->eta) < 1.566 && fabs(photons[i]->eta) > 1.4442)
+	//					&& SignalRegionPass(photons[j])
+	//				){
+	//					PhotonProbe->Fill(photons[j]->pt,photons[j]->eta,1);
+	//					if(debugSelect)
+	//						cout << "---- PASS Electron Probe" <<endl;
+	//					if()
+	//						PhotonProbePass->Fill(photons[j]->pt, photons[j]->eta, 1);
+	//				}
+	//			}
+	//		}
+	//	}
+	//}
+	//if(debugSelect)
+	//	cout << "---- Start Fill" <<endl;
+
+	//if(ZpeakPass){
+	//	leptonOnePt  = tempElec.Pt();
+	//	leptonOneEta = tempElec.Eta();
+	//	leptonOnePhi = tempElec.Phi();
+
+	//	leptonTwoPt  = tempPhoton.Pt();
+	//	leptonTwoEta = tempPhoton.Eta();
+	//	leptonTwoPhi = tempPhoton.Phi();
+
+	//	dileptonPt  = tempDilep.Pt();
+	//	dileptonEta = tempDilep.Eta();
+	//	dileptonPhi = tempDilep.Phi();
+	//	dileptonM   = tempDilep.M();
+	//}
+    }
+
+    else if (params->selection == "elelg") {
+	if(debugSelect){
+		cout << "Start selection...\n";
+		cout << "-------nEL:: "<< nElectrons << endl;
+		cout << "-------nPh:: "<< nPhotons << endl;
+		}
+        if (electrons.size() < 2) 
+            return kTRUE;
+        hTotalEvents->Fill(5);
+	if(debugSelect)
+		cout << "-------Electron Mult Pass ---------\n";
+        if (photons.size() < 1)
+            return kTRUE;
+        hTotalEvents->Fill(6);
+	if(debugSelect)
+		cout << "-------Photon Mult Pass ---------\n";
+      
+	if(debugSelect)
+		cout << "Multiplicity selection...\n";
+	//cout << "-------Multiplicity Pass ---------\n";
         TLorentzVector leptonOneP4, leptonTwoP4;
         unsigned int electronOneIndex = 0;
         unsigned int electronTwoIndex = 1;
@@ -786,60 +2064,537 @@ Bool_t zAnalyzer::Process(Long64_t entry)
             return kTRUE;
         hTotalEvents->Fill(7);
 
-        if (leptonOneP4.Pt() <= 25.0)
+        if (leptonOneP4.Pt() < 25.0)
             return kTRUE;
 
-        if (leptonTwoP4.Pt() <= 15.0)
+        if (leptonTwoP4.Pt() < 20.0)
             return kTRUE;
         
-	leptonOneP4.SetPtEtaPhiM(electrons[electronOneIndex]->calibPt, electrons[electronOneIndex]->eta, electrons[electronOneIndex]->phi, ELE_MASS);
-	leptonTwoP4.SetPtEtaPhiM(electrons[electronTwoIndex]->calibPt, electrons[electronTwoIndex]->eta, electrons[electronTwoIndex]->phi, ELE_MASS);
+	if(debugSelect)
+		cout << "-------Lepton Pass --------\n";
+        if (sync_print_precut) {
+            cout << "selected lepton1_pt, lepton1_eta, lepton1_phi, lepton2_pt, lepton2_eta, lepton2_phi" << endl;
+            cout << leptonOneP4.Pt() << ", " << leptonOneP4.Eta() << ", " << leptonOneP4.Phi() << ", " 
+                 << leptonTwoP4.Pt() << ", " << leptonTwoP4.Eta() << ", " << leptonTwoP4.Phi() << endl;
+        }
+        
+        TLorentzVector dileptonP4 = leptonOneP4 + leptonTwoP4;
+       
+        bool hasValidPhoton = false;
+        unsigned int photonIndex = 0;
 
+        for (unsigned int i = 0; i < photons.size(); ++i) {
+            TLorentzVector tempPhoton;
+            TLorentzVector tempLLG;
+            tempPhoton.SetPtEtaPhiM(photons[i]->calibPt, photons[i]->eta, photons[i]->phi, 0.);
+            tempLLG = dileptonP4 + tempPhoton;
+            float this_dr1 = leptonOneP4.DeltaR(tempPhoton);
+            float this_dr2 = leptonTwoP4.DeltaR(tempPhoton);
+            if (sync_print_precut) {
+                cout << "photon pt, et/m, z_mass, h_mass, dr1, dr2" << endl;
+                cout << tempPhoton.Pt() << ", " << tempPhoton.Et()/tempLLG.M() << ", " 
+                     << dileptonP4.M() << ", " << tempLLG.M() << ", " 
+                     << this_dr1 << ", " << this_dr2 << endl;
+            }
+            if (
+                tempPhoton.Pt() >= 15.0 
+                //&& tempPhoton.Et()/tempLLG.M() > (15.0/110.0) 
+                //&& dileptonP4.M() + tempLLG.M() > 185.0 
+                //&& tempLLG.M() > 100. && tempLLG.M() < 180. 
+                //&& this_dr1 > 0.4 && this_dr2 > 0.4
+                ) {
+                hasValidPhoton = true;
+                photonIndex = i;
+                break;
+            }
+            else {
+                if (sync_print_precut) {
+                    cout << "photon variables in the loop" << endl;
+                    cout << "pt, et/m_llg, mass_sum, llg_mass, dr1, dr2" << endl;
+                    cout << tempPhoton.Pt() << ", " << tempPhoton.Et()/tempLLG.M() << ", " << 
+                            dileptonP4.M() + tempLLG.M() << ", " << tempLLG.M() << ", " << 
+                            this_dr1 << ", " << this_dr2 << endl;
+                }
+            }
+        }
 
-        TLorentzVector dielectron = leptonOneP4 + leptonTwoP4;
-        if (electrons[electronOneIndex]->q == electrons[electronTwoIndex]->q)
-            return kTRUE;
+        if (!hasValidPhoton)
+            return kTRUE; 
         hTotalEvents->Fill(8);
+        if (sync_print_precut)
+            cout << "valid photon" << endl;
+
+        TLorentzVector photonOneP4;
+        photonOneP4.SetPtEtaPhiM(photons[photonIndex]->calibPt, photons[photonIndex]->eta, photons[photonIndex]->phi, 0.);
+        if (photonOneP4.Pt() < 15.0)
+            return kTRUE;
+        hTotalEvents->Fill(9);
+	if(debugSelect)
+		cout << "-------Photon Pass --------\n";
         
-        leptonOneIso    = GetElectronIsolation(electrons[electronOneIndex], fInfo->rhoJet);
-        leptonOneFlavor = electrons[electronOneIndex]->q*11;
-        leptonOneDZ     = electrons[electronOneIndex]->dz;
-        leptonOneD0     = electrons[electronOneIndex]->d0;
+        TLorentzVector llgP4 = dileptonP4 + photonOneP4;
+        
+        // DY photon overlap removal
+        vetoDY = false;
+        for (unsigned int i = 0; i < genPhotons.size(); ++i) {
+            TGenParticle *pho = genPhotons.at(i);
+            if (pho->fromHardProcessFinalState || pho->isPromptFinalState) {
+                TLorentzVector thisGenPhotonP4;
+                thisGenPhotonP4.SetPtEtaPhiM(pho->pt, pho->eta, pho->phi, 0.);
+                if (thisGenPhotonP4.DeltaR(photonOneP4) < 0.1) {
+                    vetoDY = true;
+                    break;
+                }
+            }
+	    // gen Iso
+	    float genIso = GetGenIsolation(pho);
+	    if(genIso < 5) 
+		genIsoPass = true;
+        }  
+        
+        // checking for lepton tag
+        isLeptonTag = false;
+        for (unsigned int i = 0; i < muons.size(); ++i) {
+            TLorentzVector tempMuon;
+            tempMuon.SetPtEtaPhiM(muons[i]->pt, muons[i]->eta, muons[i]->phi, MUON_MASS);
+            if (leptonOneP4.DeltaR(tempMuon) < 0.4 ||
+                leptonTwoP4.DeltaR(tempMuon) < 0.4 || 
+                photonOneP4.DeltaR(tempMuon) < 0.4)
+                continue;
+            else
+                isLeptonTag = true;
+        }
+
+        if (!isLeptonTag) {
+            for (unsigned int i = 0; i < electrons.size(); ++i) {
+                TLorentzVector tempElectron;
+                tempElectron.SetPtEtaPhiM(electrons[i]->calibPt, electrons[i]->eta, electrons[i]->phi, ELE_MASS);
+                if (leptonOneP4.DeltaR(tempElectron) < 0.4 ||
+                    leptonTwoP4.DeltaR(tempElectron) < 0.4 || 
+                    photonOneP4.DeltaR(tempElectron) < 0.4)
+                    continue;
+                else
+                    isLeptonTag = true;
+            }
+        }
+       
+
+	//////////////////////////////////////////////
+        for (unsigned int i = 0; i < electrons.size(); ++i) {
+		TLorentzVector tempElectron;
+		tempElectron.SetPtEtaPhiM(electrons[i]->calibPt, electrons[i]->eta, electrons[i]->phi, ELE_MASS);
+		if (leptonOneP4.DeltaR(tempElectron) < 0.1)
+		    	leptonOneTag = true;
+		if (leptonTwoP4.DeltaR(tempElectron) < 0.1)
+		    	leptonTwoTag = true;
+	}
+	///////////////////////////////////
+ 
+        // checking for dijet tag
+        isDijetTag = false;
+        isTightDijetTag = false;
+        unsigned int jetOneIndex = 0;
+        unsigned int jetTwoIndex = 0;
+        unsigned int purityLevel = 0;
+        TLorentzVector jetOneP4, jetTwoP4;
+        if (!isLeptonTag) {
+            //if (sync_print_precut) 
+             //   cout << "event is not lepton tagged; checking dijet tag" << endl;
+            if (jets.size() > 1)  {
+                //if (sync_print_precut)
+                 //   cout << "event has at least two jets" << endl;
+                for (unsigned int i = 0; i < jets.size(); ++i) {
+                    for (unsigned int j = i+1; j < jets.size(); ++j) {
+                        TLorentzVector tempJetOne;
+                        TLorentzVector tempJetTwo;
+                        tempJetOne.SetPtEtaPhiM(jets[i]->pt, jets[i]->eta, jets[i]->phi, jets[i]->mass);
+                        tempJetTwo.SetPtEtaPhiM(jets[j]->pt, jets[j]->eta, jets[j]->phi, jets[j]->mass);
+                        TLorentzVector tempDijet = tempJetOne + tempJetTwo;
+                        float zeppen = llgP4.Eta() - (tempJetOne.Eta() + tempJetTwo.Eta())/2.;
+                        if (    purityLevel < 5  
+                            &&  tempJetOne.DeltaR(leptonOneP4) >= 0.4 && tempJetOne.DeltaR(leptonTwoP4) >= 0.4 
+                            &&  tempJetTwo.DeltaR(leptonOneP4) >= 0.4 && tempJetTwo.DeltaR(leptonTwoP4) >= 0.4 
+                            &&  tempJetOne.DeltaR(photonOneP4) >= 0.4 && tempJetTwo.DeltaR(photonOneP4) >= 0.4
+                            &&  fabs(tempJetOne.Eta() - tempJetTwo.Eta()) >= 3.5 
+                            &&  fabs(zeppen) <= 2.5 && tempDijet.M() >= 500.
+                            &&  fabs(tempDijet.DeltaPhi(llgP4)) >= 2.4
+                           ) {
+                            isDijetTag = true;
+                            isTightDijetTag = true;
+                            jetOneIndex = i;
+                            jetTwoIndex = j;
+                            purityLevel = 5;
+                            break;
+                        }
+                        else if (   purityLevel < 4 
+                                &&  tempJetOne.DeltaR(leptonOneP4) >= 0.4 && tempJetOne.DeltaR(leptonTwoP4) >= 0.4 
+                                &&  tempJetTwo.DeltaR(leptonOneP4) >= 0.4 && tempJetTwo.DeltaR(leptonTwoP4) >= 0.4 
+                                &&  tempJetOne.DeltaR(photonOneP4) >= 0.4 && tempJetTwo.DeltaR(photonOneP4) >= 0.4
+                                &&  fabs(tempJetOne.Eta() - tempJetTwo.Eta()) >= 3.5 
+                                &&  fabs(zeppen) <= 2.5
+                                &&  fabs(tempDijet.DeltaPhi(llgP4)) >= 2.4
+                                ) {
+                            isDijetTag = true;
+                            jetOneIndex = i;
+                            jetTwoIndex = j;
+                            purityLevel = 4;
+                        }
+                        else if (   purityLevel < 3 
+                                &&  tempJetOne.DeltaR(leptonOneP4) >= 0.4 && tempJetOne.DeltaR(leptonTwoP4) >= 0.4 
+                                &&  tempJetTwo.DeltaR(leptonOneP4) >= 0.4 && tempJetTwo.DeltaR(leptonTwoP4) >= 0.4 
+                                &&  tempJetOne.DeltaR(photonOneP4) >= 0.4 && tempJetTwo.DeltaR(photonOneP4) >= 0.4
+                                &&  fabs(tempJetOne.Eta() - tempJetTwo.Eta()) >= 3.5 
+                                &&  fabs(tempDijet.DeltaPhi(llgP4)) >= 2.4
+                                ) {
+                            isDijetTag = true;
+                            jetOneIndex = i;
+                            jetTwoIndex = j;
+                            purityLevel = 3;
+                        }
+                        else if (   purityLevel < 2
+                                &&  tempJetOne.DeltaR(leptonOneP4) >= 0.4 && tempJetOne.DeltaR(leptonTwoP4) >= 0.4 
+                                &&  tempJetTwo.DeltaR(leptonOneP4) >= 0.4 && tempJetTwo.DeltaR(leptonTwoP4) >= 0.4 
+                                &&  tempJetOne.DeltaR(photonOneP4) >= 0.4 && tempJetTwo.DeltaR(photonOneP4) >= 0.4
+                                &&  fabs(tempDijet.DeltaPhi(llgP4)) >= 2.4
+                                ) {
+                            isDijetTag = true;
+                            jetOneIndex = i;
+                            jetTwoIndex = j;
+                            purityLevel = 2;
+                        }
+                        else if (   purityLevel < 1
+                                &&  tempJetOne.DeltaR(leptonOneP4) >= 0.4 && tempJetOne.DeltaR(leptonTwoP4) >= 0.4 
+                                &&  tempJetTwo.DeltaR(leptonOneP4) >= 0.4 && tempJetTwo.DeltaR(leptonTwoP4) >= 0.4 
+                                &&  tempJetOne.DeltaR(photonOneP4) >= 0.4 && tempJetTwo.DeltaR(photonOneP4) >= 0.4
+                                ) {
+                            isDijetTag = true;
+                            jetOneIndex = i;
+                            jetTwoIndex = j;
+                            purityLevel = 1;
+                        }
+                                
+                    }
+                }
+            }
+        }
+
+        
+        if (isDijetTag) {
+            jetOneP4.SetPtEtaPhiM(jets[jetOneIndex]->pt, jets[jetOneIndex]->eta, jets[jetOneIndex]->phi, jets[jetOneIndex]->mass);
+            jetTwoP4.SetPtEtaPhiM(jets[jetTwoIndex]->pt, jets[jetTwoIndex]->eta, jets[jetTwoIndex]->phi, jets[jetTwoIndex]->mass);
+            jetOnePt = jetOneP4.Pt();
+            jetOneEta = jetOneP4.Eta();
+            jetOnePhi = jetOneP4.Phi();
+            jetOneM   = jetOneP4.M();
             
-        leptonTwoIso    = GetElectronIsolation(electrons[electronTwoIndex], fInfo->rhoJet);
-        leptonTwoFlavor = electrons[electronTwoIndex]->q*11;
-        leptonTwoDZ     = electrons[electronTwoIndex]->dz;
-        leptonTwoD0     = electrons[electronTwoIndex]->d0;
+            jetTwoPt = jetTwoP4.Pt();
+            jetTwoEta = jetTwoP4.Eta();
+            jetTwoPhi = jetTwoP4.Phi();
+            jetTwoM   = jetTwoP4.M();
 
-	lepTagR9     = electrons[electronOneIndex]->r9;
-	lepTagSieie  = electrons[electronOneIndex]->sieie;
-	lepTagHoverE = electrons[electronOneIndex]->hovere;
-	lepTagIneu   = electrons[electronOneIndex]->neuHadIso;
-	lepTagIph    = electrons[electronOneIndex]->gammaIso; 	
-	lepTagIch    = electrons[electronOneIndex]->chHadIso;       
+            TLorentzVector dijet = jetOneP4 + jetTwoP4;
+            dijetPt = dijet.Pt();
+            dijetEta = dijet.Eta();
+            dijetPhi = dijet.Phi();
+            dijetM = dijet.M();
+            dijetDEta = fabs(jetOneP4.Eta() - jetTwoP4.Eta());
+            dijetDPhi = fabs(jetOneP4.DeltaPhi(jetTwoP4));
+            dijetDR = jetOneP4.DeltaR(jetTwoP4);
 
-	lepProbeR9     = electrons[electronTwoIndex]->r9;
-	lepProbeSieie  = electrons[electronTwoIndex]->sieie;
-	lepProbeHoverE = electrons[electronTwoIndex]->hovere;
-	lepProbeIneu   = electrons[electronTwoIndex]->neuHadIso;
-	lepProbeIph    = electrons[electronTwoIndex]->gammaIso; 	
-	lepProbeIch    = electrons[electronTwoIndex]->chHadIso;       
+            l1j1DEta = fabs(leptonOneP4.Eta() - jetOneP4.Eta());
+            l1j1DPhi = fabs(leptonOneP4.DeltaPhi(jetOneP4));
+            l1j1DR = leptonOneP4.DeltaR(jetOneP4);
+            l1j2DEta = fabs(leptonOneP4.Eta() - jetTwoP4.Eta());
+            l1j2DPhi = fabs(leptonOneP4.DeltaPhi(jetTwoP4));
+            l1j2DR = leptonOneP4.DeltaR(jetTwoP4);
+            l2j1DEta = fabs(leptonTwoP4.Eta() - jetOneP4.Eta());
+            l2j1DPhi = fabs(leptonTwoP4.DeltaPhi(jetOneP4));
+            l2j1DR = leptonTwoP4.DeltaR(jetOneP4);
+            l2j2DEta = fabs(leptonTwoP4.Eta() - jetTwoP4.Eta());
+            l2j2DPhi = fabs(leptonTwoP4.DeltaPhi(jetTwoP4));
+            l2j2DR = leptonTwoP4.DeltaR(jetTwoP4);
+            
+            j1PhotonDEta = fabs(jetOneP4.Eta() - photonOneP4.Eta());
+            j1PhotonDPhi = fabs(jetOneP4.DeltaPhi(photonOneP4));
+            j1PhotonDR = jetOneP4.DeltaR(photonOneP4);
+            j2PhotonDEta = fabs(jetTwoP4.Eta() - photonOneP4.Eta());
+            j2PhotonDPhi = fabs(jetTwoP4.DeltaPhi(photonOneP4));
+            j2PhotonDR = jetTwoP4.DeltaR(photonOneP4);
+        
+            if (j1PhotonDR > j2PhotonDR) {
+                jPhotonDRMax = j1PhotonDR;
+                jPhotonDRMin = j2PhotonDR; 
+            }
+            else {
+                jPhotonDRMax = j2PhotonDR;
+                jPhotonDRMin = j1PhotonDR;
+            }
+            
+            zepp = llgP4.Eta() - (jetOneP4.Eta() + jetTwoP4.Eta())/2.;
+            llgJJDEta = fabs(llgP4.Eta() - dijet.Eta());
+            llgJJDPhi = fabs(llgP4.DeltaPhi(dijet));
+            llgJJDR = llgP4.DeltaR(dijet);
+        }
+        
+        if (sync_print_precut) {
+            cout << "lepton1_pt, lepton1_eta, lepton1_phi, lepton2_pt, lepton2_eta, lepton2_phi, dilepton_mass, dr1, dr2" << endl;
+            cout << leptonOneP4.Pt() << ", " << leptonOneP4.Eta() << ", " << leptonOneP4.Phi() << ", " 
+                 << leptonTwoP4.Pt() << ", " << leptonTwoP4.Eta() << ", " << leptonTwoP4.Phi() << ", "
+                 << (leptonOneP4 + leptonTwoP4).M() << ", " << leptonOneP4.DeltaR(photonOneP4) << ", " << leptonTwoP4.DeltaR(photonOneP4) << endl;
+        }
+
+	if(debugSelect)
+		cout << "------- Fill -------------\n";
+        leptonOnePt         = leptonOneP4.Pt();
+        leptonOneEta        = leptonOneP4.Eta();
+        leptonOnePhi        = leptonOneP4.Phi();
+        leptonOneIso        = GetElectronIsolation(electrons[electronOneIndex], fInfo->rhoJet);
+        leptonOneFlavor     = electrons[electronOneIndex]->q*11;
+        leptonOneDZ         = electrons[electronOneIndex]->dz;
+        leptonOneD0         = electrons[electronOneIndex]->d0;
+        leptonOneECALDriven = (electrons[electronOneIndex]->typeBits & baconhep::kEcalDriven);
+	leptonOneCharge     = electrons[electronOneIndex]->q;        
+    
+        leptonTwoPt         = leptonTwoP4.Pt();
+        leptonTwoEta        = leptonTwoP4.Eta();
+        leptonTwoPhi        = leptonTwoP4.Phi();
+        leptonTwoIso        = GetElectronIsolation(electrons[electronTwoIndex], fInfo->rhoJet);
+        leptonTwoFlavor     = electrons[electronTwoIndex]->q*11;
+        leptonTwoDZ         = electrons[electronTwoIndex]->dz;
+        leptonTwoD0         = electrons[electronTwoIndex]->d0;
+        leptonTwoECALDriven = (electrons[electronTwoIndex]->typeBits & baconhep::kEcalDriven);
+	leptonTwoCharge     = electrons[electronTwoIndex]->q;        
+
+        photonOnePt    = photonOneP4.Pt();
+        photonOneEta   = photonOneP4.Eta();
+        photonOnePhi   = photonOneP4.Phi();
+	if(params->period == "2016")
+	        photonOneMVA   = photons[photonIndex]->mvaSpring16;
+	else if(params->period == "2016Legacy")
+	        photonOneMVA   = photons[photonIndex]->mvaFall17V2;
+	else
+	        photonOneMVA   = photons[photonIndex]->mvaFall17V2;
+        photonOneERes  = photons[photonIndex]->eRes;
+        photonOneSieie = photons[photonIndex]->sieie;
+        photonOneIph   = photons[photonIndex]->gammaIso;
+        photonOneIneu  = photons[photonIndex]->neuHadIso;
+        photonOneIch   = photons[photonIndex]->chHadIso;
+
+	photonOneSieip       = photons[photonIndex]->sieip;
+	photonOneSipip      = photons[photonIndex]->sipip;
+	photonOneSrr        = photons[photonIndex]->srr;
+	photonOneE2x2       = photons[photonIndex]->e2x2;
+	photonOneE5x5       = photons[photonIndex]->e5x5;
+	photonOneScEtaWidth = photons[photonIndex]->scEtaWidth;
+	photonOneScPhiWidth = photons[photonIndex]->scPhiWidth;
+	photonOneScRawE     = photons[photonIndex]->scRawE;
+	photonOnePreShowerE = photons[photonIndex]->scESEn;
+	photonOneScBrem     = photons[photonIndex]->scBrem;
+
+
+	/*
+	cout << "------- Fill GEN -------------\n";
+	genLeptonOnePt  = genLeptons[0]->pt;
+	genLeptonOneEta = genLeptons[0]->eta;
+	genLeptonOnePhi = genLeptons[0]->phi;
+	genLeptonTwoPt  = genLeptons[1]->pt;
+	genLeptonTwoEta = genLeptons[1]->eta;
+	genLeptonTwoPhi = genLeptons[1]->phi;
+	genPhotonPt  = genPhotons[0]->pt;
+	genPhotonEta = genPhotons[0]->eta;
+	genPhotonPhi = genPhotons[0]->phi;
+	*/
+
+        passElectronVeto = photons[photonIndex]->passElectronVeto;  
+        if (!isData)
+            photonOneR9 = weights->GetCorrectedPhotonR9(*photons[photonIndex]);
+        else 
+            photonOneR9 = photons[photonIndex]->r9;
+
+        //if (sync_print_precut)
+         //   cout << "photon r9 = " << photonOneR9 << endl;
+
+
+
+        dileptonPt = dileptonP4.Pt();
+        dileptonEta = dileptonP4.Eta();
+        dileptonPhi = dileptonP4.Phi();
+        dileptonM = dileptonP4.M();
+        //dileptonMKin = (electronOneP4KinFit + electronTwoP4KinFit).M();
+        //dileptonMKinJames = (electronOneP4KinFitJames + electronTwoP4KinFitJames).M();
+        dileptonDEta = fabs(leptonOneP4.Eta() - leptonTwoP4.Eta());
+        dileptonDPhi = fabs(leptonOneP4.DeltaPhi(leptonTwoP4));
+        dileptonDR = leptonOneP4.DeltaR(leptonTwoP4);
+
+        llgPt = llgP4.Pt();
+        llgEta = llgP4.Eta();
+        llgPhi = llgP4.Phi();
+        llgM = llgP4.M();
+        llgPtOverM = llgP4.Pt()/llgP4.M();
+        //llgMKin = (electronOneP4KinFit + electronTwoP4KinFit + photonOneP4).M();
+        //llgMKinJames = (electronOneP4KinFitJames + electronTwoP4KinFitJames + photonOneP4).M();
+        
+	//cout << "------- AFTER FIT ------\n";
+
+        l1PhotonDEta = fabs(leptonOneP4.Eta() - photonOneP4.Eta());
+        l1PhotonDPhi = fabs(leptonOneP4.DeltaPhi(photonOneP4));
+        l1PhotonDR = leptonOneP4.DeltaR(photonOneP4);
+        l2PhotonDEta = fabs(leptonTwoP4.Eta() - photonOneP4.Eta());
+        l2PhotonDPhi = fabs(leptonTwoP4.DeltaPhi(photonOneP4));
+        l2PhotonDR = leptonTwoP4.DeltaR(photonOneP4);
+
+        if (l1PhotonDR > l2PhotonDR) {
+            lPhotonDRMax = l1PhotonDR;
+            lPhotonDRMin = l2PhotonDR; 
+        }
+        else {
+            lPhotonDRMax = l2PhotonDR;
+            lPhotonDRMin = l1PhotonDR;
+        }
+
+        dileptonPhotonDEta = fabs(dileptonP4.Eta() - photonOneP4.Eta());
+        dileptonPhotonDPhi = fabs(dileptonP4.DeltaPhi(photonOneP4));
+        dileptonPhotonDR = dileptonP4.DeltaR(photonOneP4);
+        ptt = 2*fabs(dileptonP4.Px()*photonOneP4.Py() - photonOneP4.Px()*dileptonP4.Py())/llgP4.Pt();
+        
+        /*std::cout << "kinematics before Brian angles" << std::endl;
+        leptonOneP4.Print();
+        leptonTwoP4.Print();
+        dileptonP4.Print();
+        llgP4.Print();*/
+        // calculate angles like Brian
+        TVector3 Xframe = llgP4.BoostVector();
+        TVector3 Z1frame = dileptonP4.BoostVector();
+
+        // "partons"
+        TLorentzVector kq, kqbar, veckq_in_Xframe, veckqbar_in_Xframe;
+        kq.SetPxPyPzE(0., 0., (llgP4.E() + llgP4.Pz())/2., (llgP4.E() + llgP4.Pz())/2.);
+        kqbar.SetPxPyPzE(0., 0., (llgP4.Pz() - llgP4.E())/2., (llgP4.E() - llgP4.Pz())/2.);
+        veckq_in_Xframe = kq;
+        veckqbar_in_Xframe = kqbar;
+        veckq_in_Xframe.Boost(-1*Xframe);
+        veckqbar_in_Xframe.Boost(-1*Xframe);
+   
+        // Z vectors
+        TLorentzVector vecz_in_Xframe = dileptonP4;
+        TLorentzVector vecg_in_Xframe = photonOneP4;
+        TLorentzVector vecz_in_Z1frame = dileptonP4;
+        vecz_in_Xframe.Boost(-1*Xframe);
+        vecg_in_Xframe.Boost(-1*Xframe);
+        vecz_in_Z1frame.Boost(-1*Z1frame);
+
+        // coord system in the CM frame
+        TVector3 uz_in_Xframe = vecz_in_Xframe.Vect().Unit();
+        TVector3 uy_in_Xframe = (veckq_in_Xframe.Vect().Unit().Cross(uz_in_Xframe.Unit())).Unit();
+        TVector3 ux_in_Xframe = (uy_in_Xframe.Unit().Cross(uz_in_Xframe.Unit())).Unit();
+        TRotation rotation;
+        rotation = rotation.RotateAxes(ux_in_Xframe, uy_in_Xframe, uz_in_Xframe).Inverse();
+
+        // for going to the Z frames from the CM frame, boost after transform
+        TLorentzVector vecz_in_Xframe_newcoords = vecz_in_Xframe;
+        vecz_in_Xframe_newcoords.Transform(rotation);
+        TVector3 Z1frame_from_Xframe_newcoords = vecz_in_Xframe_newcoords.BoostVector();
+
+        // define the positive and negative leptons
+        TLorentzVector l_minus_james, l_plus_james; 
+        if (leptonOneFlavor > 0) {
+            l_minus_james = leptonOneP4;
+            l_plus_james = leptonTwoP4;
+        }
+        else {
+            l_minus_james = leptonTwoP4;
+            l_plus_james = leptonOneP4;
+        }
+       
+        // little theta, phi in Z1 frame; first boost to CM, then redefine coords
+        TLorentzVector veclm_in_Z1frame = l_minus_james;
+        TLorentzVector veclp_in_Z1frame = l_plus_james;
+        veclm_in_Z1frame.Boost(-1*Xframe);
+        veclm_in_Z1frame.Transform(rotation);
+        veclp_in_Z1frame.Boost(-1*Xframe);
+        veclp_in_Z1frame.Transform(rotation);
+
+        // then boost to Z1
+        veclm_in_Z1frame.Boost(-1*Z1frame_from_Xframe_newcoords);
+        veclp_in_Z1frame.Boost(-1*Z1frame_from_Xframe_newcoords);
+
+        // now get angles
+        zgPhiJames = veclm_in_Z1frame.Phi();
+        zgLittleThetaJames = veclm_in_Z1frame.CosTheta();
+
+        if (zgPhiJames < 0) 
+            zgPhiJames += 2*M_PI;
+
+        // Big Theta in X frame
+        TLorentzVector veczg_in_Xframe = llgP4;
+        veczg_in_Xframe.Transform(rotation);
+
+        TLorentzVector veczg_in_Xframe_newcoords = llgP4;
+        veczg_in_Xframe_newcoords.Transform(rotation);
+        zgBigThetaJames = (-1*veczg_in_Xframe_newcoords.Vect()).CosTheta();
+
+        /////////////////////////////
+        //std::cout << "kinematics after Brian angles" << std::endl;
+        //leptonOneP4.Print();
+        //leptonTwoP4.Print();
+        //dileptonP4.Print();
+        //llgP4.Print();
+    
+        // calculate angles like Ming-Yan
+        TLorentzVector l_minus, l_plus; 
+        if (leptonOneFlavor > 0) {
+            l_minus = leptonOneP4;
+            l_plus = leptonTwoP4;
+        }
+        else {
+            l_minus = leptonTwoP4;
+            l_plus = leptonOneP4;
+        }
+        
+        TVector3 llgFrame = -1*llgP4.BoostVector();
+        dileptonP4.Boost(llgFrame);
+        l_minus.Boost(llgFrame);
+        l_minus.Boost(dileptonP4.BoostVector());
+        zgLittleTheta = cos(dileptonP4.Angle(l_minus.Vect()));
+        zgBigTheta = cos(dileptonP4.Angle(llgP4.Vect()));
+        
+        // the way MY does it (I think wrong)
+        TLorentzVector lep0 = leptonOneP4;
+        lep0.Boost(llgFrame);
+        lep0.Boost(dileptonP4.BoostVector());
+        zgLittleThetaMY = cos(dileptonP4.Angle(lep0.Vect()));
+        
+        TVector3 ppAxis(0, 0, 1);
+        TVector3 zAxis = dileptonP4.Vect().Unit();
+        TVector3 yAxis = ppAxis.Cross(zAxis.Unit()).Unit();
+        TVector3 xAxis = (yAxis.Unit().Cross(zAxis.Unit())).Unit();
+
+        TRotation rot;
+        rot = rot.RotateAxes(xAxis, yAxis, zAxis).Inverse();
+
+        dileptonP4.Transform(rot);
+        l_minus.Transform(rot);
+        zgPhi = l_minus.Phi();
+            
         if (!isData) {
 
-            elIDWeightOne = weights->GetHZZElectronRecoIdEff(*electrons[electronOneIndex]);
-            elIDWeightTwo = weights->GetHZZElectronRecoIdEff(*electrons[electronTwoIndex]);
+            elIDWeightOne = weights->GetHZZElectronRecoIdEff(*electrons[electronOneIndex]); 
+            elIDWeightTwo = weights->GetHZZElectronRecoIdEff(*electrons[electronTwoIndex]); 
             eventWeight *= elIDWeightOne;
             eventWeight *= elIDWeightTwo;
-
+            
             float sf11 = weights->GetDoubleEGTriggerEffWeight("HLT_DoubleEG_leg1", *electrons[electronOneIndex]);
             float sf22 = weights->GetDoubleEGTriggerEffWeight("HLT_DoubleEG_leg2", *electrons[electronTwoIndex]);
-    
+
             elTrigWeightOne = sf11;
             elTrigWeightTwo = sf22;
-    
+
             triggerWeight = elTrigWeightOne*elTrigWeightTwo;
             eventWeight *= triggerWeight;
-
+           
+            photonIDWeight = weights->GetPhotonMVAIdEff(*photons[photonIndex]); 
+            eventWeight *= photonIDWeight;
+            
             if (sync_print_precut) {
                 cout << "run,lumi,evt,puwei,totSF,trg0,trg1,id0,id1,gammaID,pt0,pt1,calibpt0,calibpt1,eta0,eta1,sceta0,sceta1" << endl;
                 cout << fInfo->runNum << ", " << fInfo->lumiSec << ", " << fInfo->evtNum << ", "
@@ -850,17 +2605,256 @@ Bool_t zAnalyzer::Process(Long64_t entry)
                      << electrons[electronOneIndex]->eta << ", " << electrons[electronTwoIndex]->eta << ", "
                      << electrons[electronOneIndex]->scEta << ", " << electrons[electronTwoIndex]->scEta << endl;
             }
-
+        
         }
-	
-    } 
+	//cout << "----- END --------\n" ;
+    } // end elelg selection
+
+    else if (params->selection == "tautaug") {
+        if (muons.size() != 1) // avoid multi-muon events (DY contamination)
+            return kTRUE;
+        hTotalEvents->Fill(5);
+        if (taus.size() < 1)
+            return kTRUE;
+        hTotalEvents->Fill(6);
+        if (photons.size() < 1)
+            return kTRUE;
+        hTotalEvents->Fill(7);
+
+        if (muons[0]->pt <= 25.) 
+            return kTRUE;
+        hTotalEvents->Fill(8);
+
+        TLorentzVector muonP4;
+        muonP4.SetPtEtaPhiM(muons[0]->pt, muons[0]->eta, muons[0]->phi, MUON_MASS);
+
+        unsigned int tau_index = 0;
+        for (unsigned int i = 0; i < taus.size(); ++i) {
+            if (taus[i]->q != muons[0]->q && taus[i]->pt > 20.) {
+                tau_index = i;
+                break;
+            }
+        }
+
+        if (taus[tau_index]->pt <= 20.)
+            return kTRUE;
+        hTotalEvents->Fill(9);
+
+        TLorentzVector tauP4;
+        tauP4.SetPtEtaPhiM(taus[tau_index]->pt, taus[tau_index]->eta, taus[tau_index]->phi, taus[tau_index]->m);
+
+        if (photons[0]->calibPt <= 15.)
+            return kTRUE;
+        hTotalEvents->Fill(10);
+
+        // muon transverse mass cut to reject ttbar and w+jets
+     
+        // event passed the selection; fill output variables
+        TLorentzVector photonOneP4;
+        photonOneP4.SetPtEtaPhiM(photons[0]->calibPt, photons[0]->eta, photons[0]->phi, 0.);
+        photonOnePt  = photonOneP4.Pt();
+        photonOneEta = photonOneP4.Eta();
+        photonOnePhi = photonOneP4.Phi();
+        photonOneMVA = photons[0]->mvaFall17V2;
+        passElectronVeto = photons[0]->passElectronVeto;  
+        if (!isData)
+            photonOneR9 = weights->GetCorrectedPhotonR9(*photons[0]);
+        else 
+            photonOneR9 = photons[0]->r9;
+
+        // DY photon overlap removal
+        vetoDY = false;
+        for (unsigned int i = 0; i < genPhotons.size(); ++i) {
+            TGenParticle *pho = genPhotons.at(i);
+            if (pho->fromHardProcessFinalState || pho->isPromptFinalState) {
+                TLorentzVector thisGenPhotonP4;
+                thisGenPhotonP4.SetPtEtaPhiM(pho->pt, pho->eta, pho->phi, 0.);
+                if (thisGenPhotonP4.DeltaR(photonOneP4) < 0.1) {
+                    vetoDY = true;
+                    break;
+                }
+            }
+        }
+
+        tauDecayMode    = taus[tau_index]->decaymode;
+        tauMVA          = taus[tau_index]->rawIsoMVA3newDMwLT;
+
+        if (muonP4.Pt() > tauP4.Pt()) {
+            leptonOnePt     = muonP4.Pt();
+            leptonOneEta    = muonP4.Eta();
+            leptonOnePhi    = muonP4.Phi();
+            leptonOneIso    = GetMuonIsolation(muons[0]);
+            leptonOneFlavor = muons[0]->q*13;
+            leptonOneDZ     = muons[0]->dz;
+            leptonOneD0     = muons[0]->d0;
+
+            leptonTwoPt     = tauP4.Pt();
+            leptonTwoEta    = tauP4.Eta();
+            leptonTwoPhi    = tauP4.Phi();
+            leptonTwoIso    = 0.;
+            leptonTwoFlavor = 15*taus[tau_index]->q;
+            leptonTwoDZ     = taus[tau_index]->dzLeadChHad;
+            leptonTwoD0     = taus[tau_index]->d0LeadChHad;
+        }
+        else {
+            leptonOnePt     = tauP4.Pt();
+            leptonOneEta    = tauP4.Eta();
+            leptonOnePhi    = tauP4.Phi();
+            leptonOneIso    = 0.;
+            leptonOneFlavor = 15*taus[tau_index]->q;
+            leptonOneDZ     = taus[tau_index]->dzLeadChHad;
+            leptonOneD0     = taus[tau_index]->d0LeadChHad;
+
+            leptonTwoPt     = muonP4.Pt();
+            leptonTwoEta    = muonP4.Eta();
+            leptonTwoPhi    = muonP4.Phi();
+            leptonTwoIso    = GetMuonIsolation(muons[0]);
+            leptonTwoFlavor = muons[0]->q*13;
+            leptonTwoDZ     = muons[0]->dz;
+            leptonTwoD0     = muons[0]->d0;
+        }
     
+        isDijetTag = false; // to ensure proper jet filling
+
+        // MC event weights
+        if (!isData) {
+
+            eventWeight *= weights->GetHZZMuonIDEff(*muons[0]); 
+            //eventWeight *= weights->GetMuonISOEff(muonP4);
+            eventWeight *= weights->GetPhotonMVAIdEff(*photons[0]);
+            eventWeight *= 0.95; // flat tau id scale factor
+
+            float eff_data = weights->GetTriggerEffWeight("HLT_IsoMu24_v*", muonP4).first; 
+            float eff_mc = weights->GetTriggerEffWeight("HLT_IsoMu24_v*", muonP4).second; 
+            triggerWeight = eff_data/eff_mc;
+            eventWeight *= triggerWeight;
+            cout << "eventWeight = " << eventWeight << endl;
+            
+        }
+
+    } // end tautaug selection
 
 
     ///////////////////
     // Fill jet info //
     ///////////////////
     
+
+    if (!isDijetTag) {
+        if (jets.size() > 0) {
+            jetOnePt   = jets[0]->pt;
+            jetOneEta  = jets[0]->eta;
+            jetOnePhi  = jets[0]->phi;
+            jetOneM    = jets[0]->mass;
+            jetOneTag  = jets[0]->csv;
+        } else {
+            jetOnePt  = 0.;
+            jetOneEta = 0.;
+            jetOnePhi = 0.;
+            jetOneM   = 0.;
+            jetOneTag = 0.;
+        }
+
+        if (jets.size() > 1) {
+            jetTwoPt = jets[1]->pt;
+            jetTwoEta = jets[1]->eta;
+            jetTwoPhi = jets[1]->phi;
+            jetTwoM = jets[1]->mass;
+            jetTwoTag    = jets[1]->csv;
+        } else {
+            jetTwoPt = 0.;
+            jetTwoEta = 0.;
+            jetTwoPhi = 0.;
+            jetTwoM = 0.;
+            jetTwoTag    = 0.;
+        }
+    }
+ 
+    if (!isData && genLeptons.size() == 2) {
+        genLeptonOneId = genLeptons[0]->pdgId;
+        genLeptonOnePt = genLeptons[0]->pt;
+        genLeptonOneEta = genLeptons[0]->eta;
+        genLeptonOnePhi = genLeptons[0]->phi;
+        genLeptonTwoId = genLeptons[1]->pdgId;
+        genLeptonTwoPt = genLeptons[1]->pt;
+        genLeptonTwoEta = genLeptons[1]->eta;
+        genLeptonTwoPhi = genLeptons[1]->phi;   
+    }
+    else {
+        genLeptonOnePt = 0.;
+        genLeptonOneEta = 0.;
+        genLeptonOnePhi = 0.;
+        genLeptonTwoPt = 0.;
+        genLeptonTwoEta = 0.;
+        genLeptonTwoPhi = 0.;
+    }
+
+    TLorentzVector genPhotonP4;
+    if (!isData && genPhotons.size() > 0) {
+        TLorentzVector photonOneP4;
+        photonOneP4.SetPtEtaPhiM(photonOnePt, photonOneEta, photonOnePhi, 0.);
+        float min_phot_dr = 1000.;
+        for (unsigned int i = 0; i < genPhotons.size(); i++) {
+            TLorentzVector tmpGenPhot;
+            tmpGenPhot.SetPtEtaPhiM(genPhotons[i]->pt, genPhotons[i]->eta, genPhotons[i]->phi, genPhotons[i]->mass);
+            float this_dr = tmpGenPhot.DeltaR(photonOneP4);
+            if (this_dr < min_phot_dr) {
+                genPhotonP4.SetPtEtaPhiM(genPhotons[i]->pt, genPhotons[i]->eta, genPhotons[i]->phi, genPhotons[i]->mass);
+                genPhotonFHPFS = genPhotons[i]->fromHardProcessFinalState;
+                genPhotonIPFS = genPhotons[i]->isPromptFinalState;
+                min_phot_dr = this_dr;
+            }
+        }
+        genPhotonPt = genPhotonP4.Pt();
+        genPhotonEta = genPhotonP4.Eta();
+        genPhotonPhi = genPhotonP4.Phi();
+    }
+    else {
+        genPhotonPt = 0.;
+        genPhotonEta = 0.;
+        genPhotonPhi = 0.;
+    }
+        
+    // gen angles
+    if (!isData && genLeptons.size() == 2 && genPhotons.size() > 0) {        
+        TLorentzVector l_minus, l_plus; 
+        if (genLeptonOneId > 0) {
+            l_minus.SetPtEtaPhiM(genLeptonOnePt, genLeptonOneEta, genLeptonOnePhi, genLeptons[0]->mass);
+            l_plus.SetPtEtaPhiM(genLeptonTwoPt, genLeptonTwoEta, genLeptonTwoPhi, genLeptons[1]->mass);
+        }
+        else {
+            l_minus.SetPtEtaPhiM(genLeptonTwoPt, genLeptonTwoEta, genLeptonTwoPhi, genLeptons[1]->mass);
+            l_plus.SetPtEtaPhiM(genLeptonOnePt, genLeptonOneEta, genLeptonOnePhi, genLeptons[0]->mass);
+        }
+     
+        TLorentzVector dileptonP4Gen, llgP4Gen;
+        dileptonP4Gen = l_minus + l_plus;
+        llgP4Gen = dileptonP4Gen + genPhotonP4;
+
+        TVector3 llgFrame = -1*llgP4Gen.BoostVector();
+        dileptonP4Gen.Boost(llgFrame);
+        l_minus.Boost(llgFrame);
+        l_minus.Boost(dileptonP4Gen.BoostVector());
+        genLittleTheta = cos(dileptonP4Gen.Angle(l_minus.Vect()));
+        genBigTheta = cos(dileptonP4Gen.Angle(llgP4Gen.Vect()));
+        
+        TVector3 ppAxis(0, 0, 1);
+        TVector3 zAxis = dileptonP4Gen.Vect().Unit();
+        TVector3 yAxis = ppAxis.Cross(zAxis.Unit()).Unit();
+        TVector3 xAxis = (yAxis.Unit().Cross(zAxis.Unit())).Unit();
+
+        TRotation rotation;
+        rotation = rotation.RotateAxes(xAxis, yAxis, zAxis).Inverse();
+
+        dileptonP4Gen.Transform(rotation);
+        l_minus.Transform(rotation);
+        genPhi = l_minus.Phi();
+    }
+    else {
+        genLittleTheta = -9.;
+        genBigTheta = -9.;
+        genPhi = -9.;
+    }
 
     outTree->Fill();
     this->passedEvents++;
@@ -959,173 +2953,187 @@ float zAnalyzer::GetPhotonIsolation(const baconhep::TPhoton* pho, const float rh
     return combIso;
 }
 
-void zAnalyzer::EvalMuonEnergyResolution(std::map<string, float> mva_input_floats, std::map<string, int> mva_input_ints, float &mean, float &sigma, float &alphaL, float &powerL, float &alphaR, float &powerR) 
+float zAnalyzer::GetGenIsolation(const TGenParticle* pho)
 {
-    // Evaluates and returns the estimate of muon energy resolution function.
-    // semi-parametric MVAs' inputs and outputs
-    static RooRealVar* invar[99]; // [varnum]
-    static RooAbsReal* mvaMean = NULL;
-    static RooAbsReal* mvaSigma;
-    static RooAbsReal* mvaAlphaL;
-    static RooAbsReal* mvaAlphaR;
 
-    // one-time MVA initialization: get trainings
-    if (!mvaMean) {
-        TDirectory* wd = gDirectory;
-        
-        const std::string cmssw_base = getenv("CMSSW_BASE");
-        string fileName;
-        fileName = cmssw_base + "/src/BLT/BLTAnalysis/data/muon_training.root";
-        TFile f(fileName.c_str());
-        if (f.IsZombie())
-            FATAL("TFile::Open() failed");
-         // cd back into previous current working directory
-        if (wd) wd->cd();
-        else gDirectory = 0;
-         RooWorkspace* ws = dynamic_cast<RooWorkspace*>(f.Get("ws_mva_muons"));
-        if (!ws) FATAL("TFile::Get() failed");
-        // current working directory
-        invar[0] = ws->var("var01");
-        invar[1] = ws->var("var02");
-        invar[2] = ws->var("var03");
-        invar[3] = ws->var("var04");
-        invar[4] = ws->var("var05");
-        invar[5] = ws->var("var06");
-        invar[6] = ws->var("var07");
-        invar[7] = ws->var("var08");
-        invar[8] = ws->var("var09");
-        invar[9] = ws->var("var10");
-        invar[10] = ws->var("var11");
-        invar[11] = ws->var("var12");
-        mvaMean = ws->function("limMean");
-        mvaSigma = ws->function("limSigma");
-        mvaAlphaL = ws->function("limAlphaL");
-        mvaAlphaR = ws->function("limAlphaR");
-     } // one-time initialization
-     // load necessary tree branches
-    float rho                      = mva_input_floats["rho"];
-    float muEnergy                 = mva_input_floats["muEnergy"];
-    float muEta                    = mva_input_floats["muEta"];
-    float muChi2NDF                = mva_input_floats["muTkChi2"];
-    Int_t muNumberOfValidTrkLayers = mva_input_ints["muNumberOfValidTrkLayers"];
-    Int_t muNumberOfValidPixelHits = mva_input_ints["muNumberOfValidPixelHits"];
-    Int_t muNumberOfValidMuonHits  = mva_input_ints["muNumberOfValidMuonHits"];
-    Int_t muStations               = mva_input_ints["muStations"];
-    float muPFIsoR04_CH            = mva_input_floats["muPFIsoR04_CH"];
-    float muPFIsoR04_NH            = mva_input_floats["muPFIsoR04_NH"];
-    float muPFIsoR04_Pho           = mva_input_floats["muPFIsoR04_Pho"];
-    float muPFIsoR04_PU            = mva_input_floats["muPFIsoR04_PU"];
-     // set input variables associated with the GBRLikelihood trainings
-    *invar[0] = rho;
-    *invar[1] = muEnergy;
-    *invar[2] = muEta;
-    *invar[3] = muChi2NDF;
-    *invar[4] = muNumberOfValidTrkLayers;
-    *invar[5] = muNumberOfValidPixelHits;
-    *invar[6] = muNumberOfValidMuonHits;
-    *invar[7] = muStations;
-    *invar[8] = muPFIsoR04_CH;
-    *invar[9] = muPFIsoR04_NH;
-    *invar[10] = muPFIsoR04_Pho;
-    *invar[11] = muPFIsoR04_PU;
-    mean = mvaMean->getVal();
-    sigma = mvaSigma->getVal();
-    alphaL = mvaAlphaL->getVal();
-    alphaR = mvaAlphaR->getVal();
-     // NOTE: negative = infinite; powers were fixed at the training level
-    powerL = -1;
-    powerR = -1;
-    //f.Close();
- }
- void zAnalyzer::EvalElectronEnergyResolution(std::map<string, float> mva_inputs, float &mean, float &sigma, 
-                                                    float &alphaL, float &powerL, float &alphaR, float &powerR) 
-{
-    // Evaluates and returns the estimate of muon energy resolution function.
-    // semi-parametric MVAs' inputs and outputs
-    static RooRealVar* invar[99]; // [varnum]
-    static RooAbsReal* mvaMean = NULL;
-    static RooAbsReal* mvaSigma;
-    static RooAbsReal* mvaAlphaL;
-    static RooAbsReal* mvaAlphaR;
-    static RooAbsReal* mvaPowerL;
-    static RooAbsReal* mvaPowerR;
-     // one-time MVA initialization: get trainings
-    if (!mvaMean) {
-        // current working directory
-        TDirectory* wd = gDirectory;
-        
-        const std::string cmssw_base = getenv("CMSSW_BASE");
-        string fileName;
-        fileName = cmssw_base + "/src/BLT/BLTAnalysis/data/electron_training.root";
-        TFile f(fileName.c_str());
-        if (f.IsZombie())
-            FATAL("TFile::Open() failed");
-         // cd back into previous current working directory
-        if (wd) wd->cd();
-        else gDirectory = 0;
-         RooWorkspace* ws = dynamic_cast<RooWorkspace*>(f.Get("ws_mva_electrons"));
-        if (!ws) FATAL("TFile::Get() failed");
-         invar[0] = ws->var("var01");
-        invar[1] = ws->var("var02");
-        invar[2] = ws->var("var03");
-        invar[3] = ws->var("var04");
-        invar[4] = ws->var("var05");
-        invar[5] = ws->var("var06");
-        invar[6] = ws->var("var07");
-        invar[7] = ws->var("var08");
-        invar[8] = ws->var("var09");
-        invar[9] = ws->var("var10");
-        invar[10] = ws->var("var11");
-        invar[11] = ws->var("var12");
-        invar[12] = ws->var("var13");
-        invar[13] = ws->var("var14");
-        invar[14] = ws->var("var15");
-         mvaMean = ws->function("limMean");
-        mvaSigma = ws->function("limSigma");
-        mvaAlphaL = ws->function("limAlphaL");
-        mvaAlphaR = ws->function("limAlphaR");
-        mvaPowerL = ws->function("limPowerL");
-        mvaPowerR = ws->function("limPowerR");
-     } // one-time initialization
-     // load necessary tree branches
-    float rho = mva_inputs["rho"];
-    float elEnergy = mva_inputs["elEnergy"];
-    float elScEta = mva_inputs["elScEta"];
-    float elScPhi = mva_inputs["elScPhi"];
-    float elR9 = mva_inputs["elR9"];
-    float elE1x5OverE = mva_inputs["elE1x5OverE"];
-    float elE2x5OverE = mva_inputs["elE2x5OverE"];
-    float elE5x5OverE = mva_inputs["elE5x5OverE"];
-    float elFBrem = mva_inputs["elFBrem"];
-    float elHOverE = mva_inputs["elHOverE"];
-    float elSigmaIEtaIEta = mva_inputs["elSigmaIEtaIEta"];
-    float elPFIsoR04_CH = mva_inputs["elPFIsoR04_CH"];
-    float elPFIsoR04_NH = mva_inputs["elPFIsoR04_NH"];
-    float elPFIsoR04_Pho = mva_inputs["elPFIsoR04_Pho"];
-    float elPFIsoR04_PU = mva_inputs["elPFIsoR04_PU"];
-     // set input variables associated with the GBRLikelihood trainings
-    *invar[0] = rho;
-    *invar[1] = elEnergy;
-    *invar[2] = elScEta;
-    *invar[3] = elScPhi;
-    *invar[4] = elR9;
-    *invar[5] = elE1x5OverE;
-    *invar[6] = elE2x5OverE;
-    *invar[7] = elE5x5OverE;
-    *invar[8] = elFBrem;
-    *invar[9] = elHOverE;
-    *invar[10] = elSigmaIEtaIEta;
-    *invar[11] = elPFIsoR04_CH;
-    *invar[12] = elPFIsoR04_NH;
-    *invar[13] = elPFIsoR04_Pho;
-    *invar[14] = elPFIsoR04_PU;
-     mean = mvaMean->getVal();
-    sigma = mvaSigma->getVal();
-    alphaL = mvaAlphaL->getVal();
-    alphaR = mvaAlphaR->getVal();
-    powerL = mvaPowerL->getVal();
-    powerR = mvaPowerR->getVal();
+	float genIso = 0;
+	int isStable = 1;
+        for (int i = 0; i < fGenParticleArr->GetEntries(); ++i) {
+		TGenParticle* particle = (TGenParticle*) fGenParticleArr->At(i);
+
+		float dR = sqrt(pow((pho->eta - particle->eta),2) + pow((pho->phi - particle->phi),2));
+		if(particle->status == isStable && dR < 0.4)
+			genIso += particle->pt;
+	}
+	return genIso;
 }
+//void zAnalyzer::EvalMuonEnergyResolution(std::map<string, float> mva_input_floats, std::map<string, int> mva_input_ints, float &mean, float &sigma, float &alphaL, float &powerL, float &alphaR, float &powerR) 
+//{
+//    // Evaluates and returns the estimate of muon energy resolution function.
+//    // semi-parametric MVAs' inputs and outputs
+//    static RooRealVar* invar[99]; // [varnum]
+//    static RooAbsReal* mvaMean = NULL;
+//    static RooAbsReal* mvaSigma;
+//    static RooAbsReal* mvaAlphaL;
+//    static RooAbsReal* mvaAlphaR;
+//
+//    // one-time MVA initialization: get trainings
+//    if (!mvaMean) {
+//        TDirectory* wd = gDirectory;
+//        
+//        const std::string cmssw_base = getenv("CMSSW_BASE");
+//        string fileName;
+//        fileName = cmssw_base + "/src/BLT/BLTAnalysis/data/muon_training.root";
+//        TFile f(fileName.c_str());
+//        if (f.IsZombie())
+//            FATAL("TFile::Open() failed");
+//         // cd back into previous current working directory
+//        if (wd) wd->cd();
+//        else gDirectory = 0;
+//         RooWorkspace* ws = dynamic_cast<RooWorkspace*>(f.Get("ws_mva_muons"));
+//        if (!ws) FATAL("TFile::Get() failed");
+//        // current working directory
+//        invar[0] = ws->var("var01");
+//        invar[1] = ws->var("var02");
+//        invar[2] = ws->var("var03");
+//        invar[3] = ws->var("var04");
+//        invar[4] = ws->var("var05");
+//        invar[5] = ws->var("var06");
+//        invar[6] = ws->var("var07");
+//        invar[7] = ws->var("var08");
+//        invar[8] = ws->var("var09");
+//        invar[9] = ws->var("var10");
+//        invar[10] = ws->var("var11");
+//        invar[11] = ws->var("var12");
+//        mvaMean = ws->function("limMean");
+//        mvaSigma = ws->function("limSigma");
+//        mvaAlphaL = ws->function("limAlphaL");
+//        mvaAlphaR = ws->function("limAlphaR");
+//     } // one-time initialization
+//     // load necessary tree branches
+//    float rho                      = mva_input_floats["rho"];
+//    float muEnergy                 = mva_input_floats["muEnergy"];
+//    float muEta                    = mva_input_floats["muEta"];
+//    float muChi2NDF                = mva_input_floats["muTkChi2"];
+//    Int_t muNumberOfValidTrkLayers = mva_input_ints["muNumberOfValidTrkLayers"];
+//    Int_t muNumberOfValidPixelHits = mva_input_ints["muNumberOfValidPixelHits"];
+//    Int_t muNumberOfValidMuonHits  = mva_input_ints["muNumberOfValidMuonHits"];
+//    Int_t muStations               = mva_input_ints["muStations"];
+//    float muPFIsoR04_CH            = mva_input_floats["muPFIsoR04_CH"];
+//    float muPFIsoR04_NH            = mva_input_floats["muPFIsoR04_NH"];
+//    float muPFIsoR04_Pho           = mva_input_floats["muPFIsoR04_Pho"];
+//    float muPFIsoR04_PU            = mva_input_floats["muPFIsoR04_PU"];
+//     // set input variables associated with the GBRLikelihood trainings
+//    *invar[0] = rho;
+//    *invar[1] = muEnergy;
+//    *invar[2] = muEta;
+//    *invar[3] = muChi2NDF;
+//    *invar[4] = muNumberOfValidTrkLayers;
+//    *invar[5] = muNumberOfValidPixelHits;
+//    *invar[6] = muNumberOfValidMuonHits;
+//    *invar[7] = muStations;
+//    *invar[8] = muPFIsoR04_CH;
+//    *invar[9] = muPFIsoR04_NH;
+//    *invar[10] = muPFIsoR04_Pho;
+//    *invar[11] = muPFIsoR04_PU;
+//    mean = mvaMean->getVal();
+//    sigma = mvaSigma->getVal();
+//    alphaL = mvaAlphaL->getVal();
+//    alphaR = mvaAlphaR->getVal();
+//     // NOTE: negative = infinite; powers were fixed at the training level
+//    powerL = -1;
+//    powerR = -1;
+//    //f.Close();
+// }
+// void zAnalyzer::EvalElectronEnergyResolution(std::map<string, float> mva_inputs, float &mean, float &sigma, 
+//                                                    float &alphaL, float &powerL, float &alphaR, float &powerR) 
+//{
+//    // Evaluates and returns the estimate of muon energy resolution function.
+//    // semi-parametric MVAs' inputs and outputs
+//    static RooRealVar* invar[99]; // [varnum]
+//    static RooAbsReal* mvaMean = NULL;
+//    static RooAbsReal* mvaSigma;
+//    static RooAbsReal* mvaAlphaL;
+//    static RooAbsReal* mvaAlphaR;
+//    static RooAbsReal* mvaPowerL;
+//    static RooAbsReal* mvaPowerR;
+//     // one-time MVA initialization: get trainings
+//    if (!mvaMean) {
+//        // current working directory
+//        TDirectory* wd = gDirectory;
+//        
+//        const std::string cmssw_base = getenv("CMSSW_BASE");
+//        string fileName;
+//        fileName = cmssw_base + "/src/BLT/BLTAnalysis/data/electron_training.root";
+//        TFile f(fileName.c_str());
+//        if (f.IsZombie())
+//            FATAL("TFile::Open() failed");
+//         // cd back into previous current working directory
+//        if (wd) wd->cd();
+//        else gDirectory = 0;
+//         RooWorkspace* ws = dynamic_cast<RooWorkspace*>(f.Get("ws_mva_electrons"));
+//        if (!ws) FATAL("TFile::Get() failed");
+//         invar[0] = ws->var("var01");
+//        invar[1] = ws->var("var02");
+//        invar[2] = ws->var("var03");
+//        invar[3] = ws->var("var04");
+//        invar[4] = ws->var("var05");
+//        invar[5] = ws->var("var06");
+//        invar[6] = ws->var("var07");
+//        invar[7] = ws->var("var08");
+//        invar[8] = ws->var("var09");
+//        invar[9] = ws->var("var10");
+//        invar[10] = ws->var("var11");
+//        invar[11] = ws->var("var12");
+//        invar[12] = ws->var("var13");
+//        invar[13] = ws->var("var14");
+//        invar[14] = ws->var("var15");
+//         mvaMean = ws->function("limMean");
+//        mvaSigma = ws->function("limSigma");
+//        mvaAlphaL = ws->function("limAlphaL");
+//        mvaAlphaR = ws->function("limAlphaR");
+//        mvaPowerL = ws->function("limPowerL");
+//        mvaPowerR = ws->function("limPowerR");
+//     } // one-time initialization
+//     // load necessary tree branches
+//    float rho = mva_inputs["rho"];
+//    float elEnergy = mva_inputs["elEnergy"];
+//    float elScEta = mva_inputs["elScEta"];
+//    float elScPhi = mva_inputs["elScPhi"];
+//    float elR9 = mva_inputs["elR9"];
+//    float elE1x5OverE = mva_inputs["elE1x5OverE"];
+//    float elE2x5OverE = mva_inputs["elE2x5OverE"];
+//    float elE5x5OverE = mva_inputs["elE5x5OverE"];
+//    float elFBrem = mva_inputs["elFBrem"];
+//    float elHOverE = mva_inputs["elHOverE"];
+//    float elSigmaIEtaIEta = mva_inputs["elSigmaIEtaIEta"];
+//    float elPFIsoR04_CH = mva_inputs["elPFIsoR04_CH"];
+//    float elPFIsoR04_NH = mva_inputs["elPFIsoR04_NH"];
+//    float elPFIsoR04_Pho = mva_inputs["elPFIsoR04_Pho"];
+//    float elPFIsoR04_PU = mva_inputs["elPFIsoR04_PU"];
+//     // set input variables associated with the GBRLikelihood trainings
+//    *invar[0] = rho;
+//    *invar[1] = elEnergy;
+//    *invar[2] = elScEta;
+//    *invar[3] = elScPhi;
+//    *invar[4] = elR9;
+//    *invar[5] = elE1x5OverE;
+//    *invar[6] = elE2x5OverE;
+//    *invar[7] = elE5x5OverE;
+//    *invar[8] = elFBrem;
+//    *invar[9] = elHOverE;
+//    *invar[10] = elSigmaIEtaIEta;
+//    *invar[11] = elPFIsoR04_CH;
+//    *invar[12] = elPFIsoR04_NH;
+//    *invar[13] = elPFIsoR04_Pho;
+//    *invar[14] = elPFIsoR04_PU;
+//     mean = mvaMean->getVal();
+//    sigma = mvaSigma->getVal();
+//    alphaL = mvaAlphaL->getVal();
+//    alphaR = mvaAlphaR->getVal();
+//    powerL = mvaPowerL->getVal();
+//    powerR = mvaPowerR->getVal();
+//}
 
  void zAnalyzer::find_optimized(double* p, double &e1, double& e2)
 {
@@ -1143,4 +3151,16 @@ void zAnalyzer::EvalMuonEnergyResolution(std::map<string, float> mva_input_float
    fun->SetRange(p[2] * (1 - 3 * p[5]), p[3] * (1 - 3 * p[11]),
                  p[2] * (1 + 3 * p[5]), p[3] * (1 + 3 * p[11]));
     fun->GetMinimumXY(e1, e2);
+}
+bool zAnalyzer::SignalRegionPass(const baconhep::TPhoton *photon){
+	bool signalPass = false;
+	if(photon->eta <= 1.48){
+		if(photon->chHadIso >= 2.0)
+			signalPass = true;
+	}
+	else {
+		if(photon->chHadIso >= 1.5)
+			signalPass = true;
+	}
+	return signalPass;
 }
