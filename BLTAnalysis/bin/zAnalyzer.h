@@ -88,7 +88,9 @@ public:
     std::vector<string> triggerNames;
 
     // Branches in the output file
-    
+   
+    Float_t genWeight,eventWeight,puWeight;
+ 
     // event data
     UInt_t runNumber, lumiSection, nPV, nPartons;
     ULong64_t evtNumber;
@@ -97,16 +99,6 @@ public:
     Float_t xPV, yPV, zPV;
     UInt_t nJets, nCentralJets, nFwdJets, nBJets, nMuons, nElectrons, nTaus, nPhotons;
    
-    // weights
-    Int_t genWeight;
-    Float_t eventWeight, triggerWeight, puWeight;
-    Float_t elIDWeightOne, elIDWeightTwo;
-    Float_t elTrigWeightOne, elTrigWeightTwo;
-    Float_t muonIDWeightOne, muonIDWeightTwo;
-    Float_t muonISOWeightOne, muonISOWeightTwo;
-    Float_t muonTrigWeightOne, muonTrigWeightTwo;
-    Float_t photonIDWeight;
-    Int_t Sgen,SgenAccep;
     // physics object Lorentz vectors
     Float_t leptonOnePt, leptonOneEta, leptonOnePhi;
     Float_t leptonOnePassPt, leptonOnePassEta, leptonOnePassPhi;
@@ -208,23 +200,6 @@ public:
 
 
 
-    Bool_t isLeptonTag;
-    Bool_t isDijetTag;
-    Bool_t isTightDijetTag;
-
-    // jet data
-    Float_t jetOnePt, jetOneEta, jetOnePhi, jetOneM;
-    Float_t jetTwoPt, jetTwoEta, jetTwoPhi, jetTwoM;
-    Float_t jetOneTag, jetTwoTag, jetThreeTag, jetFourTag;
-    Float_t met, metPhi, metNC, metPhiNC, ht, htPhi, htSum;
-
-    // generator level data
-    Float_t genLeptonOnePt, genLeptonOneEta, genLeptonOnePhi;
-    Float_t genLeptonTwoPt, genLeptonTwoEta, genLeptonTwoPhi;
-    Float_t genPhotonPt, genPhotonEta, genPhotonPhi;
-    Int_t genLeptonOneId, genLeptonTwoId;
-    Bool_t genPhotonFHPFS, genPhotonIPFS;
-    
     //Int_t genOneId, genTwoId, genOneMother, genTwoMother, genCategory;
     //TLorentzVector genOneP4, genTwoP4;
     //Bool_t fromHardProcessFinalState, isPromptFinalState, hasPhotonMatch;
@@ -261,39 +236,6 @@ public:
     //Float_t dileptonVertexChi2One, dileptonVertexDOFOne;
     //Float_t dileptonVertexChi2Two, dileptonVertexDOFTwo;
     
-    // dijet data
-    Float_t dijetPt, dijetEta, dijetPhi, dijetM;
-    Float_t dijetDEta, dijetDPhi, dijetDR;
-
-    // jet, lepton data
-    Float_t l1j1DEta, l1j1DPhi, l1j1DR;
-    Float_t l1j2DEta, l1j2DPhi, l1j2DR;
-    Float_t l2j1DEta, l2j1DPhi, l2j1DR;
-    Float_t l2j2DEta, l2j2DPhi, l2j2DR;
-
-    // jet, photon data
-    Float_t j1PhotonDEta, j1PhotonDPhi, j1PhotonDR;
-    Float_t j2PhotonDEta, j2PhotonDPhi, j2PhotonDR;
-    Float_t jPhotonDRMax, jPhotonDRMin;
-
-    // three body
-    Float_t llgPt, llgEta, llgPhi, llgM, llgPtOverM;
-    Float_t llgMKin;
-    Float_t llgMKinJames;
-    Float_t l1PhotonDEta, l1PhotonDPhi, l1PhotonDR;
-    Float_t l2PhotonDEta, l2PhotonDPhi, l2PhotonDR;
-    Float_t lPhotonDRMax, lPhotonDRMin;
-    Float_t dileptonPhotonDEta, dileptonPhotonDPhi, dileptonPhotonDR;
-    Float_t ptt;
-    Float_t zgBigTheta, zgLittleTheta, zgPhi;
-    Float_t zgLittleThetaMY;
-    Float_t zgBigThetaJames, zgLittleThetaJames, zgPhiJames;
-    Float_t genBigTheta, genLittleTheta, genPhi;
-
-    // other
-    Float_t llgJJDEta, llgJJDPhi, llgJJDR;
-    Float_t zepp;
-
     float GetMuonIsolation(const baconhep::TMuon*);
     float GetElectronIsolation(const baconhep::TElectron*, float);
     float GetPhotonIsolation(const baconhep::TPhoton*, float);

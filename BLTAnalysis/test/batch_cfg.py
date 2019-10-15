@@ -7,8 +7,8 @@ cfg        = bm.JobConfig
 path       = 'root://cmseos.fnal.gov//store/user/corderom/sync_mc'
 executable = 'execBatch.sh'
 
-#legacy = True
-legacy = False
+legacy = True
+#legacy = False
 
 #selection  = 'jetjetgmjetjet'
 #selection  = 'mumug'
@@ -17,49 +17,70 @@ selection  = 'ee'
 
 period     = '2016'
 
+
+
+
+data_samples = []
+mc_samples   = []
+
 #data_samples = ['single_mu']
 #data_samples = ['single_el']
-if legacy:
-	if selection == 'mumug':
-		data_samples = ['double_mu_legacy']
-	elif selection == 'mumu':
-		data_samples = ['double_mu_legacy']
-	elif selection == 'ee':	
-		data_samples = ['single_el_legacy']
-	elif selection == 'elelg':	
-		data_samples = ['double_el_legacy']
-	################
-	mc_samples = []
-	if selection == "mumug":
-		mc_samples += ['JC_DYJets_Legacy']
-		mc_samples += ['JC_WW_Legacy','JC_WZ_Legacy','JC_ZZ_Legacy']
-		mc_samples += ['JC_TTTo2L2Nu_Legacy']
-		mc_samples += ['JC_WJets_Legacy']
-		mc_samples += ['JC_ZGToLLG_Legacy']
-	elif selection == "ee":
-		mc_samples += ['JC_DYJets_Legacy']
-else:
-	if selection == 'mumug':
-		data_samples = ['double_mu']
-	elif selection == 'mumu':
-		data_samples = ['double_mu']
-	elif selection == 'ee':	
-		data_samples = ['single_el']
-	elif selection == 'elelg':	
-		data_samples = ['double_el']
-	##################
-	mc_samples = []
+if period == '2016':
+	if legacy:
+		############  DATA
+		if selection == 'mumug':
+			data_samples += ['double_mu_legacy']
+		elif selection == 'mumu':
+			data_samples += ['double_mu_legacy']
+		elif selection == 'ee':	
+			data_samples += ['single_el_legacy']
+		elif selection == 'elelg':	
+			data_samples += ['double_el_legacy']
 
-	if selection == "mumug":
-		mc_samples += ['JB_TT']
-		mc_samples += ['JB_ZG_ZToLL']
-		mc_samples += ['JB_WJets']
-		mc_samples += ['JB_DYJets']
-		mc_samples += ['JB_WZ','JB_ZZ']
-	elif selection == "ee":
-		mc_samples += ['JB_DYJets']
-	#mc_samples += ['JB_DYJets_Madgraph']
+		############  MC
+		if selection == "mumug":
+			mc_samples += ['JC_DYJets_Legacy']
+			mc_samples += ['JC_WW_Legacy','JC_WZ_Legacy','JC_ZZ_Legacy']
+			mc_samples += ['JC_TTTo2L2Nu_Legacy']
+			mc_samples += ['JC_WJets_Legacy']
+			mc_samples += ['JC_ZGToLLG_Legacy']
+		elif selection == "ee":
+			mc_samples += ['JC_DYJets_Legacy']
+	else:
+		############  DATA
+		if selection == 'mumug':
+			data_samples += ['double_mu']
+		elif selection == 'mumu':
+			data_samples += ['double_mu']
+		elif selection == 'ee':	
+			data_samples += ['single_el']
+		elif selection == 'elelg':	
+			data_samples += ['double_el']
 
+		############  MC
+		if selection == "mumug":
+			mc_samples += ['JB_TT']
+			mc_samples += ['JB_ZG_ZToLL']
+			mc_samples += ['JB_WJets']
+			mc_samples += ['JB_DYJets']
+			mc_samples += ['JB_WZ','JB_ZZ']
+		elif selection == "ee":
+			mc_samples += ['JB_DYJets']
+		#mc_samples += ['JB_DYJets_Madgraph']
+elif period == '2017':
+	############  DATA
+	if selection == 'ee':
+		data_samples += ['single_el_2017Reco']
+	
+	############  MC
+	if selection == "mumug":
+		mc_samples += ['JB_TT_2017Reco']
+		mc_samples += ['JB_ZG_ZToLL_2017Reco']
+		mc_samples += ['JB_WJets_2017Reco']
+		mc_samples += ['JB_DYJets_2017Reco']
+		mc_samples += ['JB_WZ_2017Reco','JB_ZZ_2017Reco']
+	elif selection == "ee":
+		mc_samples += ['JB_DYJets_2017Reco']
 ################################################
 
 
@@ -266,9 +287,9 @@ data_dict['single_el'] = [
 
 #----------------------------------------------------
 #---------------------------------------------------
-#######################################################
-##################### JC SAMPLES #######################
-#######################################################
+######################################################################################################################
+############################################## JC SAMPLES 2016 #######################################################
+######################################################################################################################
 path = '/eos/uscms/store/user/corderom/sync_mc'
 
 ########################## ZH #######################
@@ -519,9 +540,9 @@ mc_dict['JB_ZG_ZToLL']=[
 
 #----------------------------------------------------
 #---------------------------------------------------
-#######################################################
-##################### JC SAMPLES Legacy #######################
-#######################################################
+######################################################################################################################
+########################################### JC SAMPLES Legacy ########################################################
+######################################################################################################################
 SampleType = 'mc'
 path = '/eos/uscms/store/user/corderom/'+SampleType+'_legacy_gen_2016'
 
@@ -685,48 +706,81 @@ data_dict['double_el_legacy'] = [
 			    ),
 			]
 
+path = "/eos/uscms/store/user/corderom/data_legacy_gen_2016"
 data_dict['single_el_legacy'] = [
-			 cfg(data_name = 'DoubleEG_2016B_v1',
-			     path      = '{0}/DoubleEG/2016_data_legacy_DoubleEG_Run2016B-17Jul2018_ver2-v1/190820_133958'.format(path),
+			 cfg(data_name = 'Electron_2016B_v1',
+			     path      = '{0}/Electron/2016_data_legacy_Electron_Run2016B-17Jul2018_ver2-v1/190820_133958'.format(path),
 			     nJobs     = 30,
-			     suffix    = 'DoubleEG_2016B'
+			     suffix    = 'Electron_2016B'
 			    ),
-			 cfg(data_name = 'DoubleEG_2016C_v1',
-			     path      = '{0}/DoubleEG/2016_data_legacy_DoubleEG_Run2016C-17Jul2018-v1/190819_180618'.format(path),
+			 cfg(data_name = 'Electron_2016C_v1',
+			     path      = '{0}/SingleElectron/2016_data_legacy_SingleElectron_Run2016C-17Jul2018-v1/191002_063637'.format(path),
 			     nJobs     = 30,
-			     suffix    = 'DoubleEG_2016C'
+			     suffix    = 'Electron_2016C'
 			    ),
-			 cfg(data_name = 'DoubleEG_2016D_v1',
-			     path      = '{0}/DoubleEG/2016_data_legacy_DoubleEG_Run2016D-17Jul2018-v1/190819_180836'.format(path),
+			 cfg(data_name = 'Electron_2016D_v1',
+			     path      = '{0}/SingleElectron/2016_data_legacy_SingleElectron_Run2016D-17Jul2018-v1/191002_063848'.format(path),
 			     nJobs     = 30,
-			     suffix    = 'DoubleEG_2016D'
+			     suffix    = 'Electron_2016D'
 			    ),
-			 cfg(data_name = 'DoubleEG_2016E_v1',
-			    path      = '{0}/DoubleEG/2016_data_legacy_DoubleEG_Run2016E-17Jul2018-v1/190819_181102'.format(path),
+			 cfg(data_name = 'Electron_2016E_v1',
+			    path      = '{0}/SingleElectron/2016_data_legacy_SingleElectron_Run2016E-17Jul2018-v1/191002_064057'.format(path),
 			    nJobs     = 30,
-			    suffix    = 'DoubleEG_2016E'
+			    suffix    = 'Electron_2016E'
 			   ),
-			 cfg(data_name = 'DoubleEG_2016F_v1',
-			     path      = '{0}/DoubleEG/2016_data_legacy_DoubleEG_Run2016F-17Jul2018-v1/190819_181357'.format(path),
+			 cfg(data_name = 'Electron_2016F_v1',
+			     path      = '{0}/Electron/2016_data_legacy_Electron_Run2016F-17Jul2018-v1/190819_181357'.format(path),
 			     nJobs     = 30,
-			     suffix    = 'DoubleEG_2016F'
+			     suffix    = 'Electron_2016F'
 			    ),
-			 cfg(data_name = 'DoubleEG_2016G_v1',
-			     path      = '{0}/DoubleEG/2016_data_legacy_DoubleEG_Run2016G-17Jul2018-v1/190819_181601'.format(path),
+			 cfg(data_name = 'Electron_2016G_v1',
+			     path      = '{0}/SingleElectron/2016_data_legacy_SingleElectron_Run2016G-17Jul2018-v1/191002_064504/'.format(path),
 			     nJobs     = 30,
-			     suffix    = 'DoubleEG_2016G'
+			     suffix    = 'Electron_2016G'
 			    ),
-			 cfg(data_name = 'DoubleEG_2016H_v1',
-			     path      = '{0}/DoubleEG/2016_data_legacy_DoubleEG_Run2016H-17Jul2018-v1/190819_181830'.format(path),
+			 cfg(data_name = 'Electron_2016H_v1',
+			     path      = '{0}/Electron/2016_data_legacy_Electron_Run2016H-17Jul2018-v1/190819_181830'.format(path),
 			     nJobs     = 30,
-			     suffix    = 'DoubleEG_2016H'
+			     suffix    = 'Electron_2016H'
 			    ),
 			]
 
 
+######################################################################################################################
+############################################## SAMPLES 2017 ##########################################################
+######################################################################################################################
+
+path = "/eos/uscms/store/user/lpcbacon/15/"
+data_dict['single_el_2017Reco'] = [
+			 cfg(data_name = 'Electron_2016B_v1',
+			     path      = '{0}/SingleElectronRun2017B_31Mar2018_v1'.format(path),
+			     nJobs     = 30,
+			     suffix    = 'Electron_2016B'
+			    ),
+			 cfg(data_name = 'Electron_2016C_v1',
+			     path      = '{0}/SingleElectronRun2017C_31Mar2018_v1'.format(path),
+			     nJobs     = 30,
+			     suffix    = 'Electron_2016C'
+			    ),
+			 cfg(data_name = 'Electron_2016D_v1',
+			     path      = '{0}/SingleElectronRun2017D_31Mar2018_v1'.format(path),
+			     nJobs     = 30,
+			     suffix    = 'Electron_2016D'
+			    ),
+			 cfg(data_name = 'Electron_2016E_v1',
+			    path      = '{0}/SingleElectronRun2017E_31Mar2018_v1'.format(path),
+			    nJobs     = 30,
+			    suffix    = 'Electron_2016E'
+			   ),
+			]
+
+
+
+######################################################################################################
+
 batch_list = []
 batch_list += sum([data_dict[n] for n in data_samples], []) 
-#batch_list += sum([mc_dict[n] for n in mc_samples], []) 
+batch_list += sum([mc_dict[n] for n in mc_samples], []) 
 
 #batch_list += sum([VBF_dict[n] for n in vbf_samples], []) 
 batch = bm.BatchMaster(config_list = batch_list, 
