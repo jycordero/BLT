@@ -17,7 +17,7 @@ WeightUtils::WeightUtils(string dataPeriod, string selection, bool isRealData)
 		PeriodFolder = "ReReco2016";
 	else if (dataPeriod == "2016Legacy")
 		PeriodFolder = "Legacy2016";
-	else if (dataPeriod == "2017Rereco")
+	else if (dataPeriod == "2017ReReco")
 		PeriodFolder = "ReReco2017";
 	
 
@@ -27,7 +27,16 @@ WeightUtils::WeightUtils(string dataPeriod, string selection, bool isRealData)
 	SetMuonISOWeights    (PeriodFolder);
 
 
+	// PU weights
+	if(PeriodFolder == "ReReco2016" || PeriodFolder == "Legacy2016")
+		_fileName = _cmssw_base + "/src/BLT/BLTAnalysis/data/" + PeriodFolder + "/pileup_sf_2016_full.root";
+	else if(PeriodFolder == "ReReco2017")
+		_fileName = _cmssw_base + "/src/BLT/BLTAnalysis/data/" + PeriodFolder + "/pileup_sf_2017_full.root";
+	TFile* puFile = new TFile(_fileName.c_str(), "OPEN");
+	_puReweight = (TGraph*)puFile->Get("pileup_sf");
 
+
+	///////////////////////////////////
 	PeriodFolder = "ReReco2016";
 	SetMuonTriggerWeights(PeriodFolder);
 
@@ -37,10 +46,6 @@ WeightUtils::WeightUtils(string dataPeriod, string selection, bool isRealData)
 
 	SetPhotonIDWeights(PeriodFolder);
 
-	// PU weights
-	_fileName = _cmssw_base + "/src/BLT/BLTAnalysis/data/" + PeriodFolder + "/pileup_sf_2016_full.root";
-	TFile* puFile = new TFile(_fileName.c_str(), "OPEN");
-	_puReweight = (TGraph*)puFile->Get("pileup_sf");
 
 	// photon r9 reweighting
 	_fileName = _cmssw_base + "/src/BLT/BLTAnalysis/data/"+ PeriodFolder+"/photon_corrections/photon_r9_reweighting_2016.root";
@@ -250,12 +255,6 @@ void WeightUtils::SetMuonIDWeights(std::string PeriodFolder){
 
 		_muSF_tight_ID_BCDEF = (TH2F*)f_muRecoSF_ID_BCDEF->Get("NUM_TightID_DEN_genTracks_pt_abseta");
 
-		// muon tight ID sf (GH)
-		_fileName = _cmssw_base + "/src/BLT/BLTAnalysis/data/" + PeriodFolder + "/muon_id/EfficienciesAndSF_GH.root";
-		TFile* f_muRecoSF_ID_GH = new TFile(_fileName.c_str(), "OPEN"); 
-
-		_muSF_tight_ID_GH = (TH2F*)f_muRecoSF_ID_GH->Get("NUM_TightID_DEN_genTracks_pt_abseta");
-
 
 		
 		// muon loose ID sf (BCDEF)
@@ -264,11 +263,6 @@ void WeightUtils::SetMuonIDWeights(std::string PeriodFolder){
 
 		_muSF_loose_ID_BCDEF = (TH2F*)f_muRecoSF_Loose_ID_BCDEF->Get("NUM_LooseID_DEN_genTracks_pt_abseta");
 
-		// muon loose ID sf (GH)
-		_fileName = _cmssw_base + "/src/BLT/BLTAnalysis/data/" + PeriodFolder + "/muon_id/EfficienciesAndSF_GH.root";
-		TFile* f_muRecoSF_Loose_ID_GH = new TFile(_fileName.c_str(), "OPEN"); 
-
-		_muSF_loose_ID_GH = (TH2F*)f_muRecoSF_Loose_ID_GH->Get("NUM_LooseID_DEN_genTracks_pt_abseta");
 	}
 }
 void WeightUtils::SetMuonISOWeights(std::string PeriodFolder){
@@ -370,28 +364,14 @@ void WeightUtils::SetMuonISOWeights(std::string PeriodFolder){
 		_fileName = _cmssw_base + "/src/BLT/BLTAnalysis/data/" + PeriodFolder + "/muon_iso/EfficienciesAndSF_BCDEF.root";
 		 TFile* f_muRecoSF_ISO_BCDEF = new TFile(_fileName.c_str(), "OPEN"); 
 
-		_muSF_tight_ISO_BCDEF = (TH2F*)f_muRecoSF_ISO_BCDEF->Get("NUM_TightRelIso_DEN_TightIDandIPCut_eta_pt");
-		
-		// muon tight ISO sf (GH)
-		_fileName = _cmssw_base + "/src/BLT/BLTAnalysis/data/" + PeriodFolder + "/muon_iso/EfficienciesAndSF_GH.root";
-		 TFile* f_muRecoSF_ISO_GH = new TFile(_fileName.c_str(), "OPEN"); 
-
-		_muSF_tight_ISO_GH = (TH2F*)f_muRecoSF_ISO_GH->Get("NUM_TightRelIso_DEN_TightIDandIPCut_eta_pt");
-
-
+		_muSF_tight_ISO_BCDEF = (TH2F*)f_muRecoSF_ISO_BCDEF->Get("NUM_TightRelIso_DEN_TightIDandIPCut_pt_abseta");
+	
 
 		// muon loose ISO sf (BCDEF)
 		_fileName = _cmssw_base + "/src/BLT/BLTAnalysis/data/" + PeriodFolder + "/muon_iso/EfficienciesAndSF_BCDEF.root";
 		 TFile* f_muRecoSF_Loose_ISO_BCDEF = new TFile(_fileName.c_str(), "OPEN"); 
 
-		_muSF_loose_ISO_BCDEF = (TH2F*)f_muRecoSF_Loose_ISO_BCDEF->Get("NUM_LooseRelIso_DEN_TightIDandIPCut_eta_pt");
-		
-		// muon loose ISO sf (GH)
-		_fileName = _cmssw_base + "/src/BLT/BLTAnalysis/data/" + PeriodFolder + "/muon_iso/EfficienciesAndSF_GH.root";
-		 TFile* f_muRecoSF_Loose_ISO_GH = new TFile(_fileName.c_str(), "OPEN"); 
-
-		_muSF_loose_ISO_GH = (TH2F*)f_muRecoSF_Loose_ISO_GH->Get("NUM_LooseRelIso_DEN_TightIDandIPCut_eta_pt");
-		
+		_muSF_loose_ISO_BCDEF = (TH2F*)f_muRecoSF_Loose_ISO_BCDEF->Get("NUM_LooseRelIso_DEN_TightIDandIPCut_pt_abseta");	
 	}
 }
 
@@ -668,11 +648,12 @@ float WeightUtils::GetMuonIDEff(TLorentzVector& muon) const
 	else if(_dataPeriod == "2017ReReco"){
 	    float random = rng->Rndm();
 	    if (muon.Pt() < 120.) {
-		if (random > 0.468) {
-		    weight   *= _muSF_tight_ID_BCDEF->GetBinContent(_muSF_tight_ID_BCDEF->FindBin(muon.Pt(),fabs(muon.Eta()) ));
-		} else {
-		    weight   *= _muSF_tight_ID_GH->GetBinContent(_muSF_tight_ID_GH->FindBin(muon.Pt(),fabs(muon.Eta())));
-		}
+		weight   *= _muSF_tight_ID_BCDEF->GetBinContent(_muSF_tight_ID_BCDEF->FindBin(muon.Pt(),fabs(muon.Eta()) ));
+		//if (random > 0.468) {
+		//    weight   *= _muSF_tight_ID_BCDEF->GetBinContent(_muSF_tight_ID_BCDEF->FindBin(muon.Pt(),fabs(muon.Eta()) ));
+		//} else {
+		//    weight   *= _muSF_tight_ID_GH->GetBinContent(_muSF_tight_ID_GH->FindBin(muon.Pt(),fabs(muon.Eta())));
+		//}
 	    }
 	}
 
@@ -763,11 +744,16 @@ float WeightUtils::GetMuonISOEff(TLorentzVector& muon) const
 	else if(_dataPeriod == "2017ReReco"){
 	    float random = rng->Rndm();
 	    if (muon.Pt() < 120.) {
-		if (random > 0.468) {
-		    weight   *= _muSF_tight_ISO_BCDEF->GetBinContent(_muSF_tight_ISO_BCDEF->FindBin(fabs(muon.Eta()), muon.Pt()));
-		} else {
-		    weight   *= _muSF_tight_ISO_GH->GetBinContent(_muSF_tight_ISO_GH->FindBin(fabs(muon.Eta()), muon.Pt()));
-		}
+		//cout << "(eta " << muon.Eta() << " , pt " << muon.Pt() << ") Eff" << _muSF_tight_ISO_BCDEF->GetBinContent(_muSF_tight_ISO_BCDEF->FindBin(muon.Pt(), fabs(muon.Eta()))) << endl;
+		//weight   *= _muSF_tight_ISO_BCDEF->GetBinContent(_muSF_tight_ISO_BCDEF->FindBin(fabs(muon.Eta()), muon.Pt()));
+		//
+		weight   *= _muSF_tight_ISO_BCDEF->GetBinContent(_muSF_tight_ISO_BCDEF->FindBin(muon.Pt(), fabs(muon.Eta())));
+
+		//if (random > 0.468) {
+		//    weight   *= _muSF_tight_ISO_BCDEF->GetBinContent(_muSF_tight_ISO_BCDEF->FindBin(fabs(muon.Eta()), muon.Pt()));
+		//} else {
+		//    weight   *= _muSF_tight_ISO_GH->GetBinContent(_muSF_tight_ISO_GH->FindBin(fabs(muon.Eta()), muon.Pt()));
+		//}
 	    }
 
 	}
@@ -811,11 +797,12 @@ float WeightUtils::GetLooseMuonISOEff(TLorentzVector& muon) const
 	else if(_dataPeriod == "2017ReReco"){
 	    float random = rng->Rndm();
 	    if (muon.Pt() < 120.) {
-		if (random > 0.468) {
-		    weight   *= _muSF_loose_ISO_BCDEF->GetBinContent(_muSF_loose_ISO_BCDEF->FindBin(fabs(muon.Eta()), muon.Pt()));
-		} else {
-		    weight   *= _muSF_loose_ISO_GH->GetBinContent(_muSF_loose_ISO_GH->FindBin(fabs(muon.Eta()), muon.Pt()));
-		}
+		weight   *= _muSF_loose_ISO_BCDEF->GetBinContent(_muSF_loose_ISO_BCDEF->FindBin(fabs(muon.Eta()), muon.Pt()));
+		//if (random > 0.468) {
+		//    weight   *= _muSF_loose_ISO_BCDEF->GetBinContent(_muSF_loose_ISO_BCDEF->FindBin(fabs(muon.Eta()), muon.Pt()));
+		//} else {
+		//    weight   *= _muSF_loose_ISO_GH->GetBinContent(_muSF_loose_ISO_GH->FindBin(fabs(muon.Eta()), muon.Pt()));
+		//}
 	    }
 
 	}

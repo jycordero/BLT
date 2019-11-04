@@ -69,9 +69,9 @@ void zAnalyzer::Begin(TTree *tree)
 
     if(params->period == "2016Legacy")
 	PeriodFolder= "Legacy2016";
-    else if (params->period == "2017Rereco")
+    else if (params->period == "2017ReReco")
 	PeriodFolder = "ReReco2017";
-    else if (params->period == "2016Rereco")
+    else if (params->period == "2016ReReco")
 	PeriodFolder = "ReReco2016";
 
     
@@ -89,26 +89,33 @@ void zAnalyzer::Begin(TTree *tree)
     const std::string cmssw_base = getenv("CMSSW_BASE");
     std::string trigfilename = cmssw_base + "/src/BaconAna/DataFormats/data/HLTFile_25ns";
     trigger.reset(new baconhep::TTrigger(trigfilename));
+    if(params->period == "2016" || params->period == "2016ReReco" || params->period == "2016Legacy"){
+            if (params->selection == "mumu" || params->selection == "mumug") {
+                triggerNames.push_back("HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_v*");
+                triggerNames.push_back("HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v*");
+                triggerNames.push_back("HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_v*");
+                triggerNames.push_back("HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v*");
+            }
+            else if (params->selection == "ee" || params->selection == "elelg") {
+                triggerNames.push_back("HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v*");
+                triggerNames.push_back("HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_v*");
+            }
+            else if (params->selection == "tautaug") { // select one muon plus one hadronic tau (for now)
+                triggerNames.push_back("HLT_IsoMu24_v*");
+                triggerNames.push_back("HLT_IsoTkMu24_v*");
+            }
+    }
+    else if(params->period == "2017" || params->period == "2017ReReco" || params->period == "2017Legacy"){
+        if (params->selection == "mumu" || params->selection == "mumug") {
+		triggerNames.push_back("HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8_v*");
+		triggerNames.push_back("HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass8_v*");
+        }
+        else if (params->selection == "ee" || params->selection == "elelg") {
+                triggerNames.push_back("HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v*");
+                triggerNames.push_back("HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_v*");
+        }
+    }
 
-    if (params->selection == "mumu" || params->selection == "mumug") {
-        triggerNames.push_back("HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_v*");
-        triggerNames.push_back("HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v*");
-        triggerNames.push_back("HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_v*");
-        triggerNames.push_back("HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v*");
-    }
-    else if( params->selection == "elelg") {
-        triggerNames.push_back("HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v*");
-        triggerNames.push_back("HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_v*");
-    }
-    else if(params->selection == "ee") {
-	triggerNames.push_back("HLT_Ele27_WPTight_Gsf_v*");
-        triggerNames.push_back("HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v*");
-        triggerNames.push_back("HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_v*");
-    }
-    else if (params->selection == "tautaug") { // select one muon plus one hadronic tau (for now)
-        triggerNames.push_back("HLT_IsoMu24_v*");
-        triggerNames.push_back("HLT_IsoTkMu24_v*");
-    }
         
     if(confDebug)
 	cout << "--- Weights \n";
@@ -174,6 +181,28 @@ void zAnalyzer::Begin(TTree *tree)
     outTree->Branch("zPV"          , &zPV);
     outTree->Branch("Rho"          , &Rho);
 
+    // Gen objects
+    outTree->Branch("genLeptonOnePt" , &genLeptonOnePt);
+    outTree->Branch("genLeptonOneEta", &genLeptonOneEta);
+    outTree->Branch("genLeptonOnePhi", &genLeptonOnePhi);
+    outTree->Branch("genLeptonOneId" , &genLeptonOneId);
+    outTree->Branch("genLeptonTwoPt" , &genLeptonTwoPt);
+    outTree->Branch("genLeptonTwoEta", &genLeptonTwoEta);
+    outTree->Branch("genLeptonTwoPhi", &genLeptonTwoPhi);
+    outTree->Branch("genLeptonTwoId" , &genLeptonTwoId);
+    outTree->Branch("genPhotonPt"    , &genPhotonPt);
+    outTree->Branch("genPhotonEta"   , &genPhotonEta);
+    outTree->Branch("genPhotonPhi"   , &genPhotonPhi);
+    outTree->Branch("genPhotonFHPFS" , &genPhotonFHPFS);
+    outTree->Branch("genPhotonIPFS"  , &genPhotonIPFS);
+
+    outTree->Branch("vetoDY"         , &vetoDY);
+    outTree->Branch("TagFromZ"       , &TagFromZ);
+    outTree->Branch("ProbeFromZ"     , &ProbeFromZ);
+    outTree->Branch("genIsoPass"     , &genIsoPass);
+
+
+
 
     // leptons
     outTree->Branch("leptonOnePt"        , &leptonOnePt);
@@ -191,37 +220,23 @@ void zAnalyzer::Begin(TTree *tree)
     outTree->Branch("leptonOneCharge"    , &leptonOneCharge);
     outTree->Branch("leptonOneTag"       , &leptonOneTag);
 
-    // leptons
-    outTree->Branch("leptonProbeFailPt"        , &leptonProbeFailPt);
-    outTree->Branch("leptonProbeFailEta"       , &leptonProbeFailEta);
-    outTree->Branch("leptonProbeFailPhi"       , &leptonProbeFailPhi);
-    outTree->Branch("leptonProbeFailPtKin"     , &leptonProbeFailPtKin);
-    outTree->Branch("leptonProbeFailPtKinJames", &leptonProbeFailPtKinJames);
-    outTree->Branch("leptonProbeFailIso"       , &leptonProbeFailIso);
-    outTree->Branch("leptonProbeFailFlavor"    , &leptonProbeFailFlavor);
-    outTree->Branch("leptonProbeFailMother"    , &leptonProbeFailMother);
-    outTree->Branch("leptonProbeFailD0"        , &leptonProbeFailD0);
-    outTree->Branch("leptonProbeFailDZ"        , &leptonProbeFailDZ);
-    outTree->Branch("leptonProbeFailRecoWeight", &leptonProbeFailRecoWeight);
-    outTree->Branch("leptonProbeFailECALDriven", &leptonProbeFailECALDriven);
-    outTree->Branch("leptonProbeFailCharge"    , &leptonProbeFailCharge);
-    outTree->Branch("leptonProbeFailTag"       , &leptonProbeFailTag);
 
-    outTree->Branch("leptonProbePassPt"        , &leptonProbePassPt);
-    outTree->Branch("leptonProbePassEta"       , &leptonProbePassEta);
-    outTree->Branch("leptonProbePassPhi"       , &leptonProbePassPhi);
-    outTree->Branch("leptonProbePassPtKin"     , &leptonProbePassPtKin);
-    outTree->Branch("leptonProbePassPtKinJames", &leptonProbePassPtKinJames);
-    outTree->Branch("leptonProbePassIso"       , &leptonProbePassIso);
-    outTree->Branch("leptonProbePassFlavor"    , &leptonProbePassFlavor);
-    outTree->Branch("leptonProbePassMother"    , &leptonProbePassMother);
-    outTree->Branch("leptonProbePassD0"        , &leptonProbePassD0);
-    outTree->Branch("leptonProbePassDZ"        , &leptonProbePassDZ);
-    outTree->Branch("leptonProbePassRecoWeight", &leptonProbePassRecoWeight);
-    outTree->Branch("leptonProbePassECALDriven", &leptonProbePassECALDriven);
-    outTree->Branch("leptonProbePassCharge"    , &leptonProbePassCharge);
-    outTree->Branch("leptonProbePassTag"       , &leptonProbePassTag);
- 
+    outTree->Branch("leptonTwoPt"        , &leptonTwoPt);
+    outTree->Branch("leptonTwoEta"       , &leptonTwoEta);
+    outTree->Branch("leptonTwoPhi"       , &leptonTwoPhi);
+    outTree->Branch("leptonTwoPtKin"     , &leptonTwoPtKin);
+    outTree->Branch("leptonTwoPtKinJames", &leptonTwoPtKinJames);
+    outTree->Branch("leptonTwoIso"       , &leptonTwoIso);
+    outTree->Branch("leptonTwoFlavor"    , &leptonTwoFlavor);
+    outTree->Branch("leptonTwoMother"    , &leptonTwoMother);
+    outTree->Branch("leptonTwoD0"        , &leptonTwoD0);
+    outTree->Branch("leptonTwoDZ"        , &leptonTwoDZ);
+    outTree->Branch("leptonTwoRecoWeight", &leptonTwoRecoWeight);
+    outTree->Branch("leptonTwoECALDriven", &leptonTwoECALDriven);
+    outTree->Branch("leptonTwoCharge"    , &leptonTwoCharge);
+    outTree->Branch("leptonTwoTag"       , &leptonTwoTag);
+
+    outTree->Branch("ProbePass"        , &ProbePass);
     // photons
     outTree->Branch("photonOnePt"     , &photonOnePt);
     outTree->Branch("photonOneEta"    , &photonOneEta);
@@ -261,28 +276,15 @@ void zAnalyzer::Begin(TTree *tree)
     outTree->Branch("nBJets", &nBJets);
     
     // dilepton
-
-    // dileptonProbeFail
-    outTree->Branch("dileptonProbeFailPt"       , &dileptonProbeFailPt);
-    outTree->Branch("dileptonProbeFailEta"      , &dileptonProbeFailEta);
-    outTree->Branch("dileptonProbeFailPhi"      , &dileptonProbeFailPhi);
-    outTree->Branch("dileptonProbeFailM"        , &dileptonProbeFailM);
-    outTree->Branch("dileptonProbeFailDEta"     , &dileptonProbeFailDEta);
-    outTree->Branch("dileptonProbeFailDPhi"     , &dileptonProbeFailDPhi);
-    outTree->Branch("dileptonProbeFailDR"       , &dileptonProbeFailDR);
-    outTree->Branch("dileptonProbeFailMKin"     , &dileptonProbeFailMKin);
-    outTree->Branch("dileptonProbeFailMKinJames", &dileptonProbeFailMKinJames);
-
-    // dileptonProbePass
-    outTree->Branch("dileptonProbePassPt"       , &dileptonProbePassPt);
-    outTree->Branch("dileptonProbePassEta"      , &dileptonProbePassEta);
-    outTree->Branch("dileptonProbePassPhi"      , &dileptonProbePassPhi);
-    outTree->Branch("dileptonProbePassM"        , &dileptonProbePassM);
-    outTree->Branch("dileptonProbePassDEta"     , &dileptonProbePassDEta);
-    outTree->Branch("dileptonProbePassDPhi"     , &dileptonProbePassDPhi);
-    outTree->Branch("dileptonProbePassDR"       , &dileptonProbePassDR);
-    outTree->Branch("dileptonProbePassMKin"     , &dileptonProbePassMKin);
-    outTree->Branch("dileptonProbePassMKinJames", &dileptonProbePassMKinJames);
+    outTree->Branch("dileptonPt"       , &dileptonPt);
+    outTree->Branch("dileptonEta"      , &dileptonEta);
+    outTree->Branch("dileptonPhi"      , &dileptonPhi);
+    outTree->Branch("dileptonM"        , &dileptonM);
+    outTree->Branch("dileptonDEta"     , &dileptonDEta);
+    outTree->Branch("dileptonDPhi"     , &dileptonDPhi);
+    outTree->Branch("dileptonDR"       , &dileptonDR);
+    outTree->Branch("dileptonMKin"     , &dileptonMKin);
+    outTree->Branch("dileptonMKinJames", &dileptonMKinJames);
     // dilepton vertices
     //outTree->Branch("dileptonVertexOne", &dileptonVertexOne);
     //outTree->Branch("dileptonVertexErrOne", &dileptonVertexErrOne);
@@ -301,7 +303,8 @@ void zAnalyzer::Begin(TTree *tree)
     int etaNBins = 10;
 
     double ptBins [ptNBins + 1] = {0,20,40,50,90,150,500};
-    double etaBins[etaNBins + 1] = {-2.5,-2,-1.566,-1.4442,-1.0,0,1.0,1.4442,1.566,2,2.5};
+    //double etaBins[etaNBins + 1] = {-2.5,-2,-1.566,-1.4442,-1.0,0,1.0,1.4442,1.566,2,2.5};
+    double etaBins[etaNBins + 1] = {-2.5,-1.566,-1.4442,0,1.4442,1.566,2.5};
 
     PhotonProbe     = new TH2F("EGammaProbe"     , "EGammaProbe"     , ptNBins, ptBins, etaNBins, etaBins);
     PhotonProbePass = new TH2F("EGammaProbePass" , "EGammaProbePass" , ptNBins, ptBins, etaNBins, etaBins);
@@ -313,12 +316,10 @@ void zAnalyzer::Begin(TTree *tree)
 
 Bool_t zAnalyzer::Process(Long64_t entry)
 {
-    //bool debug = true;
-    bool debug = false;
-    //bool debugSelect = true;
-    bool debugSelect = false;
-    //bool RunLumi = true;
-    bool RunLumi = false;
+    bool debug = true;
+    //bool debug = false;
+    bool debugSelect = true;
+    //bool debugSelect = false;
     
     //bool debugSF = true;
     bool debugSF = false;
@@ -403,20 +404,49 @@ Bool_t zAnalyzer::Process(Long64_t entry)
         cout << "run, lumi, event" << endl;
         cout << fInfo->runNum << ", " << fInfo->lumiSec << ", " << fInfo->evtNum << endl;
     }
-          
+
+
+    ///////////////////////
+    // Generator objects // 
+    ///////////////////////
+    
+    vector<TGenParticle*> genLeptons;
+    vector<TGenParticle*> genPhotons;
+    if (!isData) {
+        unsigned count = 0;
+        for (int i = 0; i < fGenParticleArr->GetEntries(); ++i) {
+            TGenParticle* particle = (TGenParticle*) fGenParticleArr->At(i);
+
+            if (
+                    particle->status == 23 
+                    && (fabs(particle->pdgId) < 6 || particle->pdgId == 21) 
+                    && particle->parent != -2
+               ) {
+                ++count;
+            }
+
+            if ((fabs(particle->pdgId) == 11 || fabs(particle->pdgId) == 13) and particle->parent > 0) {
+                TGenParticle* mother = (TGenParticle*) fGenParticleArr->At(particle->parent);
+                if (fabs(mother->pdgId) == 23) 
+                    genLeptons.push_back(particle);
+            }
+                
+            if (fabs(particle->pdgId) == 22) 
+                genPhotons.push_back(particle);    
+
+            }
+            nPartons = count; // This is saved for reweighting inclusive DY and combining it with parton binned DY
+
+    } else {
+        nPartons = 0;
+    }
+      
 
     if (debug)
 	cout<< "Before Lumi mask passed\n";
     /* Apply lumi mask */
     if (isData) {
         RunLumiRangeMap::RunLumiPairType rl(fInfo->runNum, fInfo->lumiSec);
-	//if(RunLumi){
-	//	cout << "--- RUN Num:: " << fInfo->runNum << "--- LUMI SEC::" <<  fInfo->lumiSec << endl;
-	//	if(!lumiMask.HasRunLumi(rl)) 
-	//	    return kTRUE;
-	//}
-	if(RunLumi)
-		cout << "--- RUN Num:: " << fInfo->runNum << "--- LUMI SEC::" <<  fInfo->lumiSec << endl;
 	if(!lumiMask.HasRunLumi(rl)) 
 	    return kTRUE;
     }
@@ -888,9 +918,20 @@ Bool_t zAnalyzer::Process(Long64_t entry)
     if(debug)
 	cout << "---- Start Selection" << endl;
     
-    else if (params->selection == "ee") {
-	    //////////////////////////////////////////////////////////
+    if (params->selection == "ee") {
 	    /////////////////////////////////////////////////////////
+	    if (fElectronArr->GetEntries() < 1)
+	    	return kTRUE;
+	    if (fPhotonArr->GetEntries() < 1)
+	    	return kTRUE;
+	
+	    bool ElectronTagged = false;
+	    bool GoodPhotonProbe = false;
+
+	    TagFromZ   = false;
+	    ProbeFromZ = false;
+	    //////////////////////////////////////////////////////////
+	    //
 	    if(debugSelect)
 		cout << "---- Start Electron Tag" <<endl;
 	    //for (unsigned int j = 0; j < electrons.size(); ++j) {
@@ -900,27 +941,38 @@ Bool_t zAnalyzer::Process(Long64_t entry)
 
 		TLorentzVector tempElec;
 		tempElec.SetPtEtaPhiM(electron->calibPt, electron->eta, electron->phi, ELE_MASS);
-		//if(debugSelect){
-		//	cout 	<< "----`--- Loop" << endl 
-		//		<< "30 pt? " << electrons[j]->calibPt << endl
-		//		<< "2.1 Eta? " << fabs(electrons[j]->eta) << endl
-		//		//<< "trigger? "<< trigger->passObj("HLT_Ele27_WPTight_Gsf_v*", 1, electrons[j]->hltMatchBits) << endl
-		//		//<< "bits? " << electrons[j]->hltMatchBits << endl;
-		//		<< "trigger? " << trigger->pass("HLT_Ele27_WPTight_Gsf_v*", fInfo->triggerBits) << endl;
-		//}
-	    
-	    
+
+		leptonOnePt  = tempElec.Pt();
+		leptonOneEta = tempElec.Eta();
+		leptonOnePhi = tempElec.Phi();
+	  	//cout << "----------------------------" << endl;  
+		for (unsigned int i = 0; i < genLeptons.size(); ++i) {
+			TGenParticle *elec = genLeptons.at(i);
+			TGenParticle *mother = (TGenParticle*) fGenParticleArr->At(elec->parent);
+			//cout << "Elec ID: " << fabs(elec->pdgId) << endl;
+			//cout << "Hard:: " << elec->fromHardProcessFinalState << "Promt:: " << elec->isPromptFinalState << endl;
+			//if (elec->fromHardProcessFinalState || elec->isPromptFinalState) {
+			if(fabs(elec->pdgId) == 11){
+				TLorentzVector thisGenElecP4;
+				thisGenElecP4.SetPtEtaPhiM(elec->pt, elec->eta, elec->phi, ELE_MASS);
+				if (thisGenElecP4.DeltaR(tempElec) < 0.1) {
+					if(fabs(mother->pdgId) == 23){
+						TagFromZ = true;
+						break;
+					}
+				}
+			}					    
+			//}
+	   	} 
 		if( 	tempElec.Pt() > 30 && 
 			fabs(tempElec.Eta()) < 2.1 && 
 			(fabs(tempElec.Eta()) <= 1.4442 || fabs(tempElec.Eta()) >= 1.566) && 
-			//&& trigger->passObj("HLT_Ele27_WPTight_Gsf_v*", 1, electrons[j]->hltMatchBits)
 			trigger->pass("HLT_Ele27_WPTight_Gsf_v*", fInfo->triggerBits)
-	    
 		){
-	    
+	    		// Electron has been TAGGED
+			ElectronTagged = true;
 			if(debugSelect)
 				cout << "---- Start Electron Probe" <<endl;
-			//for (unsigned int i = 0; i < photons.size(); ++i) {
 			for (int i=0; i<fPhotonArr->GetEntries(); i++) {
 				TPhoton* photon = (TPhoton*) fPhotonArr->At(i);
 				assert(photon);
@@ -928,12 +980,16 @@ Bool_t zAnalyzer::Process(Long64_t entry)
 				TLorentzVector tempPhoton;
 				tempPhoton.SetPtEtaPhiM(photon->calibPt, photon->eta, photon->phi, ELE_MASS);
 
+				leptonTwoPt  = tempPhoton.Pt();
+				leptonTwoEta = tempPhoton.Eta();
+				leptonTwoPhi = tempPhoton.Phi();	
+
 				//tempPhoton.SetPtEtaPhiM(photons[i]->calibPt, photons[i]->eta, photons[i]->phi, ELE_MASS);
 				TLorentzVector tempDilep;	
 				tempDilep = tempElec + tempPhoton;
 
 				if(debugSelect){
-					cout 	<< "----`--- Loop" << endl 
+					cout 	<< "------- Loop" << endl 
 						<< "30 pt? " << electron->calibPt << endl
 						<< "2.1 Eta? " << fabs(electron->eta) << endl
 						<< "trigger? " << trigger->pass("HLT_Ele27_WPTight_Gsf_v*", fInfo->triggerBits) << endl
@@ -951,45 +1007,62 @@ Bool_t zAnalyzer::Process(Long64_t entry)
 					(fabs(tempPhoton.Eta()) <= 1.4442 || fabs(tempPhoton.Eta()) >= 1.566) &&
 					SignalRegionPass(photon) // need access to variables in the TPhoton object
 				){
-						PhotonProbe->Fill(tempPhoton.Pt(),tempPhoton.Eta(),1);
-						if(
-							particleSelector->PassPhotonID(photon, cuts->preSelPhID) &&
-							particleSelector->PassPhotonIso(photon, cuts->preSelPhIso,EAPho)
+					// Probe Electron( Electron reconstructed as a PF Photon) had been identified
+					PhotonProbe->Fill(tempPhoton.Pt(),tempPhoton.Eta(),1);
+					GoodPhotonProbe = true;
+					////////////////////////////////////////////
+					// DY Photon Overlap Removal
+				        vetoDY = false;
+					ProbeFromZ = false;
+					//for (unsigned int i = 0; i < genPhotons.size(); ++i) {
+					for (unsigned int i = 0; i < genLeptons.size(); ++i) {
+						TGenParticle *pho = genLeptons.at(i);
+						TGenParticle *mother = (TGenParticle*) fGenParticleArr->At(pho->parent);
 
-						){
-							if(debugSelect)
-								cout << "---- PASS Electron Probe" <<endl;
-							PhotonProbePass->Fill(tempPhoton.Pt(),tempPhoton.Eta(),1);
-
-							leptonOnePt  = tempElec.Pt();
-							leptonOneEta = tempElec.Eta();
-							leptonOnePhi = tempElec.Phi();
-						    
-							leptonProbePassPt  = tempPhoton.Pt();
-							leptonProbePassEta = tempPhoton.Eta();
-							leptonProbePassPhi = tempPhoton.Phi();
-						    
-							dileptonProbePassPt  = tempDilep.Pt();
-							dileptonProbePassEta = tempDilep.Eta();
-							dileptonProbePassPhi = tempDilep.Phi();
-							dileptonProbePassM   = tempDilep.M();
-						} else{
-							PhotonProbeFail->Fill(tempPhoton.Pt(),tempPhoton.Eta(),1);
-
-							leptonOnePt  = tempElec.Pt();
-							leptonOneEta = tempElec.Eta();
-							leptonOnePhi = tempElec.Phi();
-						    
-							leptonProbeFailPt  = tempPhoton.Pt();
-							leptonProbeFailEta = tempPhoton.Eta();
-							leptonProbeFailPhi = tempPhoton.Phi();
-						    
-							dileptonProbeFailPt  = tempDilep.Pt();
-							dileptonProbeFailEta = tempDilep.Eta();
-							dileptonProbeFailPhi = tempDilep.Phi();
-							dileptonProbeFailM   = tempDilep.M();
+						cout << "Photon ID: " << fabs(pho->pdgId) << endl;
+						
+						//if (pho->fromHardProcessFinalState || pho->isPromptFinalState) {
+						//if(pho->pdgId == 22){
+						if(fabs(pho->pdgId) == 11){
+							TLorentzVector thisGenPhotonP4;
+							thisGenPhotonP4.SetPtEtaPhiM(pho->pt, pho->eta, pho->phi, 0.);
+							if (thisGenPhotonP4.DeltaR(tempPhoton) < 0.1) {
+								if(fabs(mother->pdgId) == 23)
+									ProbeFromZ = true;
+							}
+						}					    
+					    	//}
+					    	// Gen ISO
+					    	float genIso = GetGenIsolation(pho);
+					    	if(genIso < 5){
+							genIsoPass = true;
+							cout << "X+X+X+X+X+X  ISO ISO" << endl;
 
 						}
+						if( ProbeFromZ )
+							break;
+					}
+					
+					////////////////////////////////////////////
+	
+
+					dileptonPt  = tempDilep.Pt();
+					dileptonEta = tempDilep.Eta();
+					dileptonPhi = tempDilep.Phi();
+					dileptonM   = tempDilep.M();
+
+					if(
+						particleSelector->PassPhotonID(photon, cuts->preSelPhID) 
+						&& particleSelector->PassPhotonIso(photon, cuts->preSelPhIso,EAPho)
+					){
+						if(debugSelect)
+							cout << "---- PASS Electron Probe" <<endl;
+						PhotonProbePass->Fill(tempPhoton.Pt(),tempPhoton.Eta(),1);
+						ProbePass = true; 
+					} else{
+						PhotonProbeFail->Fill(tempPhoton.Pt(),tempPhoton.Eta(),1);
+						ProbePass = false; 
+					}
 					
 				}
 			}
@@ -997,131 +1070,133 @@ Bool_t zAnalyzer::Process(Long64_t entry)
 	    }
 	    if(debugSelect)
 		cout << "---- Start Fill" <<endl;
-    
-        //if (electrons.size() < 2)
-	//	return kTRUE;
-	//if (photons.size() < 1)
-	//	return kTRUE;
-        //hTotalEvents->Fill(5);
 
-	//
-	//bool ZpeakPass = false;
+	    if(!ElectronTagged)
+		return kTRUE;
+	    if(!GoodPhotonProbe)
+		return kTRUE;
+    }
+    else if (params->selection == "mumu") {
+		/////////////////////////////////////////////////////////
+		if (fMuonArr->GetEntries() < 2)
+		return kTRUE;
 
-	//TLorentzVector tempPhoton, tempElec,tempDilep;
+		bool Tagged = false;
+		bool GoodProbe = false;
 
-	//if(debugSelect)
-	//	cout << "---- Start Electron Tag" <<endl;
-	//for (unsigned int j = 0; j < electrons.size(); ++j) {
-	//	//if(debugSelect){
-	//	//	cout 	<< "----`--- Loop" << endl 
-	//	//		<< "30 pt? " << electrons[j]->calibPt << endl
-	//	//		<< "2.1 Eta? " << fabs(electrons[j]->eta) << endl
-	//	//		//<< "trigger? "<< trigger->passObj("HLT_Ele27_WPTight_Gsf_v*", 1, electrons[j]->hltMatchBits) << endl
-	//	//		//<< "bits? " << electrons[j]->hltMatchBits << endl;
-	//	//		<< "trigger? " << trigger->pass("HLT_Ele27_WPTight_Gsf_v*", fInfo->triggerBits) << endl;
-	//	//}
+		int muonIndex;
 
-	//	tempElec.SetPtEtaPhiM(electrons[j]->calibPt, electrons[j]->eta, electrons[j]->phi, ELE_MASS);
+		TagFromZ   = false;
+		ProbeFromZ = false;
+		//////////////////////////////////////////////////////////
+		//
+		if(debugSelect)
+		cout << "---- Start Muon Tag" <<endl;
+		//for (unsigned int j = 0; j < muons.size(); ++j) {
+		for (int i=0; i<fMuonArr->GetEntries(); i++) {
+			TMuon* muon = (TMuon*) fMuonArr->At(i);
+			assert(muon);
 
-	//	if( 	electrons[j]->calibPt > 30
-	//		&& fabs(electrons[j]->eta) < 2.1
-	//		&& !(fabs(electrons[j]->eta) < 1.566 && fabs(electrons[j]->eta) > 1.4442)
-	//		//&& trigger->passObj("HLT_Ele27_WPTight_Gsf_v*", 1, electrons[j]->hltMatchBits)
-	//		&& trigger->pass("HLT_Ele27_WPTight_Gsf_v*", fInfo->triggerBits)
+			TLorentzVector tempMuon;
+			tempMuon.SetPtEtaPhiM(muon->pt, muon->eta, muon->phi, MUON_MASS);
 
-	//	){
+			leptonOnePt  = tempMuon.Pt();
+			leptonOneEta = tempMuon.Eta();
+			leptonOnePhi = tempMuon.Phi();
 
-	//		if(debugSelect)
-	//			cout << "---- Start Electron Probe" <<endl;
-	//		for (unsigned int i = 0; i < photons.size(); ++i) {
-	//			tempPhoton.SetPtEtaPhiM(photons[i]->calibPt, photons[i]->eta, photons[i]->phi, ELE_MASS);
-	//			tempDilep = tempElec + tempPhoton;
-	//			if(	tempDilep.M() > 80 
-	//				&& tempDilep.M() < 100 
-	//			){
-	//				if(     photons[i]->calibPt > 15
-	//					&& fabs(photons[i]->eta) < 2.5
-	//					&& !(fabs(photons[i]->eta) < 1.566 && fabs(photons[i]->eta) > 1.4442)
-	//					&& SignalRegionPass(photons[j])
-	//				){
-	//					PhotonProbe->Fill(photons[j]->pt,photons[j]->eta,1);
-	//					if(debugSelect)
-	//						cout << "---- PASS Electron Probe" <<endl;
-	//					if()
-	//						PhotonProbePass->Fill(photons[j]->pt, photons[j]->eta, 1);
-	//				}
-	//			}
-	//		}
-	//	}
-	//}
-	//if(debugSelect)
-	//	cout << "---- Start Fill" <<endl;
+			muonIndex = i;
 
-	//if(ZpeakPass){
-	//	leptonOnePt  = tempElec.Pt();
-	//	leptonOneEta = tempElec.Eta();
-	//	leptonOnePhi = tempElec.Phi();
+			for (int j=0; j < fMuonArr->GetEntries(); j++) {
+				if( 	leptonOnePt > 30 && 
+					fabs(leptonOneEta) < 2.4  
+				){
+					Tagged = true;
+					if(debugSelect)
+						cout << "---- Start Muon Probe" <<endl;
+					if(muonIndex == j) 
+						break;
 
-	//	leptonTwoPt  = tempPhoton.Pt();
-	//	leptonTwoEta = tempPhoton.Eta();
-	//	leptonTwoPhi = tempPhoton.Phi();
+					TMuon* muonProbe = (TMuon*) fMuonArr->At(j);
+					assert(muonProbe);
+					
+					TLorentzVector tempMuonProbe;
+					tempMuonProbe.SetPtEtaPhiM(muonProbe->pt, muonProbe->eta, muonProbe->phi, MUON_MASS);
 
-	//	dileptonPt  = tempDilep.Pt();
-	//	dileptonEta = tempDilep.Eta();
-	//	dileptonPhi = tempDilep.Phi();
-	//	dileptonM   = tempDilep.M();
-	//}
+					leptonTwoPt  = tempMuonProbe.Pt();
+					leptonTwoEta = tempMuonProbe.Eta();
+					leptonTwoPhi = tempMuonProbe.Phi();	
+
+					TLorentzVector tempDilep;	
+					tempDilep = tempMuon + tempMuonProbe;
+
+					if(	tempDilep.M() > 60  && 
+						tempDilep.M() < 120 
+						
+						//tempMuonProbe.Pt() > 15 && 
+						//fabs(tempMuonProbe.Eta()) < 2.5  
+					){
+						// Probe Muon( Muon reconstructed as a PF Photon) had been identified
+						PhotonProbe->Fill(tempMuonProbe.Pt(),tempMuonProbe.Eta(),1);
+						GoodProbe = true;
+						////////////////////////////////////////////
+						// DY Photon Overlap Removal
+						vetoDY = false;
+						ProbeFromZ = false;
+						for (unsigned int k = 0; k < genLeptons.size(); ++k) {
+							TGenParticle *muProbe = genLeptons.at(k);
+							TGenParticle *mother = (TGenParticle*) fGenParticleArr->At(muProbe->parent);
+
+							if(fabs(muProbe->pdgId) == 13){
+								TLorentzVector thisGenPhotonP4;
+								thisGenPhotonP4.SetPtEtaPhiM(muProbe->pt, muProbe->eta, muProbe->phi, MUON_MASS);
+								if (thisGenPhotonP4.DeltaR(tempMuonProbe) < 0.1) {
+									if(fabs(mother->pdgId) == 23)
+										ProbeFromZ = true;
+								}
+							}					    
+							//}
+							// Gen ISO
+							float genIso = GetGenIsolation(muProbe);
+							if(genIso < 5)
+								genIsoPass = true;
+							if( ProbeFromZ )
+								break;
+						}
+						
+						////////////////////////////////////////////
+
+
+						dileptonPt  = tempDilep.Pt();
+						dileptonEta = tempDilep.Eta();
+						dileptonPhi = tempDilep.Phi();
+						dileptonM   = tempDilep.M();
+
+						//if(
+						//	particleSelector->PassPhotonID(photon, cuts->preSelPhID) 
+						//	&& particleSelector->PassPhotonIso(photon, cuts->preSelPhIso,EAPho)
+						//){
+						//	if(debugSelect)
+						//		cout << "---- PASS Muon Probe" <<endl;
+						//	PhotonProbePass->Fill(tempMuonProbe.Pt(),tempMuonProbe.Eta(),1);
+						//	ProbePass = true; 
+						//} else{
+						//	PhotonProbeFail->Fill(tempMuonProbe.Pt(),tempMuonProbe.Eta(),1);
+						//	ProbePass = false; 
+						//}
+						//
+						}
+					}
+				}
+			}
+			if(debugSelect)
+				cout << "---- Start Fill" <<endl;
+
+			if(!Tagged)
+				return kTRUE;
+			if(!GoodProbe)
+				return kTRUE;
     }
 
-
-
-
-
- 
-    //if (!isData && genLeptons.size() == 2) {
-    //    genLeptonOneId = genLeptons[0]->pdgId;
-    //    genLeptonOnePt = genLeptons[0]->pt;
-    //    genLeptonOneEta = genLeptons[0]->eta;
-    //    genLeptonOnePhi = genLeptons[0]->phi;
-    //    genLeptonTwoId = genLeptons[1]->pdgId;
-    //    genLeptonTwoPt = genLeptons[1]->pt;
-    //    genLeptonTwoEta = genLeptons[1]->eta;
-    //    genLeptonTwoPhi = genLeptons[1]->phi;   
-    //}
-    //else {
-    //    genLeptonOnePt = 0.;
-    //    genLeptonOneEta = 0.;
-    //    genLeptonOnePhi = 0.;
-    //    genLeptonTwoPt = 0.;
-    //    genLeptonTwoEta = 0.;
-    //    genLeptonTwoPhi = 0.;
-    //}
-
-    //TLorentzVector genPhotonP4;
-    //if (!isData && genPhotons.size() > 0) {
-    //    TLorentzVector photonOneP4;
-    //    photonOneP4.SetPtEtaPhiM(photonOnePt, photonOneEta, photonOnePhi, 0.);
-    //    float min_phot_dr = 1000.;
-    //    for (unsigned int i = 0; i < genPhotons.size(); i++) {
-    //        TLorentzVector tmpGenPhot;
-    //        tmpGenPhot.SetPtEtaPhiM(genPhotons[i]->pt, genPhotons[i]->eta, genPhotons[i]->phi, genPhotons[i]->mass);
-    //        float this_dr = tmpGenPhot.DeltaR(photonOneP4);
-    //        if (this_dr < min_phot_dr) {
-    //            genPhotonP4.SetPtEtaPhiM(genPhotons[i]->pt, genPhotons[i]->eta, genPhotons[i]->phi, genPhotons[i]->mass);
-    //            genPhotonFHPFS = genPhotons[i]->fromHardProcessFinalState;
-    //            genPhotonIPFS = genPhotons[i]->isPromptFinalState;
-    //            min_phot_dr = this_dr;
-    //        }
-    //    }
-    //    genPhotonPt = genPhotonP4.Pt();
-    //    genPhotonEta = genPhotonP4.Eta();
-    //    genPhotonPhi = genPhotonP4.Phi();
-    //}
-    //else {
-    //    genPhotonPt = 0.;
-    //    genPhotonEta = 0.;
-    //    genPhotonPhi = 0.;
-    //}
         
 
     outTree->Fill();

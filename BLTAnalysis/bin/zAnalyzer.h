@@ -98,6 +98,13 @@ public:
     Float_t nPU,Rho;
     Float_t xPV, yPV, zPV;
     UInt_t nJets, nCentralJets, nFwdJets, nBJets, nMuons, nElectrons, nTaus, nPhotons;
+
+    // generator level data
+    Float_t genLeptonOnePt, genLeptonOneEta, genLeptonOnePhi;
+    Float_t genLeptonTwoPt, genLeptonTwoEta, genLeptonTwoPhi;
+    Float_t genPhotonPt, genPhotonEta, genPhotonPhi;
+    Int_t genLeptonOneId, genLeptonTwoId;
+    Bool_t genPhotonFHPFS, genPhotonIPFS;
    
     // physics object Lorentz vectors
     Float_t leptonOnePt, leptonOneEta, leptonOnePhi;
@@ -204,6 +211,8 @@ public:
     //TLorentzVector genOneP4, genTwoP4;
     //Bool_t fromHardProcessFinalState, isPromptFinalState, hasPhotonMatch;
     Bool_t vetoDY, genIsoPass;
+    Bool_t TagFromZ, ProbeFromZ;
+    Bool_t ProbePass;
 
     // dilepton data
     Float_t dileptonPt, dileptonEta, dileptonPhi, dileptonM;

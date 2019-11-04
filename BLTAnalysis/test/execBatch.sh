@@ -15,7 +15,7 @@ TOPDIR=$PWD
 
 # lpc
 export SCRAM_ARCH=slc6_amd64_gcc530
-export CMSSW_VERSION=CMSSW_8_0_20
+export CMSSW_VERSION=CMSSW_10_2_13
 source /cvmfs/cms.cern.ch/cmsset_default.sh
 
 # nut3
@@ -58,6 +58,6 @@ echo $COUNT
 
 
 #zgAnalyzer input.txt -1 $DATANAME $SUFFIX $SELECTION $PERIOD $COUNT
-zAnalyzer input.txt -1 $DATANAME $SUFFIX $SELECTION $PERIOD $COUNT
+zgAnalyzer input.txt -1 $DATANAME $SUFFIX $SELECTION $PERIOD $COUNT
 ### Copy output and cleanup ###
 cp output_${DATANAME}_${COUNT}.root ${_CONDOR_SCRATCH_DIR}
