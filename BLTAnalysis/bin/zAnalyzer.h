@@ -90,6 +90,9 @@ public:
     // Branches in the output file
    
     Float_t genWeight,eventWeight,puWeight;
+    Float_t triggerWeight;
+    Float_t elTrigWeightOne, elTrigWeightTwo;
+    Float_t photonIDWeight, photonIsConvWeight;
  
     // event data
     UInt_t runNumber, lumiSection, nPV, nPartons;
@@ -203,6 +206,7 @@ public:
     Float_t photonOneScPhiWidth; 
     Float_t photonOneScRawE; 
     Float_t photonOnePreShowerE; 
+    Float_t photonOneLeptonDR;
     Float_t photonOneScBrem; 
 
 
@@ -211,8 +215,7 @@ public:
     //TLorentzVector genOneP4, genTwoP4;
     //Bool_t fromHardProcessFinalState, isPromptFinalState, hasPhotonMatch;
     Bool_t vetoDY, genIsoPass;
-    Bool_t TagFromZ, ProbeFromZ;
-    Bool_t ProbePass;
+    Bool_t ProbeIDPass, ProbeISOPass, ProbeSigPass, ProbeWorstPass, ProbeIsConv, ProbeElecVeto;
 
     // dilepton data
     Float_t dileptonPt, dileptonEta, dileptonPhi, dileptonM;
@@ -245,10 +248,11 @@ public:
     //Float_t dileptonVertexChi2One, dileptonVertexDOFOne;
     //Float_t dileptonVertexChi2Two, dileptonVertexDOFTwo;
     
-    float GetMuonIsolation(const baconhep::TMuon*);
+    float GetMuonIsolation    (const baconhep::TMuon*);
     float GetElectronIsolation(const baconhep::TElectron*, float);
-    float GetPhotonIsolation(const baconhep::TPhoton*, float);
-    float GetGenIsolation(const TGenParticle*);
+    float GetPhotonIsolation  (const baconhep::TPhoton*, float);
+    float GetGenIsolation     (const baconhep::TGenParticle*);
+    float GetWorstChIsolation (const baconhep::TPhoton* pho);
 
     void EvalMuonEnergyResolution(std::map<string, float>, std::map<string, int>, float&, float&, float&, float&, float&, float&);
     void EvalElectronEnergyResolution(std::map<string, float>, float&, float&, float&, float&, float&, float&);
@@ -257,8 +261,12 @@ public:
     bool SignalRegionPass(const baconhep::TPhoton*);
 
     TH2F *PhotonProbe;
-    TH2F *PhotonProbePass;
-    TH2F *PhotonProbeFail;
+    TH2F *PhotonProbeIDISOPass, *PhotonProbeIDPass;
+    TH2F *PhotonProbeIDISOFail, *PhotonProbeIDFail;
+
+    TH2F *MuonProbe;
+    TH2F *MuonProbeIDISOPass, *MuonProbeIDPass;
+    TH2F *MuonProbeIDISOFail, *MuonProbeIDFail;
 
     //ClassDef(zAnalyzer,0);
 };

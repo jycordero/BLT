@@ -23,35 +23,23 @@ WeightUtils::WeightUtils(string dataPeriod, string selection, bool isRealData)
 
 
 	//SetTriggerWeights(PeriodFolder);
-	SetMuonIDWeights     (PeriodFolder);
-	SetMuonISOWeights    (PeriodFolder);
-
-
+	SetMuonIDWeights ( PeriodFolder );
+	SetMuonISOWeights( PeriodFolder );
 	// PU weights
-	if(PeriodFolder == "ReReco2016" || PeriodFolder == "Legacy2016")
-		_fileName = _cmssw_base + "/src/BLT/BLTAnalysis/data/" + PeriodFolder + "/pileup_sf_2016_full.root";
-	else if(PeriodFolder == "ReReco2017")
-		_fileName = _cmssw_base + "/src/BLT/BLTAnalysis/data/" + PeriodFolder + "/pileup_sf_2017_full.root";
-	TFile* puFile = new TFile(_fileName.c_str(), "OPEN");
-	_puReweight = (TGraph*)puFile->Get("pileup_sf");
+	SetPUWeights( PeriodFolder );
 
+	SetPhotonIDWeights    ( PeriodFolder );
+	SetPhotonIsConvWeights( PeriodFolder );
 
 	///////////////////////////////////
 	PeriodFolder = "ReReco2016";
-	SetMuonTriggerWeights(PeriodFolder);
+	SetMuonTriggerWeights( PeriodFolder );
 
-	SetElectronTriggerWeights(PeriodFolder);	
-	SetElectronIDWeights(PeriodFolder);	
-	SetElectronISOWeights(PeriodFolder);	
+	SetElectronTriggerWeights( PeriodFolder );	
+	SetElectronIDWeights     ( PeriodFolder );	
+	SetElectronISOWeights    ( PeriodFolder );	
 
-	SetPhotonIDWeights(PeriodFolder);
-
-
-	// photon r9 reweighting
-	_fileName = _cmssw_base + "/src/BLT/BLTAnalysis/data/"+ PeriodFolder+"/photon_corrections/photon_r9_reweighting_2016.root";
-	TFile* f_photon_r9 = new TFile(_fileName.c_str(), "OPEN"); 
-	_photon_r9_barrel = (TGraph *)f_photon_r9->Get("transffull5x5R9EB");
-	_photon_r9_endcap = (TGraph *)f_photon_r9->Get("transffull5x5R9EE");
+	SetPhotonR9Weights( PeriodFolder );// photon r9 reweighting
 
 	// photon r9 reweighting
 	_fileName = _cmssw_base + "/src/BLT/BLTAnalysis/data/"+ PeriodFolder+"/photon_corrections/transformation_pho_presel_BDTUpto6000.root";
@@ -69,6 +57,16 @@ WeightUtils::WeightUtils(string dataPeriod, string selection, bool isRealData)
 
 	_photon_s4_barrel       = (TGraph *)f_photon_shower->Get("transfS4EB");
 	_photon_s4_endcap       = (TGraph *)f_photon_shower->Get("transfS4EE");
+}
+void WeightUtils::SetPUWeights(std::string PeriodFolder){
+
+	if(PeriodFolder == "ReReco2016" || PeriodFolder == "Legacy2016")
+		_fileName = _cmssw_base + "/src/BLT/BLTAnalysis/data/" + PeriodFolder + "/pu_reweight/pileup_sf_2016_full.root";
+	else if(PeriodFolder == "ReReco2017")
+		_fileName = _cmssw_base + "/src/BLT/BLTAnalysis/data/" + PeriodFolder + "/pu_reweight/pileup_sf_2017_full.root";
+
+	TFile* puFile = new TFile(_fileName.c_str(), "OPEN");
+	_puReweight = (TGraph*)puFile->Get("pileup_sf");
 }
 
 void WeightUtils::SetMuonTriggerWeights(std::string PeriodFolder ){
@@ -469,9 +467,39 @@ void WeightUtils::SetPhotonIDWeights(std::string PeriodFolder ){
 	else if(PeriodFolder == "Legacy2016"){
 	}
 	else if(PeriodFolder == "ReReco2017"){
+		_fileName = _cmssw_base + "/src/BLT/BLTAnalysis/data/"+ PeriodFolder+"/photon_id/sf_photon_id_2017.root";
+		TFile* f_gammaIdSF_BCDEF = new TFile(_fileName.c_str(), "OPEN");
+		_gmSF_PreSel_ID_BCDEF = (TH2F*)f_gammaIdSF_BCDEF->Get("EGamma_sf");
 	}
 }
 void WeightUtils::SetPhotonISOWeights(std::string PeriodFolder ){}
+
+void WeightUtils::SetPhotonIsConvWeights(std::string PeriodFolder ){
+	if(PeriodFolder == "ReReco2016"){
+		// photon mva id (90%) efficiencies
+		_fileName = _cmssw_base + "/src/BLT/BLTAnalysis/data/"+ PeriodFolder+"/photon_id/photon_mva_id_2016.root";
+		TFile* f_mva_gammaIdSF = new TFile(_fileName.c_str(), "OPEN");
+		_mva_gammaSF_ID[0] = (TGraphErrors*)f_mva_gammaIdSF->Get("grSF1D_0");
+		_mva_gammaSF_ID[1] = (TGraphErrors*)f_mva_gammaIdSF->Get("grSF1D_1");
+		_mva_gammaSF_ID[2] = (TGraphErrors*)f_mva_gammaIdSF->Get("grSF1D_2");
+		_mva_gammaSF_ID[3] = (TGraphErrors*)f_mva_gammaIdSF->Get("grSF1D_3");
+		_mva_gammaSF = (TH2F *)f_mva_gammaIdSF->Get("EGamma_SF2D");
+	}
+	else if(PeriodFolder == "Legacy2016"){
+	}
+	else if(PeriodFolder == "ReReco2017"){
+		_fileName = _cmssw_base + "/src/BLT/BLTAnalysis/data/"+ PeriodFolder+"/photon_id/sf_photon_isConv_2017.root";
+		TFile* f_gammaIdSF_BCDEF = new TFile(_fileName.c_str(), "OPEN");
+		_gmSF_PreSel_ID_isConv_BCDEF = (TH2F*)f_gammaIdSF_BCDEF->Get("EGamma_sf");
+	}
+}
+
+void WeightUtils::SetPhotonR9Weights(std::string PeriodFolder ){
+	_fileName = _cmssw_base + "/src/BLT/BLTAnalysis/data/"+ PeriodFolder+"/photon_corrections/photon_r9_reweighting_2016.root";
+	TFile* f_photon_r9 = new TFile(_fileName.c_str(), "OPEN"); 
+	_photon_r9_barrel = (TGraph *)f_photon_r9->Get("transffull5x5R9EB");
+	_photon_r9_endcap = (TGraph *)f_photon_r9->Get("transffull5x5R9EE");
+}
 
 void WeightUtils::SetDataBit(bool isRealData)
 {
@@ -864,7 +892,42 @@ float WeightUtils::GetHZZElectronRecoIdEff(TElectron& electron) const
     
     return weight;
 }
+float WeightUtils::GetPhotonIdEff(TPhoton& photon) const{
+	float tmpPhotonPt;
+	float weight = 1;
 
+
+	cout << "            GETTING ID     " << endl;
+
+	if(_dataPeriod == "2016Legacy"){
+	}
+	else if(_dataPeriod == "2017ReReco"){
+		tmpPhotonPt = (photon.calibPt < 1500) ? photon.calibPt:1500;
+		//cout << " Ph ETA:: " << photon.scEta << " Ph PT::" << tmpPhotonPt << " | Index:: "<< _gmSF_PreSel_ID_BCDEF->FindBin(tmpPhotonPt,photon.scEta) << endl;
+		weight *= _gmSF_PreSel_ID_BCDEF->GetBinContent( _gmSF_PreSel_ID_BCDEF->FindBin(tmpPhotonPt,photon.scEta)  );
+	}
+
+	if(weight == 0)
+		weight = 1.;
+	return weight;
+}
+float WeightUtils::GetPhotonIsConvEff(TPhoton& photon) const{
+	float tmpPhotonPt;
+	float weight = 1;
+
+
+	if(_dataPeriod == "2016Legacy"){
+	}
+	else if(_dataPeriod == "2017ReReco"){
+		tmpPhotonPt = (photon.calibPt < 1500) ? photon.calibPt:1500;
+		//cout << " Ph ETA:: " << photon.scEta << " Ph PT::" << tmpPhotonPt << " | Index:: "<< _gmSF_PreSel_ID_BCDEF->FindBin(tmpPhotonPt,photon.scEta) << endl;
+		weight *= _gmSF_PreSel_ID_isConv_BCDEF->GetBinContent( _gmSF_PreSel_ID_BCDEF->FindBin(tmpPhotonPt,photon.scEta)  );
+	}
+
+	if(weight == 0)
+		weight = 1.;
+	return weight;
+}
 float WeightUtils::GetPhotonMVAIdEff(TPhoton& photon) const
 {
     /*float binningPt[] = {20., 35., 50., 90., 150.};
@@ -880,18 +943,17 @@ float WeightUtils::GetPhotonMVAIdEff(TPhoton& photon) const
     //if (photon.calibPt < 150.) {
     //    weight *= _mva_gammaSF_ID[ptBin]->Eval(photon.scEta);
     //}
-    
     //weight *= _mva_gammaSF->GetBinContent(_mva_gammaSF->FindBin(photon.scEta, photon.pt));
     weight *= _mva_gammaSF->GetBinContent(_mva_gammaSF->FindBin(photon.scEta, tmpPhotonPt));
 
     // electron veto scale factor
     if (fabs(photon.scEta) <= 1.49)
-        weight *= 0.9938;
+	weight *= 0.9938;
     else if (fabs(photon.scEta) > 1.49)
-        weight *= 0.9875;
+	weight *= 0.9875;
 
     if (weight == 0)
-	weight = 1.; 
+	weight = 1.;
     return weight;
 }
 /////////////////////////////////////////////////////

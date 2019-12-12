@@ -105,7 +105,7 @@ public:
     Float_t muonIDWeightOne, muonIDWeightTwo;
     Float_t muonISOWeightOne, muonISOWeightTwo;
     Float_t muonTrigWeightOne, muonTrigWeightTwo;
-    Float_t photonIDWeight;
+    Float_t photonIDWeight, photonIsConvWeight;
     Int_t Sgen,SgenAccep;
 
     // physics object Lorentz vectors
@@ -226,10 +226,14 @@ public:
     float GetElectronIsolation(const baconhep::TElectron*, float);
     float GetPhotonIsolation(const baconhep::TPhoton*, float);
     float GetGenIsolation(const TGenParticle*);
+    float GetWorstChIsolation(const TPhoton*);
+    
+    bool SignalRegionPass(const baconhep::TPhoton *);
 
     void EvalMuonEnergyResolution(std::map<string, float>, std::map<string, int>, float&, float&, float&, float&, float&, float&);
     void EvalElectronEnergyResolution(std::map<string, float>, float&, float&, float&, float&, float&, float&);
     void find_optimized(double*, double&, double&);
+
 
     //ClassDef(zgAnalyzer,0);
 };

@@ -109,6 +109,7 @@ void zgAnalyzer::Begin(TTree *tree)
 	if (params->selection == "mumu" || params->selection == "mumug") {
 		triggerNames.push_back("HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8_v*");
 		triggerNames.push_back("HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass8_v*");
+		cout << "\n\n\nTHE RIGHT TRIGGERS\n\n\n";
 	}
 	else if (params->selection == "ee" || params->selection == "elelg") {
 		triggerNames.push_back("HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v*");
@@ -183,21 +184,22 @@ void zgAnalyzer::Begin(TTree *tree)
     outTree->Branch("htSum"   , &htSum);
 
     // weights
-    outTree->Branch("genWeight"        , &genWeight);
-    outTree->Branch("eventWeight"      , &eventWeight);
-    outTree->Branch("puWeight"         , &puWeight);
-    outTree->Branch("triggerWeight"    , &triggerWeight);
-    outTree->Branch("elIDWeightOne"    , &elIDWeightOne);
-    outTree->Branch("elIDWeightTwo"    , &elIDWeightTwo);
-    outTree->Branch("elTrigWeightOne"  , &elTrigWeightOne);
-    outTree->Branch("elTrigWeightTwo"  , &elTrigWeightTwo);
-    outTree->Branch("muonIDWeightOne"  , &muonIDWeightOne);
-    outTree->Branch("muonIDWeightTwo"  , &muonIDWeightTwo);
-    outTree->Branch("muonISOWeightOne" , &muonISOWeightOne);
-    outTree->Branch("muonISOWeightTwo" , &muonISOWeightTwo);
-    outTree->Branch("muonTrigWeightOne", &muonTrigWeightOne);
-    outTree->Branch("muonTrigWeightTwo", &muonTrigWeightTwo);
-    outTree->Branch("photonIDWeight"   , &photonIDWeight);
+    outTree->Branch("genWeight"          , &genWeight);
+    outTree->Branch("eventWeight"        , &eventWeight);
+    outTree->Branch("puWeight"           , &puWeight);
+    outTree->Branch("triggerWeight"      , &triggerWeight);
+    outTree->Branch("elIDWeightOne"      , &elIDWeightOne);
+    outTree->Branch("elIDWeightTwo"      , &elIDWeightTwo);
+    outTree->Branch("elTrigWeightOne"    , &elTrigWeightOne);
+    outTree->Branch("elTrigWeightTwo"    , &elTrigWeightTwo);
+    outTree->Branch("muonIDWeightOne"    , &muonIDWeightOne);
+    outTree->Branch("muonIDWeightTwo"    , &muonIDWeightTwo);
+    outTree->Branch("muonISOWeightOne"   , &muonISOWeightOne);
+    outTree->Branch("muonISOWeightTwo"   , &muonISOWeightTwo);
+    outTree->Branch("muonTrigWeightOne"  , &muonTrigWeightOne);
+    outTree->Branch("muonTrigWeightTwo"  , &muonTrigWeightTwo);
+    outTree->Branch("photonIDWeight"     , &photonIDWeight);
+    outTree->Branch("photonIsConvWeight" , &photonIsConvWeight);
     
     outTree->Branch("Sgen", &Sgen);
     outTree->Branch("SgenAccep", &SgenAccep);
@@ -911,6 +913,7 @@ Bool_t zgAnalyzer::Process(Long64_t entry)
                 //&& particleSelector->PassPhotonID(photon, cuts->mediumPhID)
                 && particleSelector->PassPhotonID(photon, cuts->preSelPhID)
                 && particleSelector->PassPhotonIso(photon, cuts->preSelPhIso,EAPho)	
+		&& GetWorstChIsolation(photon) < 15
                 && photon->passElectronVeto
             ) {
             photons.push_back(photon);
@@ -918,6 +921,8 @@ Bool_t zgAnalyzer::Process(Long64_t entry)
         }
     } 
     sort(photons.begin(), photons.end(), sort_by_higher_pt<TPhoton>);
+
+
 
     if(debug)
 	cout << "----Photon collection" << endl;
@@ -1681,7 +1686,6 @@ Bool_t zgAnalyzer::Process(Long64_t entry)
 	  
 	    muonISOWeightOne = weights->GetMuonISOEff(leptonOneP4); 
 	    muonISOWeightTwo = weights->GetMuonISOEff(leptonTwoP4);
-	    cout << " ISO 1 " << muonISOWeightOne << " ISO 2 " << muonISOWeightTwo << endl; 
             eventWeight *= muonISOWeightOne;
             eventWeight *= muonISOWeightTwo;
 	    //////////////////////////// 
@@ -1714,8 +1718,28 @@ Bool_t zgAnalyzer::Process(Long64_t entry)
 
             if(debugSelect)
 		cout << "------ Photon ID Weights" << endl;
-           
-            photonIDWeight = weights->GetPhotonMVAIdEff(*photons[photonIndex]); 
+
+	    if(params->period == "2016Legacy"){
+		photonIDWeight = weights->GetPhotonMVAIdEff(*photons[photonIndex]); 
+	    }
+	    else if(params->period == "2017ReReco"){
+		photonIDWeight = weights->GetPhotonIdEff(*photons[photonIndex]);
+	    }
+	    eventWeight *= photonIDWeight; 
+
+
+	    if(params->period == "2016Legacy"){
+		//photonIsConvWeight = weights->GetPhotonMVAIdEff(*photons[photonIndex]); 
+		photonIsConvWeight = 1; 
+	    }
+	    else if(params->period == "2017ReReco"){
+		photonIsConvWeight = weights->GetPhotonIsConvEff(*photons[photonIndex]); 
+	    }
+	    eventWeight *= photonIsConvWeight; 
+
+	    cout << "Photon ID     Weight:: " << photonIDWeight     << endl
+	    	 << "Photon IsConv Weight:: " << photonIsConvWeight << endl;
+
             //eventWeight *= photonIDWeight;
             if (sync_print_precut) {
                 cout << "run,lumi,evt,puwei,totSF,trg0,trg1,id0,id1,gammaID,pt0,pt1,eta0,et1" << endl;
@@ -2762,173 +2786,66 @@ float zgAnalyzer::GetGenIsolation(const TGenParticle* pho)
 	}
 	return genIso;
 }
-//void zgAnalyzer::EvalMuonEnergyResolution(std::map<string, float> mva_input_floats, std::map<string, int> mva_input_ints, float &mean, float &sigma, float &alphaL, float &powerL, float &alphaR, float &powerR) 
-//{
-//    // Evaluates and returns the estimate of muon energy resolution function.
-//    // semi-parametric MVAs' inputs and outputs
-//    static RooRealVar* invar[99]; // [varnum]
-//    static RooAbsReal* mvaMean = NULL;
-//    static RooAbsReal* mvaSigma;
-//    static RooAbsReal* mvaAlphaL;
-//    static RooAbsReal* mvaAlphaR;
-//
-//    // one-time MVA initialization: get trainings
-//    if (!mvaMean) {
-//        TDirectory* wd = gDirectory;
-//        
-//        const std::string cmssw_base = getenv("CMSSW_BASE");
-//        string fileName;
-//        fileName = cmssw_base + "/src/BLT/BLTAnalysis/data/muon_training.root";
-//        TFile f(fileName.c_str());
-//        if (f.IsZombie())
-//            FATAL("TFile::Open() failed");
-//         // cd back into previous current working directory
-//        if (wd) wd->cd();
-//        else gDirectory = 0;
-//         RooWorkspace* ws = dynamic_cast<RooWorkspace*>(f.Get("ws_mva_muons"));
-//        if (!ws) FATAL("TFile::Get() failed");
-//        // current working directory
-//        invar[0] = ws->var("var01");
-//        invar[1] = ws->var("var02");
-//        invar[2] = ws->var("var03");
-//        invar[3] = ws->var("var04");
-//        invar[4] = ws->var("var05");
-//        invar[5] = ws->var("var06");
-//        invar[6] = ws->var("var07");
-//        invar[7] = ws->var("var08");
-//        invar[8] = ws->var("var09");
-//        invar[9] = ws->var("var10");
-//        invar[10] = ws->var("var11");
-//        invar[11] = ws->var("var12");
-//        mvaMean = ws->function("limMean");
-//        mvaSigma = ws->function("limSigma");
-//        mvaAlphaL = ws->function("limAlphaL");
-//        mvaAlphaR = ws->function("limAlphaR");
-//     } // one-time initialization
-//     // load necessary tree branches
-//    float rho                      = mva_input_floats["rho"];
-//    float muEnergy                 = mva_input_floats["muEnergy"];
-//    float muEta                    = mva_input_floats["muEta"];
-//    float muChi2NDF                = mva_input_floats["muTkChi2"];
-//    Int_t muNumberOfValidTrkLayers = mva_input_ints["muNumberOfValidTrkLayers"];
-//    Int_t muNumberOfValidPixelHits = mva_input_ints["muNumberOfValidPixelHits"];
-//    Int_t muNumberOfValidMuonHits  = mva_input_ints["muNumberOfValidMuonHits"];
-//    Int_t muStations               = mva_input_ints["muStations"];
-//    float muPFIsoR04_CH            = mva_input_floats["muPFIsoR04_CH"];
-//    float muPFIsoR04_NH            = mva_input_floats["muPFIsoR04_NH"];
-//    float muPFIsoR04_Pho           = mva_input_floats["muPFIsoR04_Pho"];
-//    float muPFIsoR04_PU            = mva_input_floats["muPFIsoR04_PU"];
-//     // set input variables associated with the GBRLikelihood trainings
-//    *invar[0] = rho;
-//    *invar[1] = muEnergy;
-//    *invar[2] = muEta;
-//    *invar[3] = muChi2NDF;
-//    *invar[4] = muNumberOfValidTrkLayers;
-//    *invar[5] = muNumberOfValidPixelHits;
-//    *invar[6] = muNumberOfValidMuonHits;
-//    *invar[7] = muStations;
-//    *invar[8] = muPFIsoR04_CH;
-//    *invar[9] = muPFIsoR04_NH;
-//    *invar[10] = muPFIsoR04_Pho;
-//    *invar[11] = muPFIsoR04_PU;
-//    mean = mvaMean->getVal();
-//    sigma = mvaSigma->getVal();
-//    alphaL = mvaAlphaL->getVal();
-//    alphaR = mvaAlphaR->getVal();
-//     // NOTE: negative = infinite; powers were fixed at the training level
-//    powerL = -1;
-//    powerR = -1;
-//    //f.Close();
-// }
-// void zgAnalyzer::EvalElectronEnergyResolution(std::map<string, float> mva_inputs, float &mean, float &sigma, 
-//                                                    float &alphaL, float &powerL, float &alphaR, float &powerR) 
-//{
-//    // Evaluates and returns the estimate of muon energy resolution function.
-//    // semi-parametric MVAs' inputs and outputs
-//    static RooRealVar* invar[99]; // [varnum]
-//    static RooAbsReal* mvaMean = NULL;
-//    static RooAbsReal* mvaSigma;
-//    static RooAbsReal* mvaAlphaL;
-//    static RooAbsReal* mvaAlphaR;
-//    static RooAbsReal* mvaPowerL;
-//    static RooAbsReal* mvaPowerR;
-//     // one-time MVA initialization: get trainings
-//    if (!mvaMean) {
-//        // current working directory
-//        TDirectory* wd = gDirectory;
-//        
-//        const std::string cmssw_base = getenv("CMSSW_BASE");
-//        string fileName;
-//        fileName = cmssw_base + "/src/BLT/BLTAnalysis/data/electron_training.root";
-//        TFile f(fileName.c_str());
-//        if (f.IsZombie())
-//            FATAL("TFile::Open() failed");
-//         // cd back into previous current working directory
-//        if (wd) wd->cd();
-//        else gDirectory = 0;
-//         RooWorkspace* ws = dynamic_cast<RooWorkspace*>(f.Get("ws_mva_electrons"));
-//        if (!ws) FATAL("TFile::Get() failed");
-//         invar[0] = ws->var("var01");
-//        invar[1] = ws->var("var02");
-//        invar[2] = ws->var("var03");
-//        invar[3] = ws->var("var04");
-//        invar[4] = ws->var("var05");
-//        invar[5] = ws->var("var06");
-//        invar[6] = ws->var("var07");
-//        invar[7] = ws->var("var08");
-//        invar[8] = ws->var("var09");
-//        invar[9] = ws->var("var10");
-//        invar[10] = ws->var("var11");
-//        invar[11] = ws->var("var12");
-//        invar[12] = ws->var("var13");
-//        invar[13] = ws->var("var14");
-//        invar[14] = ws->var("var15");
-//         mvaMean = ws->function("limMean");
-//        mvaSigma = ws->function("limSigma");
-//        mvaAlphaL = ws->function("limAlphaL");
-//        mvaAlphaR = ws->function("limAlphaR");
-//        mvaPowerL = ws->function("limPowerL");
-//        mvaPowerR = ws->function("limPowerR");
-//     } // one-time initialization
-//     // load necessary tree branches
-//    float rho = mva_inputs["rho"];
-//    float elEnergy = mva_inputs["elEnergy"];
-//    float elScEta = mva_inputs["elScEta"];
-//    float elScPhi = mva_inputs["elScPhi"];
-//    float elR9 = mva_inputs["elR9"];
-//    float elE1x5OverE = mva_inputs["elE1x5OverE"];
-//    float elE2x5OverE = mva_inputs["elE2x5OverE"];
-//    float elE5x5OverE = mva_inputs["elE5x5OverE"];
-//    float elFBrem = mva_inputs["elFBrem"];
-//    float elHOverE = mva_inputs["elHOverE"];
-//    float elSigmaIEtaIEta = mva_inputs["elSigmaIEtaIEta"];
-//    float elPFIsoR04_CH = mva_inputs["elPFIsoR04_CH"];
-//    float elPFIsoR04_NH = mva_inputs["elPFIsoR04_NH"];
-//    float elPFIsoR04_Pho = mva_inputs["elPFIsoR04_Pho"];
-//    float elPFIsoR04_PU = mva_inputs["elPFIsoR04_PU"];
-//     // set input variables associated with the GBRLikelihood trainings
-//    *invar[0] = rho;
-//    *invar[1] = elEnergy;
-//    *invar[2] = elScEta;
-//    *invar[3] = elScPhi;
-//    *invar[4] = elR9;
-//    *invar[5] = elE1x5OverE;
-//    *invar[6] = elE2x5OverE;
-//    *invar[7] = elE5x5OverE;
-//    *invar[8] = elFBrem;
-//    *invar[9] = elHOverE;
-//    *invar[10] = elSigmaIEtaIEta;
-//    *invar[11] = elPFIsoR04_CH;
-//    *invar[12] = elPFIsoR04_NH;
-//    *invar[13] = elPFIsoR04_Pho;
-//    *invar[14] = elPFIsoR04_PU;
-//     mean = mvaMean->getVal();
-//    sigma = mvaSigma->getVal();
-//    alphaL = mvaAlphaL->getVal();
-//    alphaR = mvaAlphaR->getVal();
-//    powerL = mvaPowerL->getVal();
-//    powerR = mvaPowerR->getVal();
-//}
+
+bool zgAnalyzer::SignalRegionPass(const baconhep::TPhoton *photon){
+        bool signalPass = false;
+        if(photon->scEta <= 1.48){
+                if(photon->chHadIso <= 2.0)
+                        signalPass = true;
+        }
+        else {
+                if(photon->chHadIso <= 1.5)
+                        signalPass = true;
+        }
+        return signalPass;
+}
+
+
+float zgAnalyzer::GetWorstChIsolation(const TPhoton* pho)
+{
+
+        unsigned int nMuon = fMuonArr    ->GetEntries();
+        unsigned int nElec = fElectronArr->GetEntries();
+        unsigned int nTau  = fTauArr     ->GetEntries();
+        unsigned int nJets = fAK4CHSArr  ->GetEntries();
+
+
+        float worstChIso = 0;
+        int isStable = 1;
+        for(unsigned int i ; i < nMuon ; i++){
+                TMuon *muon = (TMuon * ) fMuonArr->At(i);
+                float dR = sqrt(pow((pho->scEta - muon->eta),2) + pow((pho->phi - muon->phi),2));
+                if( dR < 0.4 && dR > 0.1)
+                        worstChIso += muon->pt;
+        }
+
+
+        for(unsigned int i ; i < nElec ; i++){
+                TElectron *electron = (TElectron *) fElectronArr->At(i);
+                float dR = sqrt(pow((pho->scEta - electron->scEta),2) + pow((pho->phi - electron->phi),2));
+                if( dR < 0.4 && dR > 0.1)
+                        worstChIso += electron->pt;
+        }
+
+        for(unsigned int i ; i < nTau ; i++){
+                TTau *tau = (TTau *) fTauArr->At(i);
+                float dR = sqrt(pow((pho->scEta - tau->eta),2) + pow((pho->phi - tau->phi),2));
+                if( dR < 0.4 && dR > 0.1)
+                        worstChIso += tau->pt;
+        }
+
+
+        for(unsigned int i ; i < nJets ; i++){
+                TJet *jets = (TJet *) fAK4CHSArr->At(i);
+                float dR = sqrt(pow((pho->scEta - jets->eta),2) + pow((pho->phi - jets->phi),2));
+                if( dR < 0.4 && dR > 0.1)
+                        worstChIso += jets->pt;
+        }
+
+
+        return worstChIso;
+}
+
 
  void zgAnalyzer::find_optimized(double* p, double &e1, double& e2)
 {

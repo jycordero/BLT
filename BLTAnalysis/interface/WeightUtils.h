@@ -44,6 +44,8 @@ class WeightUtils: public TObject {
         void    SetDataPeriod(string);
         void    SetSelection(string);
 
+	void    SetPUWeights(string);
+
 	void    SetMuonIDWeights(string);
 	void    SetMuonISOWeights(string);
 	void    SetMuonTriggerWeights(string);
@@ -54,22 +56,29 @@ class WeightUtils: public TObject {
 	void    SetElectronTriggerWeights(string);
 
 	void    SetPhotonIDWeights(string);
+	void    SetPhotonIsConvWeights(string);
 	void    SetPhotonISOWeights(string);
+	void    SetPhotonR9Weights(string);
 
         float   GetPUWeight(float);
         pair<float, float>   GetTriggerEffWeight(string, TLorentzVector&) const;
         //pair<float, float>   GetDoubleEGTriggerEffWeight(string, TElectron&) const;
         //pair<float, float>   GetDoubleMuonTriggerEffWeight(string, TMuon&) const;
         float   GetDoubleEGTriggerEffWeight(string, TElectron&) const;
+        float   GetElectronRecoIdEff(TLorentzVector&) const;
+        float   GetHZZElectronRecoIdEff(TElectron&) const;
+
         float   GetDoubleMuonTriggerEffWeight(string, TMuon&) const;
         float   GetMuonIDEff(TLorentzVector&) const; 
         float   GetMuonISOEff(TLorentzVector&) const; 
         float   GetLooseMuonIDEff(TLorentzVector&) const;
         float   GetLooseMuonISOEff(TLorentzVector&) const;
         float   GetHZZMuonIDEff(TMuon&) const;
-        float   GetElectronRecoIdEff(TLorentzVector&) const;
-        float   GetHZZElectronRecoIdEff(TElectron&) const;
+
+
         float   GetPhotonMVAIdEff(TPhoton&) const;
+        float   GetPhotonIdEff(TPhoton&) const;
+        float   GetPhotonIsConvEff(TPhoton&) const;
 
         float   GetCorrectedPhotonR9(TPhoton&) const;
         float   GetCorrectedPhotonEtaWidth(TPhoton&) const;
@@ -126,10 +135,10 @@ class WeightUtils: public TObject {
         TH2F *_eleSF_tight_ISO_BCDEF, *_eleSF_tight_ISO_GH;
 	TH2F *_eleSF_loose_ISO_BCDEF, *_eleSF_loose_ISO_GH;
 
-
-
+	
         TGraphErrors *_mva_gammaSF_ID[5];
         TH2F *_mva_gammaSF;
+	TH2F *_gmSF_PreSel_ID_BCDEF,*_gmSF_PreSel_ID_isConv_BCDEF;
 
         TGraph *_photon_r9_barrel, *_photon_r9_endcap;
 

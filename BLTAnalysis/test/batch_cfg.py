@@ -11,10 +11,12 @@ legacy = True
 #legacy = False
 
 #selection  = 'jetjetgmjetjet'
-selection  = 'mumug'
+#selection  = 'mumug'
+#selection  = 'mumu'
 #selection  = 'elelg'
-#selection  = 'ee'
+selection  = 'ee'
 
+#period     = '2016'
 period     = '2017'
 
 
@@ -23,8 +25,6 @@ period     = '2017'
 data_samples = []
 mc_samples   = []
 
-#data_samples = ['single_mu']
-#data_samples = ['single_el']
 if period == '2016':
 	if legacy:
 		############  DATA
@@ -46,6 +46,7 @@ if period == '2016':
 			mc_samples += ['JC_ZGToLLG_Legacy']
 		elif selection == "ee":
 			mc_samples += ['JC_DYJets_Legacy']
+			mc_samples += ['JC_WJets_Legacy']
 	else:
 		############  DATA
 		if selection == 'mumug':
@@ -66,23 +67,33 @@ if period == '2016':
 			mc_samples += ['JB_WZ','JB_ZZ']
 		elif selection == "ee":
 			mc_samples += ['JB_DYJets']
-		#mc_samples += ['JB_DYJets_Madgraph']
+			mc_samples += ['JB_WJets']
+		elif selection == "mumu":
+			mc_samples += ['JB_DYJets']
 elif period == '2017':
 	############  DATA
 	if selection == "mumug":
 		data_samples += ['double_mu_2017Reco']
 	elif selection == 'ee':
 		data_samples += ['single_el_2017Reco']
+	elif selection == 'mumu':
+		data_samples += ["single_mu_2017Reco"]
 	
 	############  MC
 	if selection == "mumug":
 		mc_samples += ['JC_TT_2017Reco']
 		mc_samples += ['JC_ZG_ZToLL_2017Reco']
 		mc_samples += ['JC_WJets_2017Reco']
-		#mc_samples += ['JC_DYJets_2017Reco']
+		mc_samples += ['JC_DYJets_2017Reco']
 		mc_samples += ['JC_WZ_2017Reco','JC_ZZ_2017Reco','JC_WW_2017Reco']
+
+		#mc_samples += ['JC_WZ_2017Reco']
+		#mc_samples += ['JC_ZZ_2017Reco']
+		#mc_samples += ['JC_WW_2017Reco']
+
 	elif selection == "ee":
 		mc_samples += ['JC_DYJets_2017Reco']
+		mc_samples += ['JC_WJets_2017Reco']
 ################################################
 
 
@@ -546,12 +557,12 @@ mc_dict['JB_ZG_ZToLL']=[
 ########################################### JC SAMPLES Legacy ########################################################
 ######################################################################################################################
 SampleType = 'mc'
-path = '/eos/uscms/store/user/corderom/'+SampleType+'_legacy_gen_2016'
-
+#path = '/eos/uscms/store/user/corderom/'+SampleType+'_legacy_gen_2016'
+path = '/eos/uscms/store/user/lpcbacon/corderom/mc_2016'
 ########################## TT  #######################
 mc_dict['JC_TTTo2L2Nu_Legacy'] = [
 		    cfg(data_name = 'TTTo2L2Nu',
-			path     = '{0}/TTTo2L2Nu_TuneCUETP8M2_ttHtranche3_13TeV-powheg-pythia8/2016_mc_legacy_gen_TTTo2L2Nu_TuneCUETP8M2_ttHtranche3_13TeV-powheg-pythia8_RunIISummer16MiniAODv3-PUMoriond17_94X_mcRu/190824_061004'.format(path),
+			path     = '{0}/TTTo2L2Nu_TuneCUETP8M2_ttHtranche3_13TeV-powheg-pythia8/2016_mc_legacy_gen_TTTo2L2Nu_TuneCUETP8M2_ttHtranche3_13TeV-powheg-pythia8_RunIISummer16MiniAODv3-PUMoriond17_94X_mcRu/190824_061004/'.format(path),
 			nJobs    = 20,
 			suffix   = 'ttto2l2nu'
 		       ),
@@ -560,7 +571,7 @@ mc_dict['JC_TTTo2L2Nu_Legacy'] = [
 ########################## ZG ######################
 mc_dict['JC_ZGToLLG_Legacy']=[	
 		 	cfg(data_name = 'ZGToLLG',
-		 	    path     = '{0}/ZGToLLG_01J_5f_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/2016_mc_legacy_gen_ZGToLLG_01J_5f_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8_RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun/190823_153456'.format(path),
+		 	    path     = '{0}/ZGToLLG_01J_5f_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/2016_mc_legacy_gen_ZGToLLG_01J_5f_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8_RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun/190823_153456/'.format(path),
 			    nJobs    = 20,
 			    suffix   = 'zgtollg'
 			),
@@ -570,7 +581,7 @@ mc_dict['JC_ZGToLLG_Legacy']=[
 ########################## DYJets ######################
 mc_dict['JC_DYJets_Legacy']=[	
 		 	cfg(data_name = 'DYJets',
-		 	    path     = '{0}/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/2016_mc_legacy_gen_DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8_RunIISummer16MiniAODv3-PUMoriond17_94X_mcRu/190824_062451'.format(path),
+		 	    path     = '{0}/Old/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/2016_mc_legacy_gen_DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8_RunIISummer16MiniAODv3-PUMoriond17_94X_mcRu/190824_062451/'.format(path),
 			    nJobs    = 50,
 			    suffix   = 'dyjets'
 			),
@@ -579,12 +590,12 @@ mc_dict['JC_DYJets_Legacy']=[
 ########################## WW  ######################
 mc_dict['JC_WW_Legacy']=[	
 		 	cfg(data_name = 'WWToLNuQQ',
-		 	    path     = '{0}/WWToLNuQQ_13TeV-powheg/2016_mc_legacy_gen_WWToLNuQQ_13TeV-powheg_RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v2/190824_055930'.format(path),
+		 	    path     = '{0}/WWToLNuQQ_13TeV-powheg/2016_mc_legacy_gen_WWToLNuQQ_13TeV-powheg_RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v2/190824_055930/'.format(path),
 			    nJobs    = 20,
 			    suffix   = 'wwtolnuqq'
 			),
 		 	cfg(data_name = 'WWTo2L2Nu',
-		 	    path     = '{0}/WWTo2L2Nu_13TeV-powheg-herwigpp/2016_mc_legacy_gen_WWTo2L2Nu_13TeV-powheg-herwigpp_RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/190824_055749'.format(path),
+		 	    path     = '{0}/WWTo2L2Nu_13TeV-powheg-herwigpp/2016_mc_legacy_gen_WWTo2L2Nu_13TeV-powheg-herwigpp_RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/190824_055749/'.format(path),
 			    nJobs    = 20,
 			    suffix   = 'wwto2l2nu'
 			),
@@ -594,7 +605,7 @@ mc_dict['JC_WW_Legacy']=[
 ########################## WZ  ######################
 mc_dict['JC_WZ_Legacy']=[	
 		 	cfg(data_name = 'WZTo3LNu',
-		 	    path     = '{0}/WZTo3LNu_TuneCUETP8M1_13TeV-powheg-pythia8/2016_mc_legacy_gen_WZTo3LNu_TuneCUETP8M1_13TeV-powheg-pythia8_RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic/190824_060249'.format(path),
+		 	    path     = '{0}/WZTo3LNu_TuneCUETP8M1_13TeV-powheg-pythia8/2016_mc_legacy_gen_WZTo3LNu_TuneCUETP8M1_13TeV-powheg-pythia8_RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic/190824_060249/'.format(path),
 			    nJobs    = 20,
 			    suffix   = 'wzto3lnu'
 			),
@@ -603,17 +614,17 @@ mc_dict['JC_WZ_Legacy']=[
 ########################## ZZ  ######################
 mc_dict['JC_ZZ_Legacy']=[	
 		 	cfg(data_name = 'ZZTo2L2Nu',
-		 	    path     = '{0}/ZZTo2L2Nu_13TeV_powheg_pythia8/2016_mc_legacy_gen_ZZTo2L2Nu_13TeV_powheg_pythia8_RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/190824_060811'.format(path),
+		 	    path     = '{0}/ZZTo2L2Nu_13TeV_powheg_pythia8/2016_mc_legacy_gen_ZZTo2L2Nu_13TeV_powheg_pythia8_RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/190824_060811/'.format(path),
 			    nJobs    = 20,
 			    suffix   = 'zzto2l2nu'
 			),
 		 	cfg(data_name = 'ZZTo2L2Q',
-		 	    path     = '{0}/ZZTo2L2Q_13TeV_amcatnloFXFX_madspin_pythia8/2016_mc_legacy_gen_ZZTo2L2Q_13TeV_amcatnloFXFX_madspin_pythia8_RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptoti/190824_060617'.format(path),
+		 	    path     = '{0}/ZZTo2L2Q_13TeV_amcatnloFXFX_madspin_pythia8/2016_mc_legacy_gen_ZZTo2L2Q_13TeV_amcatnloFXFX_madspin_pythia8_RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptoti/190824_060617/'.format(path),
 			    nJobs    = 20,
 			    suffix   = 'zzto2l2q'
 			),
 		 	cfg(data_name = 'ZZTo4L',
-		 	    path     = '{0}/ZZTo4L_13TeV-amcatnloFXFX-pythia8/2016_mc_legacy_gen_ZZTo4L_13TeV-amcatnloFXFX-pythia8_RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-/190824_060434'.format(path),
+		 	    path     = '{0}/ZZTo4L_13TeV-amcatnloFXFX-pythia8/2016_mc_legacy_gen_ZZTo4L_13TeV-amcatnloFXFX-pythia8_RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-/190824_060434/'.format(path),
 			    nJobs    = 20,
 			    suffix   = 'zzto4l'
 			),
@@ -621,7 +632,7 @@ mc_dict['JC_ZZ_Legacy']=[
 
 mc_dict['JC_WJets_Legacy'] = [
 			    cfg(data_name = 'WJets',
-				path     = '{0}/WJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/2016_mc_legacy_gen_WJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8_RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_as/190824_062650'.format(path),
+				path     = '{0}/WJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/2016_mc_legacy_gen_WJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8_RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_as/190824_062650/'.format(path),
 				nJobs    = 30,
 				suffix   = 'wjets'
 			       ),
@@ -707,11 +718,10 @@ data_dict['double_el_legacy'] = [
 			     suffix    = 'DoubleEG_2016H'
 			    ),
 			]
-
 path = "/eos/uscms/store/user/corderom/data_legacy_gen_2016"
 data_dict['single_el_legacy'] = [
 			 cfg(data_name = 'Electron_2016B_v1',
-			     path      = '{0}/Electron/2016_data_legacy_Electron_Run2016B-17Jul2018_ver2-v1/190820_133958'.format(path),
+			     path      = '{0}/SingleElectron/2016_data_legacy_Electron_Run2016B-17Jul2018_ver2-v1/190820_133958'.format(path),
 			     nJobs     = 30,
 			     suffix    = 'Electron_2016B'
 			    ),
@@ -731,7 +741,7 @@ data_dict['single_el_legacy'] = [
 			    suffix    = 'Electron_2016E'
 			   ),
 			 cfg(data_name = 'Electron_2016F_v1',
-			     path      = '{0}/Electron/2016_data_legacy_Electron_Run2016F-17Jul2018-v1/190819_181357'.format(path),
+			     path      = '{0}/SingleElectron/2016_data_legacy_Electron_Run2016F-17Jul2018-v1/190819_181357'.format(path),
 			     nJobs     = 30,
 			     suffix    = 'Electron_2016F'
 			    ),
@@ -741,7 +751,7 @@ data_dict['single_el_legacy'] = [
 			     suffix    = 'Electron_2016G'
 			    ),
 			 cfg(data_name = 'Electron_2016H_v1',
-			     path      = '{0}/Electron/2016_data_legacy_Electron_Run2016H-17Jul2018-v1/190819_181830'.format(path),
+			     path      = '{0}/SingleElectron/2016_data_legacy_SingleElectron_Run2016H-17Jul2018-v1/191002_064704'.format(path),
 			     nJobs     = 30,
 			     suffix    = 'Electron_2016H'
 			    ),
@@ -782,30 +792,66 @@ data_dict['double_mu_2017Reco'] = [
 			     suffix    = 'DoubleMuon_2017F'
 			    ),
 			]
-
-path = "/eos/uscms/store/user/lpcbacon/15/"
+path = "/eos/uscms/store/user/lpcbacon/corderom/data_2017/"
 data_dict['single_el_2017Reco'] = [
-			 cfg(data_name = 'Electron_2017B_v1',
-			     path      = '{0}/SingleElectronRun2017B_31Mar2018_v1'.format(path),
-			     nJobs     = 30,
-			     suffix    = 'Electron_2017B'
-			    ),
+			 #cfg(data_name = 'Electron_2017B_v1',
+			 #    path      = '{0}/SingleElectron/2017_data_legacy_SingleElectron_Run2017B-31Mar2018-v1/191127_043138/'.format(path),
+			 #    nJobs     = 30,
+			 #    suffix    = 'Electron_2017B'
+			 #   ),
 			 cfg(data_name = 'Electron_2017C_v1',
-			     path      = '{0}/SingleElectronRun2017C_31Mar2018_v1'.format(path),
+			     path      = '{0}/SingleElectron/2017_data_legacy_SingleElectron_Run2017C-31Mar2018-v1/191127_043440/'.format(path),
 			     nJobs     = 30,
 			     suffix    = 'Electron_2017C'
 			    ),
-			 cfg(data_name = 'Electron_2017D_v1',
-			     path      = '{0}/SingleElectronRun2017D_31Mar2018_v1'.format(path),
+			 #cfg(data_name = 'Electron_2017D_v1',
+			 #    path      = '{0}/SingleElectron/2017_data_legacy_SingleElectron_Run2017D-31Mar2018-v1/191127_043843/'.format(path),
+			 #    nJobs     = 30,
+			 #    suffix    = 'Electron_2017D'
+			 #   ),
+			 #cfg(data_name = 'Electron_2017E_v1',
+			 #   path      = '{0}/SingleElectron/2017_data_legacy_SingleElectron_Run2017E-31Mar2018-v1/191127_044217/'.format(path),
+			 #   nJobs     = 30,
+			 #   suffix    = 'Electron_2017E'
+			 #  ),
+			 #cfg(data_name = 'Electron_2017F_v1',
+			 #   path      = '{0}/SingleElectron/2017_data_legacy_SingleElectron_Run2017F-31Mar2018-v1/191127_044441/'.format(path),
+			 #   nJobs     = 30,
+			 #   suffix    = 'Electron_2017F'
+			 #  ),
+			]
+
+
+
+path = "/eos/uscms/store/user/lpcbacon/15/"
+data_dict['single_mu_2017Reco'] = [
+			 cfg(data_name = 'Muon_2017B_v1',
+			     path      = '{0}/SingleMuonRun2017B_17Nov2017_v1'.format(path),
 			     nJobs     = 30,
-			     suffix    = 'Electron_2017D'
+			     suffix    = 'Muon_2017B'
 			    ),
-			 cfg(data_name = 'Electron_2017E_v1',
-			    path      = '{0}/SingleElectronRun2017E_31Mar2018_v1'.format(path),
+			 cfg(data_name = 'Muon_2017C_v1',
+			     path      = '{0}/SingleMuonRun2017C_17Nov2017_v1'.format(path),
+			     nJobs     = 30,
+			     suffix    = 'Muon_2017C'
+			    ),
+			 cfg(data_name = 'Muon_2017D_v1',
+			     path      = '{0}/SingleMuonRun2017D_17Nov2017_v1'.format(path),
+			     nJobs     = 30,
+			     suffix    = 'Muon_2017D'
+			    ),
+			 cfg(data_name = 'Muon_2017E_v1',
+			    path      = '{0}/SingleMuonRun2017E_17Nov2017_v1'.format(path),
 			    nJobs     = 30,
-			    suffix    = 'Electron_2017E'
+			    suffix    = 'Muon_2017E'
+			   ),
+			 cfg(data_name = 'Muon_2017F_v1',
+			    path      = '{0}/SingleMuonRun2017F_17Nov2017_v1'.format(path),
+			    nJobs     = 30,
+			    suffix    = 'Muon_2017F'
 			   ),
 			]
+
 
 
 path = "/eos/uscms/store/user/corderom/mc_legacy_gen_2017"
@@ -819,7 +865,8 @@ mc_dict['JC_DYJets_2017Reco']=[
 
 mc_dict['JC_ZG_ZToLL_2017Reco']=[	
 		 	cfg(data_name = 'ZGToLLG',
-		 	    path      = '{0}/ZGToLLG_01J_5f_TuneCP5_13TeV-amcatnloFXFX-pythia8/2017_mc_legacy_ZGToLLG_01J_5f_TuneCP5_13TeV-amcatnloFXFX-pythia8_RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_/191018_203100/'.format(path),
+		 	    #path      = '{0}/ZGToLLG_01J_5f_TuneCP5_13TeV-amcatnloFXFX-pythia8/2017_mc_legacy_ZGToLLG_01J_5f_TuneCP5_13TeV-amcatnloFXFX-pythia8_RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_/191018_203100/'.format(path),
+			    path      = '/eos/uscms/store/user/lpchzg/corderom/mc_2017/ZGToLLG_01J_LoosePtlPtg_5f_TuneCP5_13TeV-amcatnloFXFX-pythia8/2017_mc_legacy_ZGToLLG_01J_LoosePtlPtg_5f_TuneCP5_13TeV-amcatnloFXFX-pythia8_RunIIFall17MiniAODv2-PU2017_12Apr2018/191205_135218/',
 			    nJobs     = 50,
 			    suffix    = 'zgtollg'
 			),
@@ -876,16 +923,17 @@ mc_dict['JC_ZZ_2017Reco']=[
 				    suffix    = 'zzto2l2nu'
 				),
 				cfg(data_name = 'ZZTo2L2Q',
-				    path      = '{0}/ZZTo2L2Q_13TeV_amcatnloFXFX_madspin_pythia8/2017_mc_legacy_ZZTo2L2Q_13TeV_amcatnloFXFX_madspin_pythia8_RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realis/191011_035910/0000/'.format(path),
+				    path      = '{0}/ZZTo2L2Q_13TeV_amcatnloFXFX_madspin_pythia8/2017_mc_legacy_ZZTo2L2Q_13TeV_amcatnloFXFX_madspin_pythia8_RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realis/191018_203518/'.format(path),
 				    nJobs     = 10,
 				    suffix    = 'zzto2l2q'
 				),
 				]
 ######################################################################################################
 
+
 batch_list = []
 batch_list += sum([data_dict[n] for n in data_samples], []) 
-batch_list += sum([mc_dict[n] for n in mc_samples], []) 
+#batch_list += sum([mc_dict[n]   for n in   mc_samples], []) 
 
 batch = bm.BatchMaster(config_list = batch_list, 
                        stage_dir   = 'batch',
