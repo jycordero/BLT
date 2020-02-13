@@ -11,10 +11,10 @@ legacy = True
 #legacy = False
 
 #selection  = 'jetjetgmjetjet'
-#selection  = 'mumug'
+selection  = 'mumug'
 #selection  = 'mumu'
 #selection  = 'elelg'
-selection  = 'ee'
+#selection  = 'ee'
 
 #period     = '2016'
 period     = '2017'
@@ -74,6 +74,8 @@ elif period == '2017':
 	############  DATA
 	if selection == "mumug":
 		data_samples += ['double_mu_2017Reco']
+	elif selection == "elelg":
+		data_samples += ['double_el_2017Reco']
 	elif selection == 'ee':
 		data_samples += ['single_el_2017Reco']
 	elif selection == 'mumu':
@@ -81,16 +83,17 @@ elif period == '2017':
 	
 	############  MC
 	if selection == "mumug":
-		mc_samples += ['JC_TT_2017Reco']
 		mc_samples += ['JC_ZG_ZToLL_2017Reco']
-		mc_samples += ['JC_WJets_2017Reco']
+		#mc_samples += ['JC_WJets_2017Reco']
 		mc_samples += ['JC_DYJets_2017Reco']
-		mc_samples += ['JC_WZ_2017Reco','JC_ZZ_2017Reco','JC_WW_2017Reco']
-
-		#mc_samples += ['JC_WZ_2017Reco']
-		#mc_samples += ['JC_ZZ_2017Reco']
-		#mc_samples += ['JC_WW_2017Reco']
-
+		#mc_samples += ['JC_WZ_2017Reco','JC_ZZ_2017Reco','JC_WW_2017Reco']
+		#mc_samples += ['JC_TT_2017Reco']
+	elif selection == "elelg":
+		#mc_samples += ['JC_ZG_ZToLL_2017Reco']
+		#mc_samples += ['JC_WJets_2017Reco']
+		#mc_samples += ['JC_DYJets_2017Reco']
+		#mc_samples += ['JC_WZ_2017Reco','JC_ZZ_2017Reco','JC_WW_2017Reco']
+		mc_samples += ['JC_TT_2017Reco']
 	elif selection == "ee":
 		mc_samples += ['JC_DYJets_2017Reco']
 		mc_samples += ['JC_WJets_2017Reco']
@@ -792,6 +795,35 @@ data_dict['double_mu_2017Reco'] = [
 			     suffix    = 'DoubleMuon_2017F'
 			    ),
 			]
+path = "/eos/uscms/store/user/lpchzg/corderom/data_2017/DoubleEG/"
+data_dict['double_el_2017Reco'] = [
+			 cfg(data_name = 'DoubleEG_2017B_v1',
+			     path      = '{0}/2017_data_legacy_trigBits_DoubleEG_Run2017B-31Mar2018-v1/200120_224406/'.format(path),
+			     nJobs     = 30,
+			     suffix    = 'DoubleEG_2017B'
+			    ),
+			 cfg(data_name = 'DoubleEG_2017C_v1',
+			     path      = '{0}/2017_data_legacy_trigBits_DoubleEG_Run2017C-31Mar2018-v1/200120_224612/'.format(path),
+			     nJobs     = 30,
+			     suffix    = 'DoubleEG_2017C'
+			    ),
+			 cfg(data_name = 'DoubleEG_2017D_v1',
+			     path      = '{0}/2017_data_legacy_trigBits_DoubleEG_Run2017D-31Mar2018-v1/200120_224756/'.format(path),
+			     nJobs     = 30,
+			     suffix    = 'DoubleEG_2017D'
+			    ),
+			 cfg(data_name = 'DoubleEG_2017E_v1',
+			    path      = '{0}/2017_data_legacy_trigBits_DoubleEG_Run2017E-31Mar2018-v1/200120_224942/'.format(path),
+			    nJobs     = 30,
+			    suffix    = 'DoubleEG_2017E'
+			   ),
+			 cfg(data_name = 'DoubleEG_2017F_v1',
+			     path      = '{0}/2017_data_legacy_trigBits_DoubleEG_Run2017F-31Mar2018-v1/200120_225128/'.format(path),
+			     nJobs     = 30,
+			     suffix    = 'DoubleEG_2017F'
+			    ),
+			]
+
 path = "/eos/uscms/store/user/lpcbacon/corderom/data_2017/"
 data_dict['single_el_2017Reco'] = [
 			 #cfg(data_name = 'Electron_2017B_v1',
@@ -932,8 +964,8 @@ mc_dict['JC_ZZ_2017Reco']=[
 
 
 batch_list = []
-batch_list += sum([data_dict[n] for n in data_samples], []) 
-#batch_list += sum([mc_dict[n]   for n in   mc_samples], []) 
+#batch_list += sum([data_dict[n] for n in data_samples], []) 
+batch_list += sum([mc_dict[n]   for n in   mc_samples], []) 
 
 batch = bm.BatchMaster(config_list = batch_list, 
                        stage_dir   = 'batch',

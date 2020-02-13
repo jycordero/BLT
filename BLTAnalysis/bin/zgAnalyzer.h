@@ -208,8 +208,8 @@ public:
     Float_t llgPt, llgEta, llgPhi, llgM, llgPtOverM;
     Float_t llgMKin;
     Float_t llgMKinJames;
-    Float_t l1PhotonDEta, l1PhotonDPhi, l1PhotonDR;
-    Float_t l2PhotonDEta, l2PhotonDPhi, l2PhotonDR;
+    Float_t l1PhotonDEta, l1PhotonDPhi, l1PhotonDR, l1PhotonM, l1PhotonPt;
+    Float_t l2PhotonDEta, l2PhotonDPhi, l2PhotonDR, l2PhotonM, l2PhotonPt;
     Float_t lPhotonDRMax, lPhotonDRMin;
     Float_t dileptonPhotonDEta, dileptonPhotonDPhi, dileptonPhotonDR;
     Float_t ptt;

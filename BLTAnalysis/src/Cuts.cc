@@ -293,7 +293,7 @@ Cuts::Cuts() {
     loosePhIso.nhIso[1]                 = 5.931;
     loosePhIso.phIso[1]                 = 6.641;
 
-    //
+    /*
     mediumPhID.cutName                    = "mediumPhID"; 
     mediumPhID.PassedEleSafeVeto[0]       = 1;
     mediumPhID.HadOverEm[0]               = 0.08;
@@ -302,7 +302,18 @@ Cuts::Cuts() {
     mediumPhID.PassedEleSafeVeto[1]       = 1;
     mediumPhID.HadOverEm[1]               = 0.05;
     mediumPhID.sigmaIetaIeta[1]           = 0.045;
-    /*
+    */
+    /////////////// OLD MEDIUM ID  2017
+    mediumPhID.cutName                    = "mediumPhID"; 
+    mediumPhID.PassedEleSafeVeto[0]       = 1;
+    mediumPhID.HadOverEm[0]               = 0.02197;
+    mediumPhID.sigmaIetaIeta[0]           = 0.01015;
+    
+    mediumPhID.PassedEleSafeVeto[1]       = 1;
+    mediumPhID.HadOverEm[1]               = 0.0326;
+    mediumPhID.sigmaIetaIeta[1]           = 0.0272;
+
+    /* /////////////// OLD MEDIUM ID
     mediumPhID.PassedEleSafeVeto[0]       = 1;
     mediumPhID.HadOverEm[0]               = 0.0396;
     mediumPhID.sigmaIetaIeta[0]           = 0.01022;
@@ -321,6 +332,17 @@ Cuts::Cuts() {
     preSelPhIso.nhIso[1]                 = 0;
     preSelPhIso.phIso[1]                 = 15;
 
+    ////////////// MEDIYM ISO 2017
+    mediumPhIso.cutName                   = "mediumPhIso";
+    mediumPhIso.chIso[0]                = 1.141;
+    mediumPhIso.nhIso[0]                = 1.189;
+    mediumPhIso.phIso[0]                = 2.08;
+
+    mediumPhIso.chIso[1]                = 1.015;
+    mediumPhIso.nhIso[1]                = 2.718;
+    mediumPhIso.phIso[1]                = 3.867;
+
+    /*
     mediumPhIso.cutName                   = "mediumPhIso";
     mediumPhIso.chIso[0]                = 0.441;
     mediumPhIso.nhIso[0]                = 2.725;
@@ -329,6 +351,7 @@ Cuts::Cuts() {
     mediumPhIso.chIso[1]                = 0.442;
     mediumPhIso.nhIso[1]                = 1.715;
     mediumPhIso.phIso[1]                = 3.863;
+    */
 
     preSelPhIDV2.cutName                    = "preSelPhIDV2";
     preSelPhIDV2.PassedEleSafeVeto[0]       = 1;

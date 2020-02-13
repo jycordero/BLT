@@ -366,9 +366,13 @@ void zgAnalyzer::Begin(TTree *tree)
     outTree->Branch("l1PhotonDEta", &l1PhotonDEta);
     outTree->Branch("l1PhotonDPhi", &l1PhotonDPhi);
     outTree->Branch("l1PhotonDR"  , &l1PhotonDR);
+    outTree->Branch("l1PhotonPt"  , &l1PhotonPt);
+    outTree->Branch("l1PhotonM"   , &l1PhotonM);
     outTree->Branch("l2PhotonDEta", &l2PhotonDEta);
     outTree->Branch("l2PhotonDPhi", &l2PhotonDPhi);
     outTree->Branch("l2PhotonDR"  , &l2PhotonDR);
+    outTree->Branch("l2PhotonPt"  , &l2PhotonPt);
+    outTree->Branch("l2PhotonM"   , &l2PhotonM);
 
     outTree->Branch("lPhotonDRMax"      , &lPhotonDRMax);
     outTree->Branch("lPhotonDRMin"      , &lPhotonDRMin);
@@ -405,10 +409,10 @@ void zgAnalyzer::Begin(TTree *tree)
 
 Bool_t zgAnalyzer::Process(Long64_t entry)
 {
-    //bool debug = true;
-    bool debug = false;
-    //bool debugSelect = true;
-    bool debugSelect = false;
+    bool debug = true;
+    //bool debug = false;
+    bool debugSelect = true;
+    //bool debugSelect = false;
     
     bool debugSF = true;
     if(debug){
@@ -427,6 +431,8 @@ Bool_t zgAnalyzer::Process(Long64_t entry)
     if (debug)
 	cout << "SetRealData.....\n";
 
+
+
     genWeight = 1;
     if (!isData) {
         
@@ -438,6 +444,7 @@ Bool_t zgAnalyzer::Process(Long64_t entry)
             genWeight = -1;
             int maxBin = hTotalEvents->GetSize() - 2;
             hTotalEvents->Fill(maxBin);
+
 	    if(debug)
 		cout << "... .... Fill hist...\n";
         }
@@ -525,9 +532,22 @@ Bool_t zgAnalyzer::Process(Long64_t entry)
             if (fabs(particle->pdgId) == 22) 
                 genPhotons.push_back(particle);    
 
-            }
+        }
+        ///////////////////////////
+        // veto flag ar gen level 
+	bool genPhotonFlag = false;
+        for (unsigned int i = 0; i < genPhotons.size(); ++i) {
+                TGenParticle *pho = genPhotons.at(i);
+                if (pho->fromHardProcessFinalState || pho->isPromptFinalState) {
+			if(pho->pdgId == 22){
+				genPhotonFlag = true;
+			}
+                }
+        }
+	if(genPhotonFlag)
+		hTotalEvents->Fill(29);
 
-            nPartons = count; // This is saved for reweighting inclusive DY and combining it with parton binned DY
+        nPartons = count; // This is saved for reweighting inclusive DY and combining it with parton binned DY
 
     } else {
         nPartons = 0;
@@ -577,9 +597,13 @@ Bool_t zgAnalyzer::Process(Long64_t entry)
 				genPhotonPt  = genPhotons[0]->pt;
 				genPhotonEta = genPhotons[0]->eta;
 				genPhotonPhi = genPhotons[0]->phi;
+
 			}
 		}
 	}
+
+	
+
     }
 
     if (debug){
@@ -910,9 +934,12 @@ Bool_t zgAnalyzer::Process(Long64_t entry)
                 && fabs(photon->scEta) < 2.5 
                 && (fabs(photon->scEta) <= 1.4442 || fabs(photon->scEta) >= 1.566)
                 //&& particleSelector->PassPhotonMVA(photon, cuts->looseMVAPhID)
-                //&& particleSelector->PassPhotonID(photon, cuts->mediumPhID)
-                && particleSelector->PassPhotonID(photon, cuts->preSelPhID)
+                
+                && particleSelector->PassPhotonID (photon, cuts->preSelPhID)
                 && particleSelector->PassPhotonIso(photon, cuts->preSelPhIso,EAPho)	
+                //
+                //&& particleSelector->PassPhotonID (photon, cuts->mediumPhID)
+                //&& particleSelector->PassPhotonIso(photon, cuts->mediumPhIso,EAPho)	
 		&& GetWorstChIsolation(photon) < 15
                 && photon->passElectronVeto
             ) {
@@ -1507,30 +1534,35 @@ Bool_t zgAnalyzer::Process(Long64_t entry)
         
 	if(debugSelect)
 		cout << "--- Dilep Fill" << endl;
-        dileptonPt = dileptonP4.Pt();
+        dileptonPt  = dileptonP4.Pt();
         dileptonEta = dileptonP4.Eta();
         dileptonPhi = dileptonP4.Phi();
-        dileptonM = dileptonP4.M();
+        dileptonM   = dileptonP4.M();
         //dileptonMKin = (muonOneP4KinFit + muonTwoP4KinFit).M();
         //dileptonMKinJames = (muonOneP4KinFitJames + muonTwoP4KinFitJames).M();
         dileptonDEta = fabs(leptonOneP4.Eta() - leptonTwoP4.Eta());
         dileptonDPhi = fabs(leptonOneP4.DeltaPhi(leptonTwoP4));
         dileptonDR = leptonOneP4.DeltaR(leptonTwoP4);
 
-        llgPt = llgP4.Pt();
+        llgPt  = llgP4.Pt();
         llgEta = llgP4.Eta();
         llgPhi = llgP4.Phi();
-        llgM = llgP4.M();
+        llgM   = llgP4.M();
         llgPtOverM = llgP4.Pt()/llgP4.M();
         //llgMKin = (muonOneP4KinFit + muonTwoP4KinFit + photonOneP4).M();
         //llgMKinJames = (muonOneP4KinFitJames + muonTwoP4KinFitJames + photonOneP4).M();
         
         l1PhotonDEta = fabs(leptonOneP4.Eta() - photonOneP4.Eta());
         l1PhotonDPhi = fabs(leptonOneP4.DeltaPhi(photonOneP4));
-        l1PhotonDR = leptonOneP4.DeltaR(photonOneP4);
+        l1PhotonDR   = leptonOneP4.DeltaR(photonOneP4);
+        l1PhotonM    = (leptonOneP4 + photonOneP4).M();
+        l1PhotonPt   = (leptonOneP4 + photonOneP4).Pt();
+
         l2PhotonDEta = fabs(leptonTwoP4.Eta() - photonOneP4.Eta());
         l2PhotonDPhi = fabs(leptonTwoP4.DeltaPhi(photonOneP4));
-        l2PhotonDR = leptonTwoP4.DeltaR(photonOneP4);
+        l2PhotonDR   = leptonTwoP4.DeltaR(photonOneP4);
+        l2PhotonM    = (leptonTwoP4 + photonOneP4).M();
+        l2PhotonPt   = (leptonTwoP4 + photonOneP4).Pt();
         
         if (l1PhotonDR > l2PhotonDR) {
             lPhotonDRMax = l1PhotonDR;
@@ -1715,6 +1747,8 @@ Bool_t zgAnalyzer::Process(Long64_t entry)
 		cout << "------ Muon Trigger Weights" << endl;
             triggerWeight = muonTrigWeightOne*muonTrigWeightTwo;
             eventWeight *= triggerWeight;
+
+
 
             if(debugSelect)
 		cout << "------ Photon ID Weights" << endl;
@@ -2257,10 +2291,15 @@ Bool_t zgAnalyzer::Process(Long64_t entry)
 
         l1PhotonDEta = fabs(leptonOneP4.Eta() - photonOneP4.Eta());
         l1PhotonDPhi = fabs(leptonOneP4.DeltaPhi(photonOneP4));
-        l1PhotonDR = leptonOneP4.DeltaR(photonOneP4);
+        l1PhotonDR   = leptonOneP4.DeltaR(photonOneP4);
+        l1PhotonM    = (leptonOneP4 + photonOneP4).M();
+        l1PhotonPt   = (leptonOneP4 + photonOneP4).Pt();
+
         l2PhotonDEta = fabs(leptonTwoP4.Eta() - photonOneP4.Eta());
         l2PhotonDPhi = fabs(leptonTwoP4.DeltaPhi(photonOneP4));
-        l2PhotonDR = leptonTwoP4.DeltaR(photonOneP4);
+        l2PhotonDR   = leptonTwoP4.DeltaR(photonOneP4);
+        l2PhotonM    = (leptonTwoP4 + photonOneP4).M();
+        l2PhotonPt   = (leptonTwoP4 + photonOneP4).Pt();
 
         if (l1PhotonDR > l2PhotonDR) {
             lPhotonDRMax = l1PhotonDR;

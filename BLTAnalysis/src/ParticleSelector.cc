@@ -655,6 +655,7 @@ bool ParticleSelector::PassPhotonIso(const baconhep::TPhoton* ph, const Cuts::ph
                     )
            ) isoPass = true;
     } if(cutLevel.cutName == "mediumPhIso"){
+	/*//////////////// 2016 
         if (
                 (
                  fabs(ph->scEta) < 1.4442
@@ -666,6 +667,21 @@ bool ParticleSelector::PassPhotonIso(const baconhep::TPhoton* ph, const Cuts::ph
                     && max((double)chIsoCor,0.)      < cutLevel.chIso[1]
                     && max((double)nhIsoCor,0.)      < cutLevel.nhIso[1] + 0.0163*ph->pt + 0.000014*ph->pt*ph->pt
                     && max((double)phIsoCor,0.)      < cutLevel.phIso[1] + 0.0034*ph->pt
+                    )
+           ) isoPass = true;
+	*/
+	///////////////// 2017 
+        if (
+                (
+                 fabs(ph->scEta) < 1.4442
+                 && max((double)chIsoCor,0.)      < cutLevel.chIso[0]
+                 && max((double)nhIsoCor,0.)      < cutLevel.nhIso[0] + 0.01512*ph->pt + 0.00002259*ph->pt*ph->pt
+                 && max((double)phIsoCor,0.)      < cutLevel.phIso[0] + 0.0037*ph->pt
+                ) || (
+                    fabs(ph->scEta) > 1.566
+                    && max((double)chIsoCor,0.)      < cutLevel.chIso[1]
+                    && max((double)nhIsoCor,0.)      < cutLevel.nhIso[1] + 0.0117*ph->pt + 0.000023*ph->pt*ph->pt
+                    && max((double)phIsoCor,0.)      < cutLevel.phIso[1] + 0.004017*ph->pt
                     )
            ) isoPass = true;
     } else {

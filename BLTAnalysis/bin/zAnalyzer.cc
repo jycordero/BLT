@@ -1044,6 +1044,12 @@ Bool_t zAnalyzer::Process(Long64_t entry)
 	    Dilep = Electron + Photon;
 
 	    PhotonProbe->Fill(Photon.Pt(),Photon.Eta(),1);
+
+	    bool Leg1 = false;
+	    for(unsigned int iT = 0; iT < triggerNames.size() ; iT++) {
+		Leg1 |= trigger->passObj(triggerNames.at(iT), 1, electrons[TagIndex]->hltMatchBits);
+	    }
+	    cout << " LEG " << Leg1 << " | Bits" << electrons[TagIndex]->hltMatchBits << endl;
 		
 	    if(    particleSelector->PassPhotonID (photons[ProbeIndex], cuts->preSelPhID) )
 		    ProbeIDPass = true;
@@ -1261,6 +1267,9 @@ Bool_t zAnalyzer::Process(Long64_t entry)
 			dileptonPhi  = Dilep.Phi();
 			dileptonM    = Dilep.M();
 		}// Tag If
+
+
+
 	    }
 	    if(debugSelect)
 		cout << "---- Start Fill" <<endl;
@@ -1269,9 +1278,16 @@ Bool_t zAnalyzer::Process(Long64_t entry)
 		return kTRUE;
 	    if(!GoodMuonProbe)
 		return kTRUE;
+
+	    bool Leg1 = false;
+	    for(unsigned int iT = 0; iT < triggerNames.size() ; iT++) {
+		Leg1 |= trigger->passObj(triggerNames.at(iT), 1, muons[TagIDPassIndex]->hltMatchBits);
+	    }
+	    cout << " LEG " << Leg1 << " | Bits" << muons[TagIDPassIndex]->hltMatchBits << endl;
     }
 
         
+
 
     outTree->Fill();
     this->passedEvents++;

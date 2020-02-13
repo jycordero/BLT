@@ -467,9 +467,14 @@ void WeightUtils::SetPhotonIDWeights(std::string PeriodFolder ){
 	else if(PeriodFolder == "Legacy2016"){
 	}
 	else if(PeriodFolder == "ReReco2017"){
+		
 		_fileName = _cmssw_base + "/src/BLT/BLTAnalysis/data/"+ PeriodFolder+"/photon_id/sf_photon_id_2017.root";
 		TFile* f_gammaIdSF_BCDEF = new TFile(_fileName.c_str(), "OPEN");
 		_gmSF_PreSel_ID_BCDEF = (TH2F*)f_gammaIdSF_BCDEF->Get("EGamma_sf");
+		
+		//_fileName = _cmssw_base + "/src/BLT/BLTAnalysis/data/"+ PeriodFolder+"/photon_id/2017_PhotonsMedium.root";
+		//TFile* f_gammaIdSF_BCDEF = new TFile(_fileName.c_str(), "OPEN");
+		//_gmSF_PreSel_ID_BCDEF = (TH2F*)f_gammaIdSF_BCDEF->Get("EGamma_SF2D");
 	}
 }
 void WeightUtils::SetPhotonISOWeights(std::string PeriodFolder ){}
@@ -895,9 +900,7 @@ float WeightUtils::GetHZZElectronRecoIdEff(TElectron& electron) const
 float WeightUtils::GetPhotonIdEff(TPhoton& photon) const{
 	float tmpPhotonPt;
 	float weight = 1;
-
-
-	cout << "            GETTING ID     " << endl;
+	cout << "---- Get Weight\n";
 
 	if(_dataPeriod == "2016Legacy"){
 	}
@@ -906,7 +909,12 @@ float WeightUtils::GetPhotonIdEff(TPhoton& photon) const{
 		//cout << " Ph ETA:: " << photon.scEta << " Ph PT::" << tmpPhotonPt << " | Index:: "<< _gmSF_PreSel_ID_BCDEF->FindBin(tmpPhotonPt,photon.scEta) << endl;
 		weight *= _gmSF_PreSel_ID_BCDEF->GetBinContent( _gmSF_PreSel_ID_BCDEF->FindBin(tmpPhotonPt,photon.scEta)  );
 	}
-
+	//else if(_dataPeriod == "2017ReReco"){
+	//	tmpPhotonPt = (photon.calibPt < 500) ? photon.calibPt:500;
+	//	weight *= _gmSF_PreSel_ID_BCDEF->GetBinContent( _gmSF_PreSel_ID_BCDEF->FindBin(photon.scEta,tmpPhotonPt)  );
+	//}
+	
+	cout << "---- Got Weight\n";
 	if(weight == 0)
 		weight = 1.;
 	return weight;
