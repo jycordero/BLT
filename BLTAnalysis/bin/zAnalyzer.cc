@@ -287,6 +287,8 @@ void zAnalyzer::Begin(TTree *tree)
     outTree->Branch("dileptonDR"       , &dileptonDR);
     outTree->Branch("dileptonMKin"     , &dileptonMKin);
     outTree->Branch("dileptonMKinJames", &dileptonMKinJames);
+
+
     // dilepton vertices
     //outTree->Branch("dileptonVertexOne", &dileptonVertexOne);
     //outTree->Branch("dileptonVertexErrOne", &dileptonVertexErrOne);
@@ -1125,7 +1127,8 @@ Bool_t zAnalyzer::Process(Long64_t entry)
 
 	    photonIsConvWeight = weights->GetPhotonIsConvEff(*photons[ProbeIndex]);
             eventWeight *= photonIsConvWeight;
-                
+
+
 
 
 	    if(debugSelect)
@@ -1284,6 +1287,8 @@ Bool_t zAnalyzer::Process(Long64_t entry)
 		Leg1 |= trigger->passObj(triggerNames.at(iT), 1, muons[TagIDPassIndex]->hltMatchBits);
 	    }
 	    cout << " LEG " << Leg1 << " | Bits" << muons[TagIDPassIndex]->hltMatchBits << endl;
+
+
     }
 
         

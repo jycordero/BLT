@@ -557,43 +557,62 @@ Bool_t zgAnalyzer::Process(Long64_t entry)
 	if(genPhotons.size() > 0 && genLeptons.size() == 2){
 		hTotalEventsGen->Fill(1);
 		Sgen++;
-		if(params->selection == "mumug"){
-			//if(genPhotons[0]->pt > 15 && genLeptons[0]->pt > 20 && genLeptons[1]->pt > 10){
-			//	if((fabs(genPhotons[0]->eta) < 1.4442 || fabs(genPhotons[0]->eta) > 1.566) 
-			//	&& fabs(genPhotons[0]->eta) < 2.4 
-			//	&& fabs(genLeptons[0]->eta) < 2.4 
-			//	&& fabs(genLeptons[1]->eta) < 2.4
-			//	)
-			hTotalEventsGen->Fill(2);
-			SgenAccep++;
 
-			genLeptonOnePt  = genLeptons[0]->pt;
-			genLeptonOneEta = genLeptons[0]->eta;
-			genLeptonOnePhi = genLeptons[0]->phi;
-			genLeptonTwoPt  = genLeptons[1]->pt;
-			genLeptonTwoEta = genLeptons[1]->eta;
-			genLeptonTwoPhi = genLeptons[1]->phi;
-			genPhotonPt  = genPhotons[0]->pt;
-			genPhotonEta = genPhotons[0]->eta;
-			genPhotonPhi = genPhotons[0]->phi;
-			//}
-		}
-		else if(params->selection == "elelg"){
-			if(genPhotons[0]->pt > 15 && genLeptons[0]->pt > 25 && genLeptons[1]->pt > 15){
+		TLorentzVector genPhotonP4, genLeptonOneP4,genLeptonTwoP4;
+
+		if(params->selection == "mumug"){
+			genPhotonP4   .SetPtEtaPhiM(genPhotons[0]->pt, genPhotons[0]->eta, genPhotons[0]->phi, 0.);
+			genLeptonOneP4.SetPtEtaPhiM(genLeptons[0]->pt, genLeptons[0]->eta, genLeptons[0]->phi, MUON_MASS);
+			genLeptonTwoP4.SetPtEtaPhiM(genLeptons[1]->pt, genLeptons[1]->eta, genLeptons[1]->phi, MUON_MASS);
+
+			if(genPhotons[0]->pt > 15 && genLeptons[0]->pt > 25 && genLeptons[1]->pt > 20){
 				if((fabs(genPhotons[0]->eta) < 1.4442 || fabs(genPhotons[0]->eta) > 1.566) 
 				&& fabs(genPhotons[0]->eta) < 2.4 
 				&& fabs(genLeptons[0]->eta) < 2.4 
 				&& fabs(genLeptons[1]->eta) < 2.4
+				&& genPhotonP4.DeltaR(genLeptonOneP4) > 0.7
+				&& genPhotonP4.DeltaR(genLeptonTwoP4) > 0.7
 				)
-				hTotalEventsGen->Fill(2);
+				hTotalEventsGen->Fill(15);
 				SgenAccep++;
 
 				genLeptonOnePt  = genLeptons[0]->pt;
 				genLeptonOneEta = genLeptons[0]->eta;
 				genLeptonOnePhi = genLeptons[0]->phi;
+
 				genLeptonTwoPt  = genLeptons[1]->pt;
 				genLeptonTwoEta = genLeptons[1]->eta;
 				genLeptonTwoPhi = genLeptons[1]->phi;
+
+				genPhotonPt  = genPhotons[0]->pt;
+				genPhotonEta = genPhotons[0]->eta;
+				genPhotonPhi = genPhotons[0]->phi;
+			}
+		}
+		else if(params->selection == "elelg"){
+			genPhotonP4   .SetPtEtaPhiM(genPhotons[0]->pt, genPhotons[0]->eta, genPhotons[0]->phi, 0.);
+			genLeptonOneP4.SetPtEtaPhiM(genLeptons[0]->pt, genLeptons[0]->eta, genLeptons[0]->phi, ELE_MASS);
+			genLeptonTwoP4.SetPtEtaPhiM(genLeptons[1]->pt, genLeptons[1]->eta, genLeptons[1]->phi, ELE_MASS);
+
+			if(genPhotons[0]->pt > 15 && genLeptons[0]->pt > 25 && genLeptons[1]->pt > 20){
+				if((fabs(genPhotons[0]->eta) < 1.4442 || fabs(genPhotons[0]->eta) > 1.566) 
+				&& fabs(genPhotons[0]->eta) < 2.5 
+				&& fabs(genLeptons[0]->eta) < 2.5
+				&& fabs(genLeptons[1]->eta) < 2.5
+				&& genPhotonP4.DeltaR(genLeptonOneP4) > 0.7
+				&& genPhotonP4.DeltaR(genLeptonTwoP4) > 0.7
+				)
+				hTotalEventsGen->Fill(15);
+				SgenAccep++;
+
+				genLeptonOnePt  = genLeptons[0]->pt;
+				genLeptonOneEta = genLeptons[0]->eta;
+				genLeptonOnePhi = genLeptons[0]->phi;
+
+				genLeptonTwoPt  = genLeptons[1]->pt;
+				genLeptonTwoEta = genLeptons[1]->eta;
+				genLeptonTwoPhi = genLeptons[1]->phi;
+
 				genPhotonPt  = genPhotons[0]->pt;
 				genPhotonEta = genPhotons[0]->eta;
 				genPhotonPhi = genPhotons[0]->phi;

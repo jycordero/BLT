@@ -5,22 +5,23 @@ import sys
 ''' Specify parameters '''
 cfg        = bm.JobConfig
 path       = 'root://cmseos.fnal.gov//store/user/corderom/sync_mc'
-executable = 'execBatch.sh'
 
 legacy = True
 #legacy = False
 
 #selection  = 'jetjetgmjetjet'
-selection  = 'mumug'
+#selection  = 'mumug'
 #selection  = 'mumu'
 #selection  = 'elelg'
-#selection  = 'ee'
+selection  = 'ee'
 
 #period     = '2016'
 period     = '2017'
 
-
-
+if selection == 'mumug' or selection == 'elelg':
+	executable = 'execBatch_ZG.sh'
+elif selection == 'ee':
+	executable = 'execBatch_Z.sh'
 ##########################################################################################
 data_samples = []
 mc_samples   = []
@@ -68,6 +69,7 @@ if period == '2016':
 		elif selection == "ee":
 			mc_samples += ['JB_DYJets']
 			mc_samples += ['JB_WJets']
+			mc_samples += ['JB_TT']
 		elif selection == "mumu":
 			mc_samples += ['JB_DYJets']
 elif period == '2017':
@@ -95,8 +97,9 @@ elif period == '2017':
 		#mc_samples += ['JC_WZ_2017Reco','JC_ZZ_2017Reco','JC_WW_2017Reco']
 		mc_samples += ['JC_TT_2017Reco']
 	elif selection == "ee":
-		mc_samples += ['JC_DYJets_2017Reco']
-		mc_samples += ['JC_WJets_2017Reco']
+		#mc_samples += ['JC_DYJets_2017Reco']
+		#mc_samples += ['JC_WJets_2017Reco']
+		mc_samples += ['JC_TT_2017Reco']
 ################################################
 
 
