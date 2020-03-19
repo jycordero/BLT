@@ -1478,3 +1478,76 @@ bool zAnalyzer::SignalRegionPass(const baconhep::TPhoton *photon){
 	}
 	return signalPass;
 }
+
+
+//float zAnalyzer::GetWorstChIsolation(const reco::Photon& photon,
+//                                     const edm::View<reco::Candidate>& pfCands,
+//                                     const reco::VertexCollection& vertices,
+//                                     const reco::Vertex& pv,
+//					){
+//  float worstIsolation = 0;
+//  float coneSizeDR2 = 0.3 * 0.3;
+//  float dRveto2 = 0.02 * 0.02;
+//  float dxyMx = 0.1;
+//  float dzMax = 0.2;
+//  for (unsigned int ivtx = 0; ivtx < vertices.size(); ++ivtx) {
+//	// Shift the photon according to the vertex
+//	const reco::VertexRef vtx(&vertices, ivtx);
+//	math::XYZVector phoWrtVtx(
+//				photon.superCluster()->x() - vtx->x(),
+//				photon.superCluster()->y() - vtx->y(),
+//				photon.superCluster()->z() - vtx->z()
+//				);
+//
+//	const float phoWrtVtxPhi = phoWrtVtx.phi();
+//	const float phoWrtVtxEta = phoWrtVtx.eta();
+//
+//	float sum = 0;
+//	// Loop over the PFCandidates
+//	for (auto const& aCCand : chargedCands) {
+//		auto iCand = aCCand.candidate;
+//		float dR2 = deltaR2(phoWrtVtxEta, phoWrtVtxPhi, iCand->eta(), iCand->phi());
+//		if (dR2 > coneSizeDR2 || (options & DR_VETO && dR2 < dRveto2))
+//			continue;
+//
+//		float dxy = -999;
+//		float dz = -999;
+//		if (options & PV_CONSTRAINT)
+//			getImpactParameters(aCCand, pv, dxy, dz);
+//		else
+//			getImpactParameters(aCCand, *vtx, dxy, dz);
+//
+//		if (fabs(dxy) > dxyMax || fabs(dz) > dzMax)
+//			continue;
+//
+//		sum += iCand->pt();
+//	}
+//
+//	worstIsolation = std::max(sum, worstIsolation);
+//  }
+//
+//  return worstIsolation;
+//}
+//
+//
+//bool zAnalyzer:: getCandidatePdgId(const reco::Candidate* candidate, bool isAOD) {
+//    const int pdgId = static_cast<const pat::PackedCandidate*>(candidate)->pdgId();
+//    if (pdgId == 22)
+//      return reco::PFCandidate::gamma;
+//    else if (abs(pdgId) == 130)  // PDG ID for K0L
+//      return reco::PFCandidate::h0;
+//    else if (abs(pdgId) == 211)  // PDG ID for pi+-
+//      return reco::PFCandidate::h;
+//    else
+//      return reco::PFCandidate::X;
+//}
+//
+//void getImpactParameters(const CachingPtrCandidate& candidate, const reco::Vertex& pv, float& dxy, float& dz) {
+//    if (candidate.track != nullptr) {
+//      dxy = candidate.track->dxy(pv.position());
+//      dz = candidate.track->dz(pv.position());
+//    } else {
+//      dxy = candidate.packed->dxy(pv.position());
+//      dz = candidate.packed->dz(pv.position());
+//    }
+//}

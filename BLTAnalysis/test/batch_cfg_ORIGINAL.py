@@ -1,50 +1,6 @@
 import BLT.BLTAnalysis.BatchMaster as bm
-from optparse import OptionParser
 
 import sys
-## NEED TO BE ADDED TO BE OPERATIONAL
-def getOptions():
-    """
-    Parse and return the arguments provided by the user.
-    """
-    usage = ("Usage: %prog --crabCmd CMD [--workArea WAD --crabCmdOpts OPTS]"
-             "\nThe multicrab command executes 'crab CMD OPTS' for each project directory contained in WAD"
-             "\nUse multicrab -h for help")
-
-    parser = OptionParser(usage=usage)
-
-    parser.add_option('-s', '--selection',
-                      dest = 'selection',
-                      default = '',
-                      help = "bash command",
-                      metavar = 'CMD')
-
-    parser.add_option('-p', '--period',
-                      dest = 'period',
-                      default = '',
-                      help = "period not valid",
-                      metavar = 'WAD')
-
-    parser.add_option('-d', '--doData',
-                      dest = 'doData',
-                      default = '',
-                      help = "Data Flag",
-                      metavar = 'DATA')
-
-    (options, arguments) = parser.parse_args()
-
-    if arguments:
-        parser.error("Found positional argument(s): %s." % (arguments))
-    if not options.crabCmd:
-        parser.error("(-c CMD, --crabCmd=CMD) option not provided.")
-    if options.crabCmd != 'submit':
-        if not options.workArea:
-            parser.error("(-w WAR, --workArea=WAR) option not provided.")
-        if not os.path.isdir(options.workArea):
-            parser.error("'%s' is not a valid directory." % (options.workArea))
-
-    return options
-#######################################################################################
 
 ''' Specify parameters '''
 cfg        = bm.JobConfig
@@ -148,9 +104,9 @@ elif period == '2017':
 		#mc_samples += ['JC_WZ_2017Reco','JC_ZZ_2017Reco','JC_WW_2017Reco']
 		mc_samples += ['JC_TT_2017Reco']
 	elif selection == "ee":
-		#mc_samples += ['JC_DYJets_2017Reco']
-		mc_samples += ['JC_WJets_2017Reco']
-		#mc_samples += ['JC_TT_2017Reco']
+		mc_samples += ['JC_DYJets_2017Reco']
+		#mc_samples += ['JC_WJets_2017Reco']
+		mc_samples += ['JC_TT_2017Reco']
 
 elif period == '2018':
 

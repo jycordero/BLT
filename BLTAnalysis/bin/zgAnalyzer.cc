@@ -409,12 +409,12 @@ void zgAnalyzer::Begin(TTree *tree)
 
 Bool_t zgAnalyzer::Process(Long64_t entry)
 {
-    bool debug = true;
-    //bool debug = false;
-    bool debugSelect = true;
-    //bool debugSelect = false;
+    //bool debug = true;
+    bool debug = false;
+    //bool debugSelect = true;
+    bool debugSelect = false;
     
-    bool debugSF = true;
+    //bool debugSF = true;
     if(debug){
 	cout << "=========================";
 	cout << "Start ..........\n";
@@ -554,6 +554,7 @@ Bool_t zgAnalyzer::Process(Long64_t entry)
     }
 
     if(!isData){
+	std::cout << "Enter Acceptance loop" << endl;
 	if(genPhotons.size() > 0 && genLeptons.size() == 2){
 		hTotalEventsGen->Fill(1);
 		Sgen++;
@@ -561,6 +562,7 @@ Bool_t zgAnalyzer::Process(Long64_t entry)
 		TLorentzVector genPhotonP4, genLeptonOneP4,genLeptonTwoP4;
 
 		if(params->selection == "mumug"){
+
 			genPhotonP4   .SetPtEtaPhiM(genPhotons[0]->pt, genPhotons[0]->eta, genPhotons[0]->phi, 0.);
 			genLeptonOneP4.SetPtEtaPhiM(genLeptons[0]->pt, genLeptons[0]->eta, genLeptons[0]->phi, MUON_MASS);
 			genLeptonTwoP4.SetPtEtaPhiM(genLeptons[1]->pt, genLeptons[1]->eta, genLeptons[1]->phi, MUON_MASS);
@@ -572,8 +574,11 @@ Bool_t zgAnalyzer::Process(Long64_t entry)
 				&& fabs(genLeptons[1]->eta) < 2.4
 				&& genPhotonP4.DeltaR(genLeptonOneP4) > 0.7
 				&& genPhotonP4.DeltaR(genLeptonTwoP4) > 0.7
+				&& GetGenIsolation(genPhotons[0]) < 5
 				)
-				hTotalEventsGen->Fill(15);
+
+				hTotalEventsGen->Fill(4);
+				hTotalEvents->Fill(15);
 				SgenAccep++;
 
 				genLeptonOnePt  = genLeptons[0]->pt;
@@ -595,12 +600,15 @@ Bool_t zgAnalyzer::Process(Long64_t entry)
 			genLeptonTwoP4.SetPtEtaPhiM(genLeptons[1]->pt, genLeptons[1]->eta, genLeptons[1]->phi, ELE_MASS);
 
 			if(genPhotons[0]->pt > 15 && genLeptons[0]->pt > 25 && genLeptons[1]->pt > 20){
-				if((fabs(genPhotons[0]->eta) < 1.4442 || fabs(genPhotons[0]->eta) > 1.566) 
+				if((fabs(genPhotons[0]->eta) < 1.4442 || fabs(genPhotons[0]->eta) > 1.566)
+ 				&& (fabs(genLeptons[0]->eta) < 1.4442 || fabs(genLeptons[0]->eta) > 1.566) 
+ 				&& (fabs(genLeptons[1]->eta) < 1.4442 || fabs(genLeptons[1]->eta) > 1.566) 
 				&& fabs(genPhotons[0]->eta) < 2.5 
 				&& fabs(genLeptons[0]->eta) < 2.5
 				&& fabs(genLeptons[1]->eta) < 2.5
 				&& genPhotonP4.DeltaR(genLeptonOneP4) > 0.7
 				&& genPhotonP4.DeltaR(genLeptonTwoP4) > 0.7
+				&& GetGenIsolation(genPhotons[0]) < 5
 				)
 				hTotalEventsGen->Fill(15);
 				SgenAccep++;
