@@ -127,6 +127,7 @@ void zgAnalyzer::Begin(TTree *tree)
     	cout << "--- LumiMask \n";
     // Set up object to handle good run-lumi filtering if necessary
     lumiMask = RunLumiRangeMap();
+    string jsonFileName;
     if( params->period == "2016Legacy"){
         string lumiFile = "Cert_314472-325175_13TeV_PromptReco_Collisions18_JSON.txt";
         jsonFileName = cmssw_base + "/src/BLT/BLTAnalysis/data/" + PeriodFolder + "/lumiMask/" + lumiFile;
