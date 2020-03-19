@@ -66,6 +66,8 @@ void zgAnalyzer::Begin(TTree *tree)
 	params->period = "2016Legacy";
     else if (params->period == "2017")
 	params->period = "2017ReReco";
+    else if(params->period == "2018");
+	params->period = "2018ReReco";
 
     if(params->period == "2016Legacy")
 	PeriodFolder= "Legacy2016";
@@ -73,6 +75,8 @@ void zgAnalyzer::Begin(TTree *tree)
 	PeriodFolder = "ReReco2017";
     else if (params->period == "2016ReReco")
 	PeriodFolder = "ReReco2016";
+    else if(params->period == "2018ReReco")
+	PeriodFolder = "ReReco2018";
 
     
     if(confDebug)
@@ -116,6 +120,17 @@ void zgAnalyzer::Begin(TTree *tree)
 		triggerNames.push_back("HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_v*");
 	}
     }
+    else if(params->period == "2018" || params->period ==  "2018ReReco" || params->period == "2018Legacy"){
+	if (params->selection == "mumu" || params->selection == "mumug") {
+		triggerNames.push_back("HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8_v*");
+		triggerNames.push_back("HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass8_v*");
+		cout << "\n\n\nTHE RIGHT TRIGGERS\n\n\n";
+	}
+	else if (params->selection == "ee" || params->selection == "elelg") {
+		triggerNames.push_back("HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v*");
+		triggerNames.push_back("HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_v*");
+	}
+    }
  
     if(confDebug)
 	cout << "--- Weights \n";
@@ -146,7 +161,7 @@ void zgAnalyzer::Begin(TTree *tree)
 
         muonCorr = new RoccoR(cmssw_base + "/src/BLT/BLTAnalysis/data/" + PeriodFolder + "/roccor.2017.v0/RoccoR2017v0.txt");
     }
-    else if(params->period == "20178ReReco"){
+    else if(params->period == "2018ReReco"){
         string lumiFile = "Cert_314472-325175_13TeV_PromptReco_Collisions18_JSON.txt";
         jsonFileName = cmssw_base + "/src/BLT/BLTAnalysis/data/" + PeriodFolder + "/lumiMask/" + lumiFile;
 
@@ -420,10 +435,10 @@ void zgAnalyzer::Begin(TTree *tree)
 
 Bool_t zgAnalyzer::Process(Long64_t entry)
 {
-    //bool debug = true;
-    bool debug = false;
-    //bool debugSelect = true;
-    bool debugSelect = false;
+    bool debug = true;
+    //bool debug = false;
+    bool debugSelect = true;
+    //bool debugSelect = false;
     
     //bool debugSF = true;
     if(debug){
@@ -565,7 +580,7 @@ Bool_t zgAnalyzer::Process(Long64_t entry)
     }
 
     if(!isData){
-	std::cout << "Enter Acceptance loop" << endl;
+	//std::cout << "Enter Acceptance loop" << endl;
 	if(genPhotons.size() > 0 && genLeptons.size() == 2){
 		hTotalEventsGen->Fill(1);
 		Sgen++;
@@ -660,6 +675,10 @@ Bool_t zgAnalyzer::Process(Long64_t entry)
 	cout<< "Lumi mask passed\n";
 
     /* Trigger selection */
+
+    if(debug)
+	cout << "--Trig: Before\n" << endl;
+
     bool passTrigger = false;
     vector<string> passTriggerNames;
     for (unsigned i = 0; i < triggerNames.size(); ++i) {
@@ -676,7 +695,7 @@ Bool_t zgAnalyzer::Process(Long64_t entry)
     hTotalEvents->Fill(3);
 
     if(debug)
-	cout << "HLT Trigger passed\n" << endl;
+	cout << "--Trig: Passed\n" << endl;
     /////////////////////
     // Fill event info //
     /////////////////////
@@ -687,6 +706,9 @@ Bool_t zgAnalyzer::Process(Long64_t entry)
     lumiSection   = fInfo->lumiSec;
     triggerStatus = passTrigger;
     nPV           = fPVArr->GetEntries();
+    if(debug)
+	cout << "--PUreW: Before" << endl;
+
     if (!isData) {
         nPU = fInfo->nPUmean;
         puWeight = weights->GetPUWeight(nPU); // pileup reweighting
@@ -694,12 +716,16 @@ Bool_t zgAnalyzer::Process(Long64_t entry)
     } else {
         nPU = 0;
     }    
-
+    if(debug)
+	cout << "--PUreW: Applied" << endl;
     ///////////////////
     // Select objects//
     ///////////////////
 
     /* Vertices */
+    
+    if(debug)
+	cout << "--PV: Before" << endl;
     TVertex* thePV;
     if (fInfo->hasGoodPV) {
         assert(fPVArr->GetEntries() != 0);
@@ -716,7 +742,7 @@ Bool_t zgAnalyzer::Process(Long64_t entry)
     hTotalEvents->Fill(4);
 
     if(debug)
-	cout << "PV passed\n" << endl;
+	cout << "--PV: passed\n" << endl;
     particleSelector->SetNPV(fInfo->nPU + 1);
     particleSelector->SetRho(fInfo->rhoJet);
     Rho = fInfo->rhoJet;
@@ -740,6 +766,8 @@ Bool_t zgAnalyzer::Process(Long64_t entry)
         TLorentzVector muonP4;
         copy_p4(muon, MUON_MASS, muonP4);
         double muonSF = 1.;
+	if(debug)
+		cout << "--MuonsRoccor Application Before\n";
         if (isData) {
             muonSF = muonCorr->kScaleDT(muon->q, muon->pt, muon->eta, muon->phi, 0, 0);
         } else {
@@ -748,7 +776,7 @@ Bool_t zgAnalyzer::Process(Long64_t entry)
                     0, 0);
         }
 	if(debug)
-		cout << "Muons correction\n";
+		cout << "--MuonsRoccor Application After\n";
         if (sync_print_precut) {
             cout << "pt_before_roccor, pt_after_roccor" << endl;
             cout << muon->pt << ", ";

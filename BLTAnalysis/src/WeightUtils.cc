@@ -19,6 +19,8 @@ WeightUtils::WeightUtils(string dataPeriod, string selection, bool isRealData)
 		PeriodFolder = "Legacy2016";
 	else if (dataPeriod == "2017ReReco")
 		PeriodFolder = "ReReco2017";
+	else if (dataPeriod == "2018ReReco")
+		PeriodFolder = "ReReco2018";
 	
 
 
@@ -64,6 +66,10 @@ void WeightUtils::SetPUWeights(std::string PeriodFolder){
 		_fileName = _cmssw_base + "/src/BLT/BLTAnalysis/data/" + PeriodFolder + "/pu_reweight/pileup_sf_2016_full.root";
 	else if(PeriodFolder == "ReReco2017")
 		_fileName = _cmssw_base + "/src/BLT/BLTAnalysis/data/" + PeriodFolder + "/pu_reweight/pileup_sf_2017_full.root";
+	else if(PeriodFolder == "ReReco2018")
+		_fileName = _cmssw_base + "/src/BLT/BLTAnalysis/data/" + PeriodFolder + "/pu_reweight/pileup_sf_2018_full.root";
+
+	cout << " PUWEIGHT:: " << PeriodFolder  << "  ||  " << _fileName << endl;
 
 	TFile* puFile = new TFile(_fileName.c_str(), "OPEN");
 	_puReweight = (TGraph*)puFile->Get("pileup_sf");

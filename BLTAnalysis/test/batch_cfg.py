@@ -1054,62 +1054,127 @@ path = '/eos/uscms/store/user/lpcbacon/corderom/data_2018/DoubleMuon/'
 
 ##############  DOUBLE MUON DATA ########################
 data_dict['double_mu_2018Reco'] = [
+			 cfg(data_name = 'DoubleMuon_2018A_v1',
+			     path      = '{0}/2018_data_trigBits_DoubleMuon_Run2018A-17Sep2018-v2/200223_073427/'.format(path),
+			     nJobs     = 30,
+			     suffix    = 'DoubleMuon_2018A'
+			    ),
 			 cfg(data_name = 'DoubleMuon_2018B_v1',
-			     path      = '{0}/2018_data_legacy_DoubleMuon_Run2018B-31Mar2018-v1/190923_203833/'.format(path),
+			     path      = '{0}/2018_data_trigBits_DoubleMuon_Run2018B-17Sep2018-v1/200223_073613/'.format(path),
 			     nJobs     = 30,
 			     suffix    = 'DoubleMuon_2018B'
 			    ),
 			 cfg(data_name = 'DoubleMuon_2018C_v1',
-			     path      = '{0}/2018_data_legacy_DoubleMuon_Run2018C-31Mar2018-v1/190923_204104/'.format(path),
+			     path      = '{0}/2018_data_trigBits_DoubleMuon_Run2018C-17Sep2018-v1/200223_073802/'.format(path),
 			     nJobs     = 30,
 			     suffix    = 'DoubleMuon_2018C'
 			    ),
 			 cfg(data_name = 'DoubleMuon_2018D_v1',
-			     path      = '{0}/2018_data_legacy_DoubleMuon_Run2018D-31Mar2018-v1/190923_204317/'.format(path),
+			     path      = '{0}/2018_data_trigBits_DoubleMuon_Run2018D-PromptReco-v2/200223_073953/'.format(path),
 			     nJobs     = 30,
 			     suffix    = 'DoubleMuon_2018D'
 			    ),
-			 cfg(data_name = 'DoubleMuon_2018E_v1',
-			    path      = '{0}/2018_data_legacy_DoubleMuon_Run2018E-31Mar2018-v1/190923_204527/'.format(path),
-			    nJobs     = 30,
-			    suffix    = 'DoubleMuon_2018E'
-			   ),
-			 cfg(data_name = 'DoubleMuon_2018F_v1',
-			     path      = '{0}/2018_data_legacy_DoubleMuon_Run2018F-31Mar2018-v1/190923_204752/'.format(path),
-			     nJobs     = 30,
-			     suffix    = 'DoubleMuon_2018F'
-			    ),
 			]
-path = "/eos/uscms/store/user/lpchzg/corderom/data_2018/DoubleEG/"
+path = "/eos/uscms/store/user/lpchzg/corderom/data_2018/EGamma/"
 data_dict['double_el_2018Reco'] = [
+			 cfg(data_name = 'DoubleEG_2018A_v1',
+			     path      = '{0}/2018_data_trigBits_EGamma_Run2018A-17Sep2018-v2/200223_080003/'.format(path),
+			     nJobs     = 30,
+			     suffix    = 'DoubleEG_2018A'
+			    ),
 			 cfg(data_name = 'DoubleEG_2018B_v1',
-			     path      = '{0}/2018_data_legacy_trigBits_DoubleEG_Run2018B-31Mar2018-v1/200120_224406/'.format(path),
+			     path      = '{0}/2018_data_trigBits_EGamma_Run2018B-17Sep2018-v1/200223_074157/'.format(path),
 			     nJobs     = 30,
 			     suffix    = 'DoubleEG_2018B'
 			    ),
 			 cfg(data_name = 'DoubleEG_2018C_v1',
-			     path      = '{0}/2018_data_legacy_trigBits_DoubleEG_Run2018C-31Mar2018-v1/200120_224612/'.format(path),
+			     path      = '{0}/2018_data_trigBits_EGamma_Run2018C-17Sep2018-v1/200223_074342/'.format(path),
 			     nJobs     = 30,
 			     suffix    = 'DoubleEG_2018C'
 			    ),
 			 cfg(data_name = 'DoubleEG_2018D_v1',
-			     path      = '{0}/2018_data_legacy_trigBits_DoubleEG_Run2018D-31Mar2018-v1/200120_224756/'.format(path),
+			     path      = '{0}/2018_data_trigBits_EGamma_Run2018D-22Jan2019-v2/200223_081540/'.format(path),
 			     nJobs     = 30,
 			     suffix    = 'DoubleEG_2018D'
-			    ),
-			 cfg(data_name = 'DoubleEG_2018E_v1',
-			    path      = '{0}/2018_data_legacy_trigBits_DoubleEG_Run2018E-31Mar2018-v1/200120_224942/'.format(path),
-			    nJobs     = 30,
-			    suffix    = 'DoubleEG_2018E'
-			   ),
-			 cfg(data_name = 'DoubleEG_2018F_v1',
-			     path      = '{0}/2018_data_legacy_trigBits_DoubleEG_Run2018F-31Mar2018-v1/200120_225128/'.format(path),
-			     nJobs     = 30,
-			     suffix    = 'DoubleEG_2018F'
 			    ),
 			]
 
 ######################################################################################################
+
+path = "/eos/uscms/store/user/corderom/mc_2018"
+mc_dict['JC_DYJets_2018Reco']=[	
+		 	cfg(data_name = 'DYJets',
+		 	    path      = '{0}/DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8/2018_mc_trigBits_DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8_RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_/200223_094452/'.format(path),
+			    nJobs     = 50,
+			    suffix    = 'dyjets'
+			),
+		]
+
+mc_dict['JC_ZG_ZToLL_2018Reco']=[	
+		 	cfg(data_name = 'ZGToLLG',
+		 	    path      = '{0}/ZGToLLG_01J_LoosePtlPtg_5f_TuneCP5_13TeV-amcatnloFXFX-pythia8/2018_mc_trigBits_ZGToLLG_01J_LoosePtlPtg_5f_TuneCP5_13TeV-amcatnloFXFX-pythia8_RunIIAutumn18MiniAOD-102X_upgrade2018/200223_084634/'.format(path),
+			    nJobs     = 50,
+			    suffix    = 'zgtollg'
+			),
+		]
+
+mc_dict['JC_TT_2018Reco']=[	
+		 	cfg(data_name = 'TTTo2L2Nu',
+		 	    path      = '{0}/TTTo2L2Nu_TuneCP5_13TeV-powheg-pythia8/2018_mc_trigBits_TTTo2L2Nu_TuneCP5_13TeV-powheg-pythia8_RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/200223_085645/'.format(path),
+			    nJobs     = 30,
+			    suffix    = 'ttto2l2nu'
+			),
+			]
+
+mc_dict['JC_WJets_2018Reco']=[	
+				cfg(data_name = 'WJets',
+				    path      = '{0}/WJetsToLNu_TuneCP5_13TeV-madgraphMLM-pythia8/2018_mc_trigBits_WJetsToLNu_TuneCP5_13TeV-madgraphMLM-pythia8_RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v2/200223_085825/'.format(path),
+				    nJobs     = 30,
+				    suffix    = 'wjets'
+				),
+				]
+
+	
+mc_dict['JC_WZ_2018Reco']=[	
+				cfg(data_name = 'WZTo2L2Q',
+				    path      = '{0}/WZTo2L2Q_13TeV_amcatnloFXFX_madspin_pythia8/2018_mc_trigBits_WZTo2L2Q_13TeV_amcatnloFXFX_madspin_pythia8_RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/200223_084953/'.format(path),
+				    nJobs     = 30,
+				    suffix    = 'wzto2l2q'
+				),
+				cfg(data_name = 'WZTo3LNu',
+				    path      = '{0}/WZTo3LNu_TuneCP5_13TeV-amcatnloFXFX-pythia8/2018_mc_trigBits_WZTo3LNu_TuneCP5_13TeV-amcatnloFXFX-pythia8_RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15_ext/200312_141428/'.format(path),
+				    nJobs     = 30,
+				    suffix    = 'wzto3lnu'
+				),
+				]
+
+
+mc_dict['JC_WW_2018Reco']=[	
+				cfg(data_name = 'WWTo2L2Nu',
+				    path      = '{0}/WWTo2L2Nu_NNPDF31_TuneCP5_13TeV-powheg-pythia8/2018_mc_trigBits_WWTo2L2Nu_NNPDF31_TuneCP5_13TeV-powheg-pythia8_RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-/200223_084812/'.format(path),
+				    nJobs     = 10,
+				    suffix    = 'wwto2l2nu'
+				),
+				]
+
+mc_dict['JC_ZZ_2018Reco']=[	
+				cfg(data_name = 'ZZTo4L',
+				    path      = '{0}/ZZTo4L_TuneCP5_13TeV-amcatnloFXFX-pythia8/2018_mc_trigBits_ZZTo4L_TuneCP5_13TeV-amcatnloFXFX-pythia8_RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/200223_085323/'.format(path),
+				    nJobs     = 10,
+				    suffix    = 'zzto4l'
+				),
+				cfg(data_name = 'ZZTo2L2Nu',
+				    path      = '{0}/ZZTo2L2Nu_TuneCP5_13TeV_powheg_pythia8/2018_mc_trigBits_ZZTo2L2Nu_TuneCP5_13TeV_powheg_pythia8_RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15_ext2-v2/200223_085502/'.format(path),
+				    nJobs     = 10,
+				    suffix    = 'zzto2l2nu'
+				),
+				cfg(data_name = 'ZZTo2L2Q',
+				    path      = '{0}/ZZTo2L2Q_13TeV_amcatnloFXFX_madspin_pythia8/2018_mc_trigBits_ZZTo2L2Q_13TeV_amcatnloFXFX_madspin_pythia8_RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/200312_141017/'.format(path),
+				    nJobs     = 10,
+				    suffix    = 'zzto2l2q'
+				),
+				]
+
 
 
 batch_list = []

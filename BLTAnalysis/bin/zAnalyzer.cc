@@ -63,17 +63,20 @@ void zAnalyzer::Begin(TTree *tree)
 
  // Param Formating
     if(params->period == "2016")
-	params->period = "2016Legacy";
+        params->period = "2016Legacy";
     else if (params->period == "2017")
-	params->period = "2017ReReco";
+        params->period = "2017ReReco";
+    else if(params->period == "2018");
+        params->period = "2018ReReco";
 
     if(params->period == "2016Legacy")
-	PeriodFolder= "Legacy2016";
+        PeriodFolder= "Legacy2016";
     else if (params->period == "2017ReReco")
-	PeriodFolder = "ReReco2017";
+        PeriodFolder = "ReReco2017";
     else if (params->period == "2016ReReco")
-	PeriodFolder = "ReReco2016";
-
+        PeriodFolder = "ReReco2016";
+    else if(params->period == "2018ReReco")
+        PeriodFolder = "ReReco2018";
     
     if(confDebug)
 	    cout << "--- Cuts and Particle Selector \n";
@@ -115,6 +118,17 @@ void zAnalyzer::Begin(TTree *tree)
                 triggerNames.push_back("HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_v*");
         }
     }
+    else if(params->period == "2018" || params->period ==  "2018ReReco" || params->period == "2018Legacy"){
+        if (params->selection == "mumu" || params->selection == "mumug") {
+                triggerNames.push_back("HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass3p8_v*");
+                triggerNames.push_back("HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_Mass8_v*");
+        }
+        else if (params->selection == "ee" || params->selection == "elelg") {
+                triggerNames.push_back("HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v*");
+                triggerNames.push_back("HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_v*");
+        }
+    }
+
 
         
     if(confDebug)
@@ -128,29 +142,30 @@ void zAnalyzer::Begin(TTree *tree)
     lumiMask = RunLumiRangeMap();
     string jsonFileName;
     if( params->period == "2016Legacy"){
-	string lumiFile = "Cert_314472-325175_13TeV_PromptReco_Collisions18_JSON.txt";
-	jsonFileName = cmssw_base + "/src/BLT/BLTAnalysis/data/" + PeriodFolder + "/lumiMask/" + lumiFile;
+        string lumiFile = "Cert_314472-325175_13TeV_PromptReco_Collisions18_JSON.txt";
+        jsonFileName = cmssw_base + "/src/BLT/BLTAnalysis/data/" + PeriodFolder + "/lumiMask/" + lumiFile;
 
-    	muonCorr = new RoccoR(cmssw_base + "/src/BLT/BLTAnalysis/data/ReReco2016/roccor.Run2.v3/RoccoR2016.txt");
-    }	
+        muonCorr = new RoccoR(cmssw_base + "/src/BLT/BLTAnalysis/data/ReReco2016/roccor.Run2.v3/RoccoR2016.txt");
+    }
     else if(params->period == "2016ReReco"){
-	string lumiFile = "Cert_314472-325175_13TeV_PromptReco_Collisions18_JSON.txt";
-        jsonFileName = cmssw_base + "/src/BLT/BLTAnalysis/data/" + PeriodFolder + "/lumiMask/" + lumiFile; 
+        string lumiFile = "Cert_314472-325175_13TeV_PromptReco_Collisions18_JSON.txt";
+        jsonFileName = cmssw_base + "/src/BLT/BLTAnalysis/data/" + PeriodFolder + "/lumiMask/" + lumiFile;
 
-    	muonCorr = new RoccoR(cmssw_base + "/src/BLT/BLTAnalysis/data/" + PeriodFolder + "/roccor.Run2.v3/RoccoR2017.txt");
+        muonCorr = new RoccoR(cmssw_base + "/src/BLT/BLTAnalysis/data/" + PeriodFolder + "/roccor.Run2.v3/RoccoR2017.txt");
     }
     else if(params->period == "2017ReReco"){
-	string lumiFile = "Cert_314472-325175_13TeV_PromptReco_Collisions18_JSON.txt";
-	jsonFileName = cmssw_base + "/src/BLT/BLTAnalysis/data/" + PeriodFolder + "/lumiMask/" + lumiFile;
+        string lumiFile = "Cert_314472-325175_13TeV_PromptReco_Collisions18_JSON.txt";
+        jsonFileName = cmssw_base + "/src/BLT/BLTAnalysis/data/" + PeriodFolder + "/lumiMask/" + lumiFile;
 
-    	muonCorr = new RoccoR(cmssw_base + "/src/BLT/BLTAnalysis/data/" + PeriodFolder + "/roccor.2017.v0/RoccoR2017v0.txt");
+        muonCorr = new RoccoR(cmssw_base + "/src/BLT/BLTAnalysis/data/" + PeriodFolder + "/roccor.2017.v0/RoccoR2017v0.txt");
     }
-    else if(params->period == "20178ReReco"){
-	string lumiFile = "Cert_314472-325175_13TeV_PromptReco_Collisions18_JSON.txt";
-	jsonFileName = cmssw_base + "/src/BLT/BLTAnalysis/data/" + PeriodFolder + "/lumiMask/" + lumiFile;
+    else if(params->period == "2018ReReco"){
+        string lumiFile = "Cert_314472-325175_13TeV_PromptReco_Collisions18_JSON.txt";
+        jsonFileName = cmssw_base + "/src/BLT/BLTAnalysis/data/" + PeriodFolder + "/lumiMask/" + lumiFile;
 
-    	muonCorr = new RoccoR(cmssw_base + "/src/BLT/BLTAnalysis/data/" + PeriodFolder + "/roccor.2018.v3/RoccoR2018.txt");
+        muonCorr = new RoccoR(cmssw_base + "/src/BLT/BLTAnalysis/data/" + PeriodFolder + "/roccor.2018.v3/RoccoR2018.txt");
     }
+
 
     lumiMask.AddJSONFile(jsonFileName);
 
