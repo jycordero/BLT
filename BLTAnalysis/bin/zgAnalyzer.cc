@@ -1825,6 +1825,9 @@ Bool_t zgAnalyzer::Process(Long64_t entry)
 	    else if(params->period == "2017ReReco"){
 		photonIDWeight = weights->GetPhotonIdEff(*photons[photonIndex]);
 	    }
+	    else if(params->period == "2018ReReco"){
+		photonIDWeight = weights->GetPhotonIdEff(*photons[photonIndex]);
+	    }
 	    eventWeight *= photonIDWeight; 
 
 
@@ -1833,6 +1836,9 @@ Bool_t zgAnalyzer::Process(Long64_t entry)
 		photonIsConvWeight = 1; 
 	    }
 	    else if(params->period == "2017ReReco"){
+		photonIsConvWeight = weights->GetPhotonIsConvEff(*photons[photonIndex]); 
+	    }
+	    else if(params->period == "2018ReReco"){
 		photonIsConvWeight = weights->GetPhotonIsConvEff(*photons[photonIndex]); 
 	    }
 	    eventWeight *= photonIsConvWeight; 
@@ -2516,8 +2522,30 @@ Bool_t zgAnalyzer::Process(Long64_t entry)
             triggerWeight = elTrigWeightOne*elTrigWeightTwo;
             eventWeight *= triggerWeight;
            
-            photonIDWeight = weights->GetPhotonMVAIdEff(*photons[photonIndex]); 
-            eventWeight *= photonIDWeight;
+	    if(params->period == "2016Legacy"){
+		photonIDWeight = weights->GetPhotonMVAIdEff(*photons[photonIndex]); 
+	    }
+	    else if(params->period == "2017ReReco"){
+		photonIDWeight = weights->GetPhotonIdEff(*photons[photonIndex]);
+	    }
+	    else if(params->period == "2018ReReco"){
+		photonIDWeight = weights->GetPhotonIdEff(*photons[photonIndex]);
+	    }
+	    eventWeight *= photonIDWeight; 
+
+
+	    if(params->period == "2016Legacy"){
+		//photonIsConvWeight = weights->GetPhotonMVAIdEff(*photons[photonIndex]); 
+		photonIsConvWeight = 1; 
+	    }
+	    else if(params->period == "2017ReReco"){
+		photonIsConvWeight = weights->GetPhotonIsConvEff(*photons[photonIndex]); 
+	    }
+	    else if(params->period == "2018ReReco"){
+		photonIsConvWeight = weights->GetPhotonIsConvEff(*photons[photonIndex]); 
+	    }
+	    eventWeight *= photonIsConvWeight; 
+
             
             if (sync_print_precut) {
                 cout << "run,lumi,evt,puwei,totSF,trg0,trg1,id0,id1,gammaID,pt0,pt1,calibpt0,calibpt1,eta0,eta1,sceta0,sceta1" << endl;

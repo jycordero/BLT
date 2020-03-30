@@ -352,10 +352,10 @@ void zAnalyzer::Begin(TTree *tree)
 
 Bool_t zAnalyzer::Process(Long64_t entry)
 {
-    //bool debug = true;
-    bool debug = false;
-    //bool debugSelect = true;
-    bool debugSelect = false;
+    bool debug = true;
+    //bool debug = false;
+    bool debugSelect = true;
+    //bool debugSelect = false;
 
     //bool useGlobalTrigger = true;
     bool useGlobalTrigger = false;

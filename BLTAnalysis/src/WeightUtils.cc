@@ -268,6 +268,22 @@ void WeightUtils::SetMuonIDWeights(std::string PeriodFolder){
 		_muSF_loose_ID_BCDEF = (TH2F*)f_muRecoSF_Loose_ID_BCDEF->Get("NUM_LooseID_DEN_genTracks_pt_abseta");
 
 	}
+	else if(_dataPeriod == "2018ReReco"){
+		// muon tight ID sf (BCDEF)
+		_fileName = _cmssw_base + "/src/BLT/BLTAnalysis/data/" + PeriodFolder + "/muon_id/RunABCD_SF_ID.root";
+		TFile* f_muRecoSF_ID_BCDEF = new TFile(_fileName.c_str(), "OPEN"); 
+
+		_muSF_tight_ID_BCDEF = (TH2F*)f_muRecoSF_ID_BCDEF->Get("NUM_TightID_DEN_TrackerMuons_pt_abseta");
+
+
+		
+		// muon loose ID sf (BCDEF)
+		_fileName = _cmssw_base + "/src/BLT/BLTAnalysis/data/" + PeriodFolder + "/muon_id/RunABCD_SF_ID.root";
+		TFile* f_muRecoSF_Loose_ID_BCDEF = new TFile(_fileName.c_str(), "OPEN"); 
+
+		_muSF_loose_ID_BCDEF = (TH2F*)f_muRecoSF_Loose_ID_BCDEF->Get("NUM_LooseID_DEN_TrackerMuons_pt_abseta");
+
+	}
 }
 void WeightUtils::SetMuonISOWeights(std::string PeriodFolder){
 
@@ -377,6 +393,20 @@ void WeightUtils::SetMuonISOWeights(std::string PeriodFolder){
 
 		_muSF_loose_ISO_BCDEF = (TH2F*)f_muRecoSF_Loose_ISO_BCDEF->Get("NUM_LooseRelIso_DEN_TightIDandIPCut_pt_abseta");	
 	}
+	else if(_dataPeriod == "2018ReReco"){
+		// muon tight ISO sf (BCDEF)
+		_fileName = _cmssw_base + "/src/BLT/BLTAnalysis/data/" + PeriodFolder + "/muon_iso/RunABCD_SF_ISO.root";
+		 TFile* f_muRecoSF_ISO_BCDEF = new TFile(_fileName.c_str(), "OPEN"); 
+
+		_muSF_tight_ISO_BCDEF = (TH2F*)f_muRecoSF_ISO_BCDEF->Get("NUM_TightRelIso_DEN_TightIDandIPCut_pt_abseta");
+	
+
+		// muon loose ISO sf (BCDEF)
+		_fileName = _cmssw_base + "/src/BLT/BLTAnalysis/data/" + PeriodFolder + "/muon_iso/RunABCD_SF_ISO.root";
+		 TFile* f_muRecoSF_Loose_ISO_BCDEF = new TFile(_fileName.c_str(), "OPEN"); 
+
+		_muSF_loose_ISO_BCDEF = (TH2F*)f_muRecoSF_Loose_ISO_BCDEF->Get("NUM_LooseRelIso_DEN_TightIDandIPCut_pt_abseta");	
+	}
 }
 
 
@@ -414,6 +444,13 @@ void WeightUtils::SetElectronRECOWeights(std::string PeriodFolder){
 		TFile* f_eleRecoSF = new TFile(_fileName.c_str(), "OPEN"); 
 		_eleSF_RECO = (TGraphErrors*)f_eleRecoSF->Get("grSF1D_0");
 		_eleSF_RECO_2D = (TH2F *)f_eleRecoSF->Get("EGamma_SF2D");
+	
+	} else if(PeriodFolder == "ReReco2018"){
+		// electron reco efficiencies
+		_fileName = _cmssw_base + "/src/BLT/BLTAnalysis/data/"+ PeriodFolder+"/electron_reco/egammaEffi.txt_EGM2D_runBCDEF_passingRECO.root";
+		TFile* f_eleRecoSF = new TFile(_fileName.c_str(), "OPEN"); 
+		_eleSF_RECO = (TGraphErrors*)f_eleRecoSF->Get("grSF1D_0");
+		_eleSF_RECO_2D = (TH2F *)f_eleRecoSF->Get("EGamma_SF2D");
 	}
 
 }
@@ -446,16 +483,19 @@ void WeightUtils::SetElectronIDWeights(std::string PeriodFolder ){
 		_hzz_eleSF_ID[12] = (TGraphErrors*)f_hzz_eleIdSF->Get("grSF1D_12");
 
 		_hzz_eleSF_ID_2D = (TH2F *)f_hzz_eleIdSF->Get("EGamma_SF2D");
-	} else if(PeriodFolder == "ReReco2017"){
-		_fileName = _cmssw_base + "/src/BLT/BLTAnalysis/data/"+ PeriodFolder+"/egammaEffi.txt_EGM2D_runBCDEF_passingTight94X.root";
-		TFile* f_eleIdSF_tight = new TFile(_fileName.c_str(), "OPEN"); 
-		_eleSF_RECO_2D = (TH2F *)f_eleIdSF_tight->Get("EGamma_SF2D");
 	} else if(PeriodFolder == "Legacy2016"){
 		_fileName = _cmssw_base + "/src/BLT/BLTAnalysis/data/"+ PeriodFolder+"/2016LegacyReReco_ElectronTight.root";
 		TFile* f_eleIdSF_tight = new TFile(_fileName.c_str(), "OPEN"); 
 		_eleSF_RECO_2D = (TH2F *)f_eleIdSF_tight->Get("EGamma_SF2D");
+	} else if(PeriodFolder == "ReReco2017"){
+		_fileName = _cmssw_base + "/src/BLT/BLTAnalysis/data/"+ PeriodFolder+"/egammaEffi.txt_EGM2D_runBCDEF_passingTight94X.root";
+		TFile* f_eleIdSF_tight = new TFile(_fileName.c_str(), "OPEN"); 
+		_eleSF_RECO_2D = (TH2F *)f_eleIdSF_tight->Get("EGamma_SF2D");
+	} else if(PeriodFolder == "ReReco2018"){
+		_fileName = _cmssw_base + "/src/BLT/BLTAnalysis/data/"+ PeriodFolder+"/egammaEffi.txt_EGM2D_runBCDEF_passingTight94X.root";
+		TFile* f_eleIdSF_tight = new TFile(_fileName.c_str(), "OPEN"); 
+		_eleSF_RECO_2D = (TH2F *)f_eleIdSF_tight->Get("EGamma_SF2D");
 	}
-
 }
 void WeightUtils::SetElectronISOWeights(std::string PeriodFolder ){}
 
@@ -477,10 +517,12 @@ void WeightUtils::SetPhotonIDWeights(std::string PeriodFolder ){
 		_fileName = _cmssw_base + "/src/BLT/BLTAnalysis/data/"+ PeriodFolder+"/photon_id/sf_photon_id_2017.root";
 		TFile* f_gammaIdSF_BCDEF = new TFile(_fileName.c_str(), "OPEN");
 		_gmSF_PreSel_ID_BCDEF = (TH2F*)f_gammaIdSF_BCDEF->Get("EGamma_sf");
+	}
+	else if(PeriodFolder == "ReReco2018"){
 		
-		//_fileName = _cmssw_base + "/src/BLT/BLTAnalysis/data/"+ PeriodFolder+"/photon_id/2017_PhotonsMedium.root";
-		//TFile* f_gammaIdSF_BCDEF = new TFile(_fileName.c_str(), "OPEN");
-		//_gmSF_PreSel_ID_BCDEF = (TH2F*)f_gammaIdSF_BCDEF->Get("EGamma_SF2D");
+		_fileName = _cmssw_base + "/src/BLT/BLTAnalysis/data/"+ PeriodFolder+"/photon_id/sf_photon_id_2018.root";
+		TFile* f_gammaIdSF_BCDEF = new TFile(_fileName.c_str(), "OPEN");
+		_gmSF_PreSel_ID_BCDEF = (TH2F*)f_gammaIdSF_BCDEF->Get("EGamma_sf");	
 	}
 }
 void WeightUtils::SetPhotonISOWeights(std::string PeriodFolder ){}
@@ -500,6 +542,11 @@ void WeightUtils::SetPhotonIsConvWeights(std::string PeriodFolder ){
 	}
 	else if(PeriodFolder == "ReReco2017"){
 		_fileName = _cmssw_base + "/src/BLT/BLTAnalysis/data/"+ PeriodFolder+"/photon_id/sf_photon_isConv_2017.root";
+		TFile* f_gammaIdSF_BCDEF = new TFile(_fileName.c_str(), "OPEN");
+		_gmSF_PreSel_ID_isConv_BCDEF = (TH2F*)f_gammaIdSF_BCDEF->Get("EGamma_sf");
+	}
+	else if(PeriodFolder == "ReReco2018"){
+		_fileName = _cmssw_base + "/src/BLT/BLTAnalysis/data/"+ PeriodFolder+"/photon_id/sf_photon_isConv_2018.root";
 		TFile* f_gammaIdSF_BCDEF = new TFile(_fileName.c_str(), "OPEN");
 		_gmSF_PreSel_ID_isConv_BCDEF = (TH2F*)f_gammaIdSF_BCDEF->Get("EGamma_sf");
 	}
@@ -695,6 +742,12 @@ float WeightUtils::GetMuonIDEff(TLorentzVector& muon) const
 		//}
 	    }
 	}
+	else if(_dataPeriod == "2018ReReco"){
+	    float random = rng->Rndm();
+	    if (muon.Pt() < 120.) {
+		weight   *= _muSF_tight_ID_BCDEF->GetBinContent(_muSF_tight_ID_BCDEF->FindBin(muon.Pt(),fabs(muon.Eta()) ));
+	    }
+	}
 
 	return weight;
 }
@@ -733,6 +786,16 @@ float WeightUtils::GetLooseMuonIDEff(TLorentzVector& muon) const
 	    }
 	}
 	else if(_dataPeriod == "2017ReReco"){
+	    float random = rng->Rndm();
+	    if (muon.Pt() < 120.) {
+		if (random > 0.468) {
+		    weight   *= _muSF_loose_ID_BCDEF->GetBinContent(_muSF_loose_ID_BCDEF->FindBin(fabs(muon.Eta()), muon.Pt()));
+		} else {
+		    weight   *= _muSF_loose_ID_GH->GetBinContent(_muSF_loose_ID_GH->FindBin(fabs(muon.Eta()), muon.Pt()));
+		}
+	    }
+	}
+	else if(_dataPeriod == "2018ReReco"){
 	    float random = rng->Rndm();
 	    if (muon.Pt() < 120.) {
 		if (random > 0.468) {
@@ -796,6 +859,13 @@ float WeightUtils::GetMuonISOEff(TLorentzVector& muon) const
 	    }
 
 	}
+	else if(_dataPeriod == "2018ReReco"){
+	    float random = rng->Rndm();
+	    if (muon.Pt() < 120.) {
+		weight   *= _muSF_tight_ISO_BCDEF->GetBinContent(_muSF_tight_ISO_BCDEF->FindBin(muon.Pt(), fabs(muon.Eta())));
+	    }
+
+	}
 	return weight;
 }
 
@@ -842,6 +912,13 @@ float WeightUtils::GetLooseMuonISOEff(TLorentzVector& muon) const
 		//} else {
 		//    weight   *= _muSF_loose_ISO_GH->GetBinContent(_muSF_loose_ISO_GH->FindBin(fabs(muon.Eta()), muon.Pt()));
 		//}
+	    }
+
+	}
+	else if(_dataPeriod == "2018ReReco"){
+	    float random = rng->Rndm();
+	    if (muon.Pt() < 120.) {
+		weight   *= _muSF_loose_ISO_BCDEF->GetBinContent(_muSF_loose_ISO_BCDEF->FindBin(fabs(muon.Eta()), muon.Pt()));
 	    }
 
 	}
@@ -915,10 +992,10 @@ float WeightUtils::GetPhotonIdEff(TPhoton& photon) const{
 		//cout << " Ph ETA:: " << photon.scEta << " Ph PT::" << tmpPhotonPt << " | Index:: "<< _gmSF_PreSel_ID_BCDEF->FindBin(tmpPhotonPt,photon.scEta) << endl;
 		weight *= _gmSF_PreSel_ID_BCDEF->GetBinContent( _gmSF_PreSel_ID_BCDEF->FindBin(tmpPhotonPt,photon.scEta)  );
 	}
-	//else if(_dataPeriod == "2017ReReco"){
-	//	tmpPhotonPt = (photon.calibPt < 500) ? photon.calibPt:500;
-	//	weight *= _gmSF_PreSel_ID_BCDEF->GetBinContent( _gmSF_PreSel_ID_BCDEF->FindBin(photon.scEta,tmpPhotonPt)  );
-	//}
+	else if(_dataPeriod == "2018ReReco"){
+		tmpPhotonPt = (photon.calibPt < 1500) ? photon.calibPt:1500;
+		weight *= _gmSF_PreSel_ID_BCDEF->GetBinContent( _gmSF_PreSel_ID_BCDEF->FindBin(tmpPhotonPt,photon.scEta)  );
+	}
 	
 	cout << "---- Got Weight\n";
 	if(weight == 0)
@@ -935,6 +1012,10 @@ float WeightUtils::GetPhotonIsConvEff(TPhoton& photon) const{
 	else if(_dataPeriod == "2017ReReco"){
 		tmpPhotonPt = (photon.calibPt < 1500) ? photon.calibPt:1500;
 		//cout << " Ph ETA:: " << photon.scEta << " Ph PT::" << tmpPhotonPt << " | Index:: "<< _gmSF_PreSel_ID_BCDEF->FindBin(tmpPhotonPt,photon.scEta) << endl;
+		weight *= _gmSF_PreSel_ID_isConv_BCDEF->GetBinContent( _gmSF_PreSel_ID_BCDEF->FindBin(tmpPhotonPt,photon.scEta)  );
+	}
+	else if(_dataPeriod == "2018ReReco"){
+		tmpPhotonPt = (photon.calibPt < 1500) ? photon.calibPt:1500;
 		weight *= _gmSF_PreSel_ID_isConv_BCDEF->GetBinContent( _gmSF_PreSel_ID_BCDEF->FindBin(tmpPhotonPt,photon.scEta)  );
 	}
 
